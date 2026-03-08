@@ -1,8 +1,5 @@
 #pragma once
 
-#include "idk/core/service.hpp"
-#include "idk/core/renderer.hpp"
-#include "idk/core/platform.hpp"
 #include "idk/core/engine.hpp"
 
 #include <atomic>
@@ -19,8 +16,7 @@ class idk::Engine: public idk::core::IEngine
 {
 public:
     Engine();
-    void update();
-
+    virtual void update() final;
     virtual void shutdown() final;
     virtual bool set_ctrl(EngineCtrl) final;
     virtual EngineStat get_stat() final;

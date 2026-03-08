@@ -1,6 +1,5 @@
 #include "idk/engine/engine.hpp"
-#include "idk/platform/platform.hpp"
-#include "idk/gfx/gfx.hpp"
+#include "idk/core/log.hpp"
 #include <atomic>
 
 using EngineFptr = idk::EngineStat(idk::Engine::*)(void);
@@ -26,6 +25,8 @@ idk::Engine::Engine()
 
 void idk::Engine::update()
 {
+    // std::lock_guard<std::mutex> lock(ctrl_mutex_);
+
     int idx = 0;
     EngineStat stat = get_stat();
 
@@ -76,12 +77,13 @@ idk::EngineStat idk::Engine::get_stat()
 
 idk::EngineStat idk::Engine::_onStatInvalid()
 {
-    VLOG_FATAL("Invalid EngineStat");
+    VLOG_FATAL("EngineStat::Invalid");
     return EngineStat::Invalid;
 }
 
 idk::EngineStat idk::Engine::_onStatAlive()
 {
+    // VLOG_INFO("EngineStat::Alive");
     if (_match_and_unset(EngineCtrl::Stop))
         return EngineStat::Stopping;
     return EngineStat::Alive;
@@ -90,7 +92,7 @@ idk::EngineStat idk::Engine::_onStatAlive()
 
 idk::EngineStat idk::Engine::_onStatDead()
 {
-    VLOG_INFO("Engine::_onStatusOff");
+    VLOG_INFO("EngineStat::Dead");
     if (_match_and_unset(EngineCtrl::Start))
         return EngineStat::Starting;
     return EngineStat::Dead;
@@ -99,14 +101,14 @@ idk::EngineStat idk::Engine::_onStatDead()
 
 idk::EngineStat idk::Engine::_onStatStarting()
 {
-    VLOG_INFO("Engine::_onStatusStarting");
+    VLOG_INFO("EngineStat::Starting");
     return EngineStat::Alive;
 }
 
 
 idk::EngineStat idk::Engine::_onStatStopping()
 {
-    VLOG_INFO("Engine::_onStatusStopping");
+    VLOG_INFO("EngineStat::Stopping");
     return EngineStat::Dead;
 }
 

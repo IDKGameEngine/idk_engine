@@ -13,7 +13,7 @@ target_include_directories(
     ${PROJECT_NAME} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/h"
 )
 target_link_libraries(
-    ${PROJECT_NAME} PUBLIC idk_core idk_gfx idk_platform
+    ${PROJECT_NAME} PUBLIC idk_core
 )
 target_sources(
     ${PROJECT_NAME} PRIVATE
