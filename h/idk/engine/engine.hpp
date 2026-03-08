@@ -2,71 +2,44 @@
 
 #include "idk/core/service.hpp"
 #include "idk/core/renderer.hpp"
-#include <cstdint>
+#include "idk/core/platform.hpp"
+#include "idk/core/engine.hpp"
+
+#include <atomic>
+#include <mutex>
 
 
 namespace idk
 {
     class Engine;
-
-    enum class EngineStatus: uint8_t
-    {
-        Invalid = 0,
-        Off,
-        StartupInProgress,
-        Running,
-        ShutdownInProgress
-    };
-
-    enum class EngineControl: uint8_t
-    {
-        None = 0,
-        BeginStartup,
-        BeginShutdown
-    };
-
 }
 
 
-class idk::Engine: public idk::NonCopyable, public idk::NonMovable
+class idk::Engine: public idk::core::IEngine
 {
 public:
-    struct Impl;
-    idk::Engine::Impl *m_impl;
-
-    Engine(const idk::core::WindowDesc &windesc);
-    ~Engine();
-
+    Engine();
     void update();
 
-    idk::EngineStatus  getStatus();
-    idk::EngineControl getControl();
-    bool setControl(idk::EngineControl);
-    void awaitControl(idk::EngineControl c) { while (c != getControl()) {}; }
-    void awaitStatus(idk::EngineStatus s) { while (s != getStatus()) {}; }
-
-    // template <typename T> T get();
-    // template <idk::EngineStatus> auto get<idk::EngineStatus>() { return getStatus(); }
-    // template <idk::EngineControl> auto get<idk::EngineControl>() { return getControl(); }
-    // template <idk::EngineControl C> bool set() { return setControl(C); }
-    // template <idk::EngineStatus S> void await() { while (S != getStatus()) {  }; }
-    // template <idk::EngineControl C> void await() { while (C != getControl()) {  }; }
-
-    idk::core::IPlatform *getPlatform();
-    idk::core::IRenderer *getRenderer();
+    virtual void shutdown() final;
+    virtual bool set_ctrl(EngineCtrl) final;
+    virtual EngineStat get_stat() final;
 
 private:
-    idk::core::ServiceManager m_services;
-    idk::EngineStatus _onStatusInvalid();
-    idk::EngineStatus _onStatusOff();
-    idk::EngineStatus _onStatusStartupInProgress();
-    idk::EngineStatus _onStatusRunning();
-    idk::EngineStatus _onStatusShutdownInProgress();
+    std::atomic<EngineStat> stat_;
+    std::atomic<EngineCtrl> ctrl_;
+    std::mutex ctrl_mutex_;
 
-    void _set_stat(idk::EngineStatus);
-    void _set_ctrl(idk::EngineControl);
-    bool _match_and_unset(idk::EngineControl expected);
-    void _await_and_unset(idk::EngineControl expected);
+    EngineStat _onStatInvalid();
+    EngineStat _onStatAlive();
+    EngineStat _onStatDead();
+    EngineStat _onStatStarting();
+    EngineStat _onStatStopping();
+
+    void _set_stat(EngineStat s) { stat_.store(s); }
+    void _set_ctrl(EngineCtrl c) { ctrl_.store(c); }
+    bool _match_and_unset(EngineCtrl expected);
+    void _await_and_unset(EngineCtrl expected);
 
 };
 

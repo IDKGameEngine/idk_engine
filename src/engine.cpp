@@ -3,98 +3,42 @@
 #include "idk/gfx/gfx.hpp"
 #include <atomic>
 
-using EngineFptr = idk::EngineStatus(idk::Engine::*)(void);
+using EngineFptr = idk::EngineStat(idk::Engine::*)(void);
 static EngineFptr ftab_[5];
 
-
-struct idk::Engine::Impl
+idk::Engine::Engine()
+:   idk::core::IEngine(),
+    stat_(EngineStat::Dead),
+    ctrl_(EngineCtrl::None)
 {
-    idk::core::IPlatformPtr         plat;
-    idk::core::IRendererPtr         ren;
-    std::atomic<idk::EngineStatus>  stat;
-    std::atomic<idk::EngineControl> ctrl;
-
-    Impl(const idk::core::WindowDesc &windesc)
-    :   plat( idk::platform::create_platform(windesc) ),
-        ren ( idk::gfx::create_renderer(plat->getWindow()) )
-    {
-        stat.store(idk::EngineStatus::Off);
-        ctrl.store(idk::EngineControl::None);
-    }
-
-};
-
-
-static void onServiceShutdown(void *arg)
-{
-    VLOG_INFO("idk::Engine onServiceShutdown");
-
-    idk::Engine *e = static_cast<idk::Engine*>(arg);
-
-    IDK_ASSERT(
-        e->getStatus() == idk::EngineStatus::Running,
-        "Engine must first be running in order shutdown"
-    );
-
-    e->setControl(idk::EngineControl::BeginShutdown);
-}
-
-
-idk::Engine::Engine(const idk::core::WindowDesc &wd)
-:   idk::NonCopyable(),
-    idk::NonMovable(),
-    m_impl(new idk::Engine::Impl(wd))
-{
-    ftab_[0] = &idk::Engine::_onStatusInvalid;
-    ftab_[1] = &idk::Engine::_onStatusOff;
-    ftab_[2] = &idk::Engine::_onStatusStartupInProgress;
-    ftab_[3] = &idk::Engine::_onStatusRunning;
-    ftab_[4] = &idk::Engine::_onStatusShutdownInProgress;
-
-    m_services.shutdown_func_ = onServiceShutdown;
-    m_services.shutdown_arg_ = (void*)this;
+    ftab_[0] = &idk::Engine::_onStatInvalid;
+    ftab_[1] = &idk::Engine::_onStatAlive;
+    ftab_[2] = &idk::Engine::_onStatDead;
+    ftab_[3] = &idk::Engine::_onStatStarting;
+    ftab_[4] = &idk::Engine::_onStatStopping;
 
     VLOG_INFO("Engine Initialized");
 
-    this->setControl(EngineControl::BeginStartup);
+    set_ctrl(EngineCtrl::Start);
     this->update();
 }
-
-idk::Engine::~Engine()
-{
-    delete m_impl;
-}
-
-
-idk::core::IPlatform *idk::Engine::getPlatform()
-{
-    return m_impl->plat.get();
-}
-
-
-idk::core::IRenderer *idk::Engine::getRenderer()
-{
-    return m_impl->ren.get();
-}
-
 
 
 void idk::Engine::update()
 {
     int idx = 0;
-    EngineStatus stat = getStatus();
+    EngineStat stat = get_stat();
 
     switch (stat)
     {
         default:
-        case EngineStatus::Invalid:
+        case EngineStat::Invalid:
             idx = 0;
             break;
-
-        case EngineStatus::Off:
-        case EngineStatus::StartupInProgress:
-        case EngineStatus::Running:
-        case EngineStatus::ShutdownInProgress:
+        case EngineStat::Alive:
+        case EngineStat::Dead:
+        case EngineStat::Starting:
+        case EngineStat::Stopping:
             idx = static_cast<int>(stat);
             break;
     }
@@ -102,52 +46,71 @@ void idk::Engine::update()
     _set_stat((this->*(ftab_[idx]))());
 }
 
-
-idk::EngineStatus idk::Engine::_onStatusInvalid()
+void idk::Engine::shutdown()
 {
-    VLOG_FATAL("Invalid EngineStatus");
-    return EngineStatus::Invalid;
+    _set_ctrl(EngineCtrl::Stop);
+    _set_stat(EngineStat::Stopping);
 }
 
 
-idk::EngineStatus idk::Engine::_onStatusOff()
+
+bool idk::Engine::set_ctrl(idk::EngineCtrl ctrl)
+{
+    std::lock_guard<std::mutex> lock(ctrl_mutex_);
+
+    if (statIsCtrlEnabled(stat_.load()))
+    {
+        ctrl_.store(ctrl);
+        return true;
+    }
+
+    return false;
+}
+
+
+idk::EngineStat idk::Engine::get_stat()
+{
+    return stat_.load();
+}
+
+
+idk::EngineStat idk::Engine::_onStatInvalid()
+{
+    VLOG_FATAL("Invalid EngineStat");
+    return EngineStat::Invalid;
+}
+
+idk::EngineStat idk::Engine::_onStatAlive()
+{
+    if (_match_and_unset(EngineCtrl::Stop))
+        return EngineStat::Stopping;
+    return EngineStat::Alive;
+}
+
+
+idk::EngineStat idk::Engine::_onStatDead()
 {
     VLOG_INFO("Engine::_onStatusOff");
-    if (_match_and_unset(EngineControl::BeginStartup))
-        return EngineStatus::StartupInProgress;
-    return EngineStatus::Off;
+    if (_match_and_unset(EngineCtrl::Start))
+        return EngineStat::Starting;
+    return EngineStat::Dead;
 }
 
 
-idk::EngineStatus idk::Engine::_onStatusStartupInProgress()
+idk::EngineStat idk::Engine::_onStatStarting()
 {
-    VLOG_INFO("Engine::_onStatusStartupInProgress");
-    m_services.registerService(m_impl->plat);
-    m_services.registerService(m_impl->ren);
-    return EngineStatus::Running;
+    VLOG_INFO("Engine::_onStatusStarting");
+    return EngineStat::Alive;
 }
 
 
-idk::EngineStatus idk::Engine::_onStatusRunning()
+idk::EngineStat idk::Engine::_onStatStopping()
 {
-    if (_match_and_unset(EngineControl::BeginShutdown))
-        return EngineStatus::ShutdownInProgress;
-    m_services.update();
-    return EngineStatus::Running;
+    VLOG_INFO("Engine::_onStatusStopping");
+    return EngineStat::Dead;
 }
 
 
-idk::EngineStatus idk::Engine::_onStatusShutdownInProgress()
-{
-    VLOG_INFO("Engine::_onStatusShutdownInProgress");
-    m_services.shutdown();
-    return EngineStatus::Off;
-}
-
-
-
-void idk::Engine::_set_stat(idk::EngineStatus  s) { m_impl->stat.store(s); }
-void idk::Engine::_set_ctrl(idk::EngineControl c) { m_impl->ctrl.store(c);  }
 
 /*
     atomic<int> foo;
@@ -164,48 +127,17 @@ void idk::Engine::_set_ctrl(idk::EngineControl c) { m_impl->ctrl.store(c);  }
         } // otherwise keep trying
     }
 */
-bool idk::Engine::_match_and_unset(idk::EngineControl expected)
+bool idk::Engine::_match_and_unset(idk::EngineCtrl expected)
 {
-    return m_impl->ctrl.compare_exchange_strong(expected, EngineControl::None);
+    return ctrl_.compare_exchange_strong(expected, EngineCtrl::None);
 }
 
-void idk::Engine::_await_and_unset(idk::EngineControl expected)
+void idk::Engine::_await_and_unset(idk::EngineCtrl expected)
 {
-    auto &ref = m_impl->ctrl;
-
-    while (!ref.compare_exchange_strong(expected, EngineControl::None))
+    while (!ctrl_.compare_exchange_strong(expected, EngineCtrl::None))
     {
         
     }
 }
 
 
-
-idk::EngineStatus idk::Engine::getStatus()
-{
-    return m_impl->stat.load();
-}
-
-// idk::EngineControl idk::Engine::getControl()
-// {
-//     return m_impl->ctrl.load();
-// }
-
-bool idk::Engine::setControl(idk::EngineControl ctl)
-{
-    switch (getStatus())
-    {
-        case EngineStatus::Off:
-        case EngineStatus::Running:
-            m_impl->ctrl.store(ctl);
-            return true;
-
-        case EngineStatus::StartupInProgress:
-        case EngineStatus::ShutdownInProgress:
-            return false;
-
-        default:
-            VLOG_FATAL("Invalid EngineStatus");
-            return false;
-    }
-}
