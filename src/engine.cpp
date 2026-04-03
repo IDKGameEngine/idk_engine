@@ -18,9 +18,18 @@ void idk::Engine::_srvmain(idk::Engine *engine, idk::core::Service *srv)
 
 
 idk::Engine::Engine()
+:   mainloop_sync_(nullptr),
+    shutdown_sync_(nullptr)
 {
     running_.store(true);
     VLOG_INFO("Engine Initialized");
+}
+
+idk::Engine::~Engine()
+{
+    if (mainloop_sync_) delete mainloop_sync_;
+    if (shutdown_sync_) delete shutdown_sync_;
+    VLOG_INFO("[Engine::~Engine]");
 }
 
 

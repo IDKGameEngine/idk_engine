@@ -18,6 +18,7 @@ class idk::Engine: public idk::IEngine
 {
 public:
     Engine();
+    ~Engine();
     void addService(idk::core::Service*);
     void start(idk::core::Service *mainsrv);
     void shutdown();
