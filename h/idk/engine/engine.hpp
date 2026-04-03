@@ -1,41 +1,57 @@
 #pragma once
 
 #include "idk/core/engine.hpp"
+#include "idk/core/service.hpp"
 
+#include <barrier>
+#include <thread>
 #include <atomic>
 #include <mutex>
-
+#include <vector>
 
 namespace idk
 {
     class Engine;
 }
 
-
-class idk::Engine: public idk::core::IEngine
+class idk::Engine: public idk::IEngine
 {
 public:
     Engine();
-    virtual void update() final;
-    virtual void shutdown() final;
-    virtual bool set_ctrl(EngineCtrl) final;
-    virtual EngineStat get_stat() final;
+    void addService(idk::core::Service*);
+    void start(idk::core::Service *mainsrv);
+    void shutdown();
+    bool running();
+    // bool set_ctrl(EngineCtrl);
+    // EngineStat get_stat();
 
 private:
-    std::atomic<EngineStat> stat_;
-    std::atomic<EngineCtrl> ctrl_;
-    std::mutex ctrl_mutex_;
+    std::atomic_bool running_;
 
-    EngineStat _onStatInvalid();
-    EngineStat _onStatAlive();
-    EngineStat _onStatDead();
-    EngineStat _onStatStarting();
-    EngineStat _onStatStopping();
+    std::barrier<> *mainloop_sync_;
+    std::barrier<> *shutdown_sync_;
 
-    void _set_stat(EngineStat s) { stat_.store(s); }
-    void _set_ctrl(EngineCtrl c) { ctrl_.store(c); }
-    bool _match_and_unset(EngineCtrl expected);
-    void _await_and_unset(EngineCtrl expected);
+    std::vector<core::Service*> services_;
+    std::vector<std::thread>    threads_;
+
+    // std::atomic<EngineStat> stat_;
+    // std::atomic<EngineCtrl> ctrl_;
+    // std::mutex ctrl_mutex_;
+
+    // EngineStat _onStatInvalid();
+    // EngineStat _onStatAlive();
+    // EngineStat _onStatDead();
+    // EngineStat _onStatStarting();
+    // EngineStat _onStatStopping();
+
+    // void _set_stat(EngineStat s) { stat_.store(s); }
+    // void _set_ctrl(EngineCtrl c) { ctrl_.store(c); }
+    // bool _match_and_unset(EngineCtrl expected);
+    // void _await_and_unset(EngineCtrl expected);
+
+    void _update();
+
+    static void _srvmain(idk::Engine*, idk::core::Service*);
 
 };
 
