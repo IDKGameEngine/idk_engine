@@ -17,7 +17,7 @@ namespace idk
 class idk::Engine: public idk::IEngine
 {
 public:
-    Engine();
+    Engine(uint32_t numServices);
     ~Engine();
     void addService(idk::core::Service*);
     void start(idk::core::Service *mainsrv);
@@ -29,8 +29,9 @@ public:
 private:
     std::atomic_bool running_;
 
-    std::barrier<> *mainloop_sync_;
-    std::barrier<> *shutdown_sync_;
+    std::uint32_t  num_services_;
+    std::barrier<> mainloop_sync_;
+    std::barrier<> shutdown_sync_;
 
     std::vector<core::Service*> services_;
     std::vector<std::thread>    threads_;

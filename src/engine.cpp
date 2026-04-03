@@ -1,34 +1,31 @@
 #include "idk/engine/engine.hpp"
+#include "idk/core/assert.hpp"
 #include "idk/core/log.hpp"
 
-#include <cstring>
 #include <atomic>
+#include <cstring>
+#include <filesystem>
+#include <SDL3/SDL.h>
 
-void idk::Engine::_srvmain(idk::Engine *engine, idk::core::Service *srv)
+
+idk::Engine::Engine(uint32_t numServices)
+:   num_services_(numServices),
+    mainloop_sync_(numServices),
+    shutdown_sync_(numServices)
 {
-    while (engine->running())
+    if (false == SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_CAMERA))
     {
-        srv->onUpdate(engine);
-        engine->mainloop_sync_->arrive_and_wait();
+        VLOG_FATAL("{}", SDL_GetError());
     }
+    std::filesystem::current_path(std::filesystem::path(SDL_GetBasePath()));
 
-    engine->shutdown_sync_->arrive_and_wait();
-    srv->onShutdown(engine);
-}
-
-
-idk::Engine::Engine()
-:   mainloop_sync_(nullptr),
-    shutdown_sync_(nullptr)
-{
     running_.store(true);
     VLOG_INFO("Engine Initialized");
 }
 
+
 idk::Engine::~Engine()
 {
-    if (mainloop_sync_) delete mainloop_sync_;
-    if (shutdown_sync_) delete shutdown_sync_;
     VLOG_INFO("[Engine::~Engine]");
 }
 
@@ -43,8 +40,11 @@ void idk::Engine::addService(idk::core::Service *srv)
 void idk::Engine::start(idk::core::Service *mainsrv)
 {
     services_.push_back(mainsrv);
-    mainloop_sync_ = new std::barrier(services_.size());
-    shutdown_sync_ = new std::barrier(services_.size());
+
+    IDK_ASSERT(
+        services_.size() == num_services_,
+        "Supplied incorrect number of services"
+    );
 
     for (auto &t: threads_)
     {
@@ -54,10 +54,10 @@ void idk::Engine::start(idk::core::Service *mainsrv)
     while (this->running())
     {
         mainsrv->onUpdate(this);
-        mainloop_sync_->arrive_and_wait();
+        mainloop_sync_.arrive_and_wait();
     }
 
-    shutdown_sync_->arrive_and_wait();
+    shutdown_sync_.arrive_and_wait();
     mainsrv->onShutdown(this);
 
     for (size_t i=0; i<services_.size(); i++)
@@ -72,9 +72,21 @@ void idk::Engine::shutdown()
     running_.store(false);
 }
 
-
 bool idk::Engine::running()
 {
     return running_.load();
+}
+
+
+void idk::Engine::_srvmain(idk::Engine *engine, idk::core::Service *srv)
+{
+    while (engine->running())
+    {
+        srv->onUpdate(engine);
+        engine->mainloop_sync_.arrive_and_wait();
+    }
+
+    engine->shutdown_sync_.arrive_and_wait();
+    srv->onShutdown(engine);
 }
 
