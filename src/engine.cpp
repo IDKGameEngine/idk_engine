@@ -4,22 +4,22 @@
 
 #include <atomic>
 #include <cstring>
-#include <filesystem>
 #include <SDL3/SDL.h>
 
 
-idk::Engine::Engine(uint32_t numServices)
-:   num_services_(numServices),
-    mainloop_sync_(numServices),
-    shutdown_sync_(numServices)
+idk::Engine::Engine(core::Service *mainsrv, std::initializer_list<core::Service*> rest)
+:   mainloop_sync_(rest.size() + 1),
+    shutdown_sync_(rest.size() + 1),
+    mainsrv_(mainsrv)
 {
-    if (false == SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_CAMERA))
-    {
-        VLOG_FATAL("{}", SDL_GetError());
-    }
-    std::filesystem::current_path(std::filesystem::path(SDL_GetBasePath()));
-
     running_.store(true);
+
+    for (auto *srv: rest)
+    {
+        subsrvs_.push_back(srv);
+        threads_.push_back(std::thread(idk::Engine::_srvmain, this, srv));
+    }
+
     VLOG_INFO("Engine Initialized");
 }
 
@@ -30,22 +30,15 @@ idk::Engine::~Engine()
 }
 
 
-void idk::Engine::addService(idk::core::Service *srv)
+// void idk::Engine::addService(idk::core::Service *srv)
+// {
+//     subsrvs_.push_back(srv);
+//     threads_.push_back(std::thread(idk::Engine::_srvmain, this, srv));
+// }
+
+
+void idk::Engine::start()
 {
-    services_.push_back(srv);
-    threads_.push_back(std::thread(idk::Engine::_srvmain, this, srv));
-}
-
-
-void idk::Engine::start(idk::core::Service *mainsrv)
-{
-    services_.push_back(mainsrv);
-
-    IDK_ASSERT(
-        services_.size() == num_services_,
-        "Supplied incorrect number of services"
-    );
-
     for (auto &t: threads_)
     {
         t.detach();
@@ -53,16 +46,16 @@ void idk::Engine::start(idk::core::Service *mainsrv)
 
     while (this->running())
     {
-        mainsrv->onUpdate(this);
+        mainsrv_->onUpdate(this);
         mainloop_sync_.arrive_and_wait();
     }
 
     shutdown_sync_.arrive_and_wait();
-    mainsrv->onShutdown(this);
+    mainsrv_->onShutdown(this);
 
-    for (size_t i=0; i<services_.size(); i++)
+    for (size_t i=0; i<subsrvs_.size(); i++)
     {
-        delete services_[i];
+        delete subsrvs_[i];
     }
 }
 

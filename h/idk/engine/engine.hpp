@@ -3,10 +3,11 @@
 #include "idk/core/engine.hpp"
 #include "idk/core/service.hpp"
 
-#include <barrier>
-#include <thread>
 #include <atomic>
+#include <barrier>
+#include <initializer_list>
 #include <mutex>
+#include <thread>
 #include <vector>
 
 namespace idk
@@ -17,10 +18,12 @@ namespace idk
 class idk::Engine: public idk::IEngine
 {
 public:
-    Engine(uint32_t numServices);
+    Engine(core::Service *mainsrv, std::initializer_list<core::Service*> rest);
     ~Engine();
-    void addService(idk::core::Service*);
-    void start(idk::core::Service *mainsrv);
+    // void addService(idk::core::Service*);
+    // void start(idk::core::Service *mainsrv);
+    void start();
+
     void shutdown();
     bool running();
     // bool set_ctrl(EngineCtrl);
@@ -29,12 +32,12 @@ public:
 private:
     std::atomic_bool running_;
 
-    std::uint32_t  num_services_;
     std::barrier<> mainloop_sync_;
     std::barrier<> shutdown_sync_;
 
-    std::vector<core::Service*> services_;
-    std::vector<std::thread>    threads_;
+    idk::core::Service *mainsrv_;
+    std::vector<core::Service*> subsrvs_;
+    std::vector<std::thread> threads_;
 
     // std::atomic<EngineStat> stat_;
     // std::atomic<EngineCtrl> ctrl_;
