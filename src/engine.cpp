@@ -46,8 +46,11 @@ void idk::Engine::start()
 
     while (this->running())
     {
-        mainsrv_->onUpdate(this);
-        mainloop_sync_.arrive_and_wait();
+        if (timer_.expired())
+        {
+            mainsrv_->onUpdate(this);
+            mainloop_sync_.arrive_and_wait();
+        }
     }
 
     shutdown_sync_.arrive_and_wait();

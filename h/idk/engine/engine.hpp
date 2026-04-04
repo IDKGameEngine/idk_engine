@@ -2,6 +2,7 @@
 
 #include "idk/core/engine.hpp"
 #include "idk/core/service.hpp"
+#include "idk/core/periodic_timer.hpp"
 
 #include <atomic>
 #include <barrier>
@@ -38,6 +39,9 @@ private:
     idk::core::Service *mainsrv_;
     std::vector<core::Service*> subsrvs_;
     std::vector<std::thread> threads_;
+
+    idk::PeriodicTimer<15> timer_;
+
 
     // std::atomic<EngineStat> stat_;
     // std::atomic<EngineCtrl> ctrl_;
