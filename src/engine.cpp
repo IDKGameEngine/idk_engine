@@ -1,4 +1,4 @@
-#include "idk/engine/engine.hpp"
+#include "idk/engine.hpp"
 #include "idk/core/assert.hpp"
 #include "idk/core/log.hpp"
 

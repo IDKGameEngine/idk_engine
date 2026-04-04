@@ -21,14 +21,10 @@ class idk::Engine: public idk::IEngine
 public:
     Engine(core::Service *mainsrv, std::initializer_list<core::Service*> rest);
     ~Engine();
-    // void addService(idk::core::Service*);
-    // void start(idk::core::Service *mainsrv);
-    void start();
 
+    void start();
     void shutdown();
     bool running();
-    // bool set_ctrl(EngineCtrl);
-    // EngineStat get_stat();
 
 private:
     std::atomic_bool running_;

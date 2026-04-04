@@ -1,7 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
 
 project(idk_engine VERSION 0.0.1)
-add_compile_options(-Werror -Wall -Wextra)
 
 add_library(
     ${PROJECT_NAME} STATIC
