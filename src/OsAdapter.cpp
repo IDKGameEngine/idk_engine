@@ -1,12 +1,12 @@
-#include "idk/AppRuntime.hpp"
+#include "idk/OsAdapter.hpp"
 #include "idk/core/log.hpp"
 #include <filesystem>
 #include <SDL3/SDL.h>
 
 
-bool idk::AppRuntime::Init()
+bool idk::OsAdapter::PreInit()
 {
-    VLOG_INFO("[AppRuntime::Init] A");
+    VLOG_INFO("[idk::OsAdapter::PreInit]");
 
     if (false == SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_CAMERA))
         VLOG_FATAL("{}", SDL_GetError());
@@ -31,18 +31,16 @@ bool idk::AppRuntime::Init()
     if (!SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8))
         VLOG_ERROR("{}", SDL_GetError());
 
-    VLOG_INFO("[AppRuntime::Init] B");
-
     return true;
 }
 
 
-uint64_t idk::AppRuntime::GetSysTimeMs()
+uint64_t idk::OsAdapter::GetSysTimeMs()
 {
     return SDL_GetTicks();
 }
 
-uint64_t idk::AppRuntime::GetSysTimeNs()
+uint64_t idk::OsAdapter::GetSysTimeNs()
 {
     return SDL_GetTicksNS();
 }

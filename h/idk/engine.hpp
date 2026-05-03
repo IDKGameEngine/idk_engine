@@ -21,40 +21,21 @@ class idk::Engine: public idk::IEngine
 public:
     Engine(core::Service *mainsrv, std::initializer_list<core::Service*> rest);
     ~Engine();
-
-    void start();
-    void shutdown();
-    bool running();
+    virtual bool running() final;
+    virtual void shutdown() final;
+    virtual void await_startup() final;
+    virtual void await_shutdown() final;
 
 private:
     std::atomic_bool running_;
-    idk::PeriodicTimer timer_;
+    const size_t     num_srvs_;
 
-    std::barrier<> mainloop_sync_;
+    std::barrier<> startup_sync_;
     std::barrier<> shutdown_sync_;
 
     idk::core::Service *mainsrv_;
     std::vector<core::Service*> subsrvs_;
     std::vector<std::thread> threads_;
-
-
-
-    // std::atomic<EngineStat> stat_;
-    // std::atomic<EngineCtrl> ctrl_;
-    // std::mutex ctrl_mutex_;
-
-    // EngineStat _onStatInvalid();
-    // EngineStat _onStatAlive();
-    // EngineStat _onStatDead();
-    // EngineStat _onStatStarting();
-    // EngineStat _onStatStopping();
-
-    // void _set_stat(EngineStat s) { stat_.store(s); }
-    // void _set_ctrl(EngineCtrl c) { ctrl_.store(c); }
-    // bool _match_and_unset(EngineCtrl expected);
-    // void _await_and_unset(EngineCtrl expected);
-
-    void _update();
 
     static void _srvmain(idk::Engine*, idk::core::Service*);
 

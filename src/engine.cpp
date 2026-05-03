@@ -10,22 +10,25 @@
 
 idk::Engine::Engine(core::Service *mainsrv, std::initializer_list<core::Service*> rest)
 :   running_(true),
-    timer_(0.0),
-    mainloop_sync_(rest.size() + 1),
-    shutdown_sync_(rest.size() + 1),
+    num_srvs_(1 + rest.size()),
+    startup_sync_(num_srvs_),
+    shutdown_sync_(num_srvs_),
     mainsrv_(mainsrv)
 {
-    running_.store(true);
-
     for (auto *srv: rest)
     {
         subsrvs_.push_back(srv);
-        threads_.push_back(std::thread(idk::Engine::_srvmain, this, srv));
+        threads_.push_back(std::thread(Engine::_srvmain, this, srv));
+    }
+
+    for (auto &t: threads_)
+    {
+        t.detach();
     }
 
     VLOG_INFO("Engine Initialized");
+    Engine::_srvmain(this, mainsrv_);
 }
-
 
 idk::Engine::~Engine()
 {
@@ -33,56 +36,42 @@ idk::Engine::~Engine()
 }
 
 
-// void idk::Engine::addService(idk::core::Service *srv)
-// {
-//     subsrvs_.push_back(srv);
-//     threads_.push_back(std::thread(idk::Engine::_srvmain, this, srv));
-// }
-
-
-void idk::Engine::start()
-{
-    for (auto &t: threads_)
-    {
-        t.detach();
-    }
-
-    while (this->running())
-    {
-        mainsrv_->update(this);
-        mainloop_sync_.arrive_and_wait();
-    }
-
-    shutdown_sync_.arrive_and_wait();
-    mainsrv_->shutdown(this);
-
-    for (size_t i=0; i<subsrvs_.size(); i++)
-    {
-        delete subsrvs_[i];
-    }
-}
-
-
-void idk::Engine::shutdown()
-{
-    running_.store(false);
-}
-
 bool idk::Engine::running()
 {
     return running_.load();
 }
 
-
-void idk::Engine::_srvmain(idk::Engine *engine, idk::core::Service *srv)
+void idk::Engine::shutdown()
 {
-    while (engine->running())
+    running_.store(false);
+    running_.notify_all();
+}
+
+void idk::Engine::await_startup()
+{
+    startup_sync_.arrive_and_wait();
+}
+
+void idk::Engine::await_shutdown()
+{
+    shutdown_sync_.arrive_and_wait();
+}
+
+
+void idk::Engine::_srvmain(idk::Engine *E, idk::core::Service *srv)
+{
+    E->await_startup();
+    srv->startup(E);
+
+    while (E->running())
     {
-        srv->update(engine);
-        engine->mainloop_sync_.arrive_and_wait();
+        srv->update(E);
+        // E->mainloop_sync_.arrive_and_wait();
     }
 
-    engine->shutdown_sync_.arrive_and_wait();
-    srv->shutdown(engine);
+    srv->shutdown(E);
+    E->await_shutdown();
+
+    delete srv;
 }
 
