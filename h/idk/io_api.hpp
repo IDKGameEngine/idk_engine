@@ -29,15 +29,16 @@ namespace idk
 
         void dummy() { (void)srv_; }
 
-        // #define IDK_XMACRO(Name) \
-        // void Name(const Name ## Request &req, Name ## Response *res) \
-        // { \
-        //     VLOG_INFO("[IoApi::" #Name "] A"); \
-        //     _send_request<Request::Name>(req, res); \
-        //     VLOG_INFO("[IoApi::" #Name "] B"); \
-        // }
-        // IDK_IOREQ_LIST
-        // #undef IDK_XMACRO
+        /*
+            void Name(const Name ## Request &req, Name ## Response *res) \
+            { \
+                VLOG_INFO("[IoApi::" #Name "] A"); \
+                _send_request<Request::Name>(req, res); \
+                VLOG_INFO("[IoApi::" #Name "] B"); \
+            }
+            IDK_IOREQ_LIST
+            #undef IDK_XMACRO
+        */
 
     };
 }
