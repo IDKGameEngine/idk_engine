@@ -28,6 +28,7 @@ public:
 
 private:
     std::atomic_bool running_;
+    idk::PeriodicTimer timer_;
 
     std::barrier<> mainloop_sync_;
     std::barrier<> shutdown_sync_;
@@ -36,7 +37,6 @@ private:
     std::vector<core::Service*> subsrvs_;
     std::vector<std::thread> threads_;
 
-    idk::PeriodicTimer<15> timer_;
 
 
     // std::atomic<EngineStat> stat_;

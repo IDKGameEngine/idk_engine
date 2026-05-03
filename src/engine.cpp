@@ -1,6 +1,7 @@
 #include "idk/engine.hpp"
 #include "idk/core/assert.hpp"
 #include "idk/core/log.hpp"
+#include "idk/core/metric.hpp"
 
 #include <atomic>
 #include <cstring>
@@ -8,7 +9,9 @@
 
 
 idk::Engine::Engine(core::Service *mainsrv, std::initializer_list<core::Service*> rest)
-:   mainloop_sync_(rest.size() + 1),
+:   running_(true),
+    timer_(0.0),
+    mainloop_sync_(rest.size() + 1),
     shutdown_sync_(rest.size() + 1),
     mainsrv_(mainsrv)
 {
@@ -46,15 +49,12 @@ void idk::Engine::start()
 
     while (this->running())
     {
-        if (timer_.expired())
-        {
-            mainsrv_->onUpdate(this);
-            mainloop_sync_.arrive_and_wait();
-        }
+        mainsrv_->update(this);
+        mainloop_sync_.arrive_and_wait();
     }
 
     shutdown_sync_.arrive_and_wait();
-    mainsrv_->onShutdown(this);
+    mainsrv_->shutdown(this);
 
     for (size_t i=0; i<subsrvs_.size(); i++)
     {
@@ -78,11 +78,11 @@ void idk::Engine::_srvmain(idk::Engine *engine, idk::core::Service *srv)
 {
     while (engine->running())
     {
-        srv->onUpdate(engine);
+        srv->update(engine);
         engine->mainloop_sync_.arrive_and_wait();
     }
 
     engine->shutdown_sync_.arrive_and_wait();
-    srv->onShutdown(engine);
+    srv->shutdown(engine);
 }
 
