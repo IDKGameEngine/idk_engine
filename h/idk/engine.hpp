@@ -19,7 +19,7 @@ namespace idk
 class idk::Engine: public idk::IEngine
 {
 public:
-    Engine(core::Service *mainsrv, std::initializer_list<core::Service*> rest);
+    Engine(std::initializer_list<core::Service*> mainthread_srvs, std::initializer_list<core::Service*> workthread_srvs);
     ~Engine();
     virtual bool running() final;
     virtual void shutdown() final;
@@ -30,14 +30,12 @@ private:
     std::atomic_bool running_;
     const size_t     num_srvs_;
 
-    std::barrier<> startup_sync_;
-    std::barrier<> shutdown_sync_;
+    std::barrier<>   startup_sync_;
+    std::barrier<>   shutdown_sync_;
 
-    idk::core::Service *mainsrv_;
-    std::vector<core::Service*> subsrvs_;
-    std::vector<std::thread> threads_;
+    std::vector<std::thread> workthreads_;
 
-    static void _srvmain(idk::Engine*, idk::core::Service*);
+    static void _workthread_main(idk::Engine*, idk::core::Service*);
 
 };
 
