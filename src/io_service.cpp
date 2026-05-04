@@ -25,34 +25,38 @@ void idk::IoService::_update(idk::IEngine *E)
 {
     (void)E;
 
-    while (!cmd_read_->empty())
-    {
-        auto &req = cmd_read_->front();
-        auto *res = req.res;
 
-        switch (req.type)
-        {
-            case IoReqType::LoadFile:
-                break;
-
-            case IoReqType::WriteFile:
-                break;
-
-            default:
-                VLOG_FATAL("Invalid IoReqType");
-                break;
-        }
-
-        res->make_ready();
-        cmd_read_->pop();
-    }
-
-    if (flush.load() == true)
-    {
-        cmd_queue_.swapBuffers();
-        flush.store(false);
-    }
 }
+
+// {
+//     while (!cmd_read_->empty())
+//     {
+//         auto &req = cmd_read_->front();
+//         auto *res = req.res;
+
+//         switch (req.type)
+//         {
+//             case IoReqType::LoadFile:
+//                 break;
+
+//             case IoReqType::WriteFile:
+//                 break;
+
+//             default:
+//                 VLOG_FATAL("Invalid IoReqType");
+//                 break;
+//         }
+
+//         res->make_ready();
+//         cmd_read_->pop();
+//     }
+
+//     if (flush.load() == true)
+//     {
+//         cmd_queue_.swapBuffers();
+//         flush.store(false);
+//     }
+// }
 
 
 void idk::IoService::_shutdown(idk::IEngine*)

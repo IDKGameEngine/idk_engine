@@ -22,6 +22,9 @@ bool idk::OsAdapter::PreInit()
     if (!SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 6))
         VLOG_ERROR("{}", SDL_GetError());
 
+    if (!SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 4))
+        VLOG_ERROR("{}", SDL_GetError());
+
     if (!SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1))
         VLOG_ERROR("{}", SDL_GetError());
 
