@@ -25,16 +25,6 @@ void idk::IoService::_update(idk::IEngine *E)
 {
     (void)E;
 
-    SDL_Event e;
-    while (SDL_PollEvent(&e))
-    {
-        if (e.type == SDL_EVENT_QUIT)
-        {
-            VLOG_INFO("SDL_EVENT_QUIT");
-            E->shutdown();
-        }
-    }
-
     while (!cmd_read_->empty())
     {
         auto &req = cmd_read_->front();
