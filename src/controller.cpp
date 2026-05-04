@@ -1,5 +1,5 @@
 #include "idk/engine/controller.hpp"
-
+#include "idk/core/log.hpp"
 
 void idk::TestCharacterController::update()
 {
@@ -10,6 +10,7 @@ void idk::TestCharacterController::update()
     if (kbstate[SDL_SCANCODE_D]) dm.x += 1.0f;
     if (kbstate[SDL_SCANCODE_W]) dm.z += 1.0f;
     if (kbstate[SDL_SCANCODE_S]) dm.z -= 1.0f;
+    VLOG_INFO("{}, {}", dm.x, dm.z);
     this->move(dm);
 
     mButtonA = kbstate[SDL_SCANCODE_1];
