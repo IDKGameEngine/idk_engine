@@ -12,7 +12,7 @@ target_include_directories(
     ${PROJECT_NAME} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/h"
 )
 target_link_libraries(
-    ${PROJECT_NAME} PUBLIC idk_core glm::glm-header-only Jolt::Jolt
+    ${PROJECT_NAME} PUBLIC idk_core Jolt::Jolt
 )
 target_sources(
     ${PROJECT_NAME} PRIVATE

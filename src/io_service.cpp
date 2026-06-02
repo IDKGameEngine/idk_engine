@@ -24,8 +24,6 @@ void idk::IoService::_startup(idk::IEngine*)
 void idk::IoService::_update(idk::IEngine *E)
 {
     (void)E;
-
-
 }
 
 // {

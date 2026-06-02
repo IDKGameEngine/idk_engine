@@ -34,9 +34,6 @@ idk::Engine::Engine(std::initializer_list<core::Service*> mainsrvs, std::initial
     for (auto *srv: mainsrvs)
         srv->shutdown(this);
     this->await_shutdown();
-
-    for (auto *srv: mainsrvs)
-        delete srv;
 }
 
 idk::Engine::~Engine()
@@ -79,7 +76,5 @@ void idk::Engine::_workthread_main(idk::Engine *E, idk::core::Service *srv)
 
     srv->shutdown(E);
     E->await_shutdown();
-
-    delete srv;
 }
 
