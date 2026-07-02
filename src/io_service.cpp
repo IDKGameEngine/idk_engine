@@ -5,59 +5,41 @@
 
 
 idk::IoService::IoService()
-:   Service(1000.0 / 60.0),
-    cmd_read_(cmd_queue_),
-    alive(true),
-    flush(false)
+:   Service(idk_typeid<IoService>())
 {
 
 }
 
 
-void idk::IoService::_startup(idk::IEngine*)
+void idk::IoService::startup(idk::IEngine*)
 {
-    VLOG_INFO("[idk::IoService::_startup]");
-    // idk::FileLoader f1("asset/")
+    VLOG_INFO("[idk::IoService::startup]");
 }
 
 
-void idk::IoService::_update(idk::IEngine *E)
+void idk::IoService::update(idk::IEngine *E)
 {
-    (void)E;
+    SDL_Event e;
+    while (SDL_PollEvent(&e))
+    {
+        if (e.type == SDL_EVENT_QUIT)
+        {
+            VLOG_INFO("SDL_EVENT_QUIT");
+            E->shutdown();
+        }
+
+        if (e.type == SDL_EVENT_KEY_UP)
+        {
+            if (e.key.scancode == SDL_SCANCODE_ESCAPE)
+            {
+                E->shutdown();
+            }
+        }
+    }
 }
 
-// {
-//     while (!cmd_read_->empty())
-//     {
-//         auto &req = cmd_read_->front();
-//         auto *res = req.res;
 
-//         switch (req.type)
-//         {
-//             case IoReqType::LoadFile:
-//                 break;
-
-//             case IoReqType::WriteFile:
-//                 break;
-
-//             default:
-//                 VLOG_FATAL("Invalid IoReqType");
-//                 break;
-//         }
-
-//         res->make_ready();
-//         cmd_read_->pop();
-//     }
-
-//     if (flush.load() == true)
-//     {
-//         cmd_queue_.swapBuffers();
-//         flush.store(false);
-//     }
-// }
-
-
-void idk::IoService::_shutdown(idk::IEngine*)
+void idk::IoService::shutdown(idk::IEngine*)
 {
     VLOG_INFO("[idk::IoService::_shutdown]");
 }

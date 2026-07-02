@@ -1,12 +1,12 @@
-#include "idk/OsAdapter.hpp"
+#include "idk/core/platform.hpp"
 #include "idk/core/log.hpp"
 #include <filesystem>
 #include <SDL3/SDL.h>
 
 
-bool idk::OsAdapter::PreInit()
+bool idk::platform::AppInit()
 {
-    VLOG_INFO("[idk::OsAdapter::PreInit]");
+    VLOG_INFO("[idk::platform::AppInit]");
 
     if (false == SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_CAMERA))
         VLOG_FATAL("{}", SDL_GetError());
@@ -38,12 +38,12 @@ bool idk::OsAdapter::PreInit()
 }
 
 
-uint64_t idk::OsAdapter::GetSysTimeMs()
+uint64_t idk::platform::GetSysTimeMs()
 {
     return SDL_GetTicks();
 }
 
-uint64_t idk::OsAdapter::GetSysTimeNs()
+uint64_t idk::platform::GetSysTimeNs()
 {
     return SDL_GetTicksNS();
 }

@@ -7,40 +7,27 @@
 #include <cstring>
 #include <SDL3/SDL.h>
 
-
-
-idk::Engine::Engine(std::initializer_list<core::Service*> mainsrvs, std::initializer_list<core::Service*> worksrvs)
-:   running_(true),
-    num_srvs_(1 + worksrvs.size()),
-    startup_sync_(num_srvs_),
-    shutdown_sync_(num_srvs_)
+idk::Engine::Engine(std::initializer_list<core::Service*> services)
 {
-    for (auto *srv: worksrvs)
+    running_.store(true);
+
+    for (auto *srv: services)
     {
-        workthreads_.push_back(std::thread(Engine::_workthread_main, this, srv));
-        workthreads_.back().detach();
+        srvs_.push_back(srv);
+    }
+
+    for (auto *srv: srvs_)
+    {
+        srv->startup(this);
     }
 
     VLOG_INFO("Engine Initialized");
-
-    this->await_startup();
-    for (auto *srv: mainsrvs)
-        srv->startup(this);
-
-    while (this->running())
-        for (auto *srv: mainsrvs)
-            srv->update(this);
-
-    for (auto *srv: mainsrvs)
-        srv->shutdown(this);
-    this->await_shutdown();
 }
 
 idk::Engine::~Engine()
 {
     VLOG_INFO("[Engine::~Engine]");
 }
-
 
 bool idk::Engine::running()
 {
@@ -50,31 +37,20 @@ bool idk::Engine::running()
 void idk::Engine::shutdown()
 {
     running_.store(false);
-    running_.notify_all();
 }
 
-void idk::Engine::await_startup()
+void idk::Engine::update()
 {
-    startup_sync_.arrive_and_wait();
-}
-
-void idk::Engine::await_shutdown()
-{
-    shutdown_sync_.arrive_and_wait();
-}
-
-
-void idk::Engine::_workthread_main(idk::Engine *E, idk::core::Service *srv)
-{
-    E->await_startup();
-    srv->startup(E);
-
-    while (E->running())
+    for (auto *srv: srvs_)
     {
-        srv->update(E);
+        srv->update(this);
     }
 
-    srv->shutdown(E);
-    E->await_shutdown();
+    if (!running())
+    {
+        for (auto *srv: srvs_)
+        {
+            srv->shutdown(this);
+        }
+    }
 }
-
