@@ -36,20 +36,18 @@ idk::Engine::Engine(std::initializer_list<core::Service*> services)
     VLOG_INFO("Engine Initialized");
 }
 
-idk::Engine::~Engine()
-{
-    VLOG_INFO("[Engine::~Engine]");
-}
 
 bool idk::Engine::running()
 {
     return running_.load();
 }
 
+
 void idk::Engine::shutdown()
 {
     running_.store(false);
 }
+
 
 void idk::Engine::update()
 {

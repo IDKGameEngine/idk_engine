@@ -20,7 +20,9 @@ target_sources(
     "${CMAKE_CURRENT_SOURCE_DIR}/src/IoService.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/src/platform.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/src/UdpService.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/world.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/engine/UdpRxer.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/engine/UdpTxer.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/engine/world.cpp"
 )
 
 add_custom_target(

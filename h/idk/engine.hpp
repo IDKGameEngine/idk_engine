@@ -17,8 +17,6 @@ namespace idk
     {
     public:
         Engine(std::initializer_list<core::Service*> services);
-        ~Engine();
-
         virtual bool running() final;
         virtual void shutdown() final;
         virtual void update() final;

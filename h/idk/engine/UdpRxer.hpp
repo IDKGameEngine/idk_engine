@@ -2,9 +2,9 @@
 
 #include "idk/core/types.hpp"
 
-namespace idk::engine
+namespace idk
 {
-    class UdpRxer
+    class UdpRxer : private idk::NonCopyable, private idk::NonMovable
     {
     private:
         void *mSocket;
@@ -14,7 +14,7 @@ namespace idk::engine
         UdpRxer(uint16_t port);
         ~UdpRxer();
         void update();
-        size_t recvmsg(void *buf, size_t bufsz);
+        int recvmsg(void *buf, int bufsz);
     };
 
 }
