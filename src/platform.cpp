@@ -10,7 +10,7 @@ bool idk::platform::AppInit()
 
     VLOG_INFO("[idk::platform::AppInit]");
 
-    if (false == SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_CAMERA))
+    if (false == SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_EVENTS))
         VLOG_FATAL("{}", SDL_GetError());
 
     fs::current_path(fs::path(SDL_GetBasePath()) / fs::path(IDK_ASSETS_DIRNAME));
