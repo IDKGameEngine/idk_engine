@@ -17,7 +17,14 @@ target_link_libraries(
 target_sources(
     ${PROJECT_NAME} PRIVATE
     "${CMAKE_CURRENT_SOURCE_DIR}/src/engine.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/io_service.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/IoService.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/src/platform.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/world.cpp"
 )
+
+add_custom_target(
+    idk_engine_data
+    COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different
+        ${CMAKE_CURRENT_SOURCE_DIR}/data ${IDK_OUTPUT_DIR}/data
+)
+add_dependencies(${PROJECT_NAME} idk_engine_data)

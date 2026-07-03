@@ -7,6 +7,18 @@
 #include <cstring>
 #include <SDL3/SDL.h>
 
+idk::EngineConfig &idk::IEngine::getConfig()
+{
+    static EngineConfig instance;
+    return instance;
+}
+
+idk::CfgParser &idk::IEngine::getCfgParser()
+{
+    return IEngine::getConfig().cfgParser;
+}
+
+
 idk::Engine::Engine(std::initializer_list<core::Service*> services)
 {
     running_.store(true);

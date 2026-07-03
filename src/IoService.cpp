@@ -1,11 +1,11 @@
-#include "idk/io_service.hpp"
+#include "idk/IoService.hpp"
 #include "idk/core/log.hpp"
 
 #include <SDL3/SDL.h>
 
 
 idk::IoService::IoService()
-:   Service(idk_typeid<IoService>())
+:   Service("IoService", idk_typeid<IoService>())
 {
 
 }

@@ -10,22 +10,23 @@
 #include <thread>
 #include <vector>
 
+
 namespace idk
 {
-    class Engine;
+    class Engine: public idk::IEngine
+    {
+    public:
+        Engine(std::initializer_list<core::Service*> services);
+        ~Engine();
+
+        virtual bool running() final;
+        virtual void shutdown() final;
+        virtual void update() final;
+
+    private:
+        std::atomic<bool> running_;
+
+    };
+
 }
-
-class idk::Engine: public idk::IEngine
-{
-public:
-    Engine(std::initializer_list<core::Service*> services);
-    ~Engine();
-    virtual bool running() final;
-    virtual void shutdown() final;
-    virtual void update() final;
-
-private:
-    std::atomic<bool> running_;
-
-};
 
