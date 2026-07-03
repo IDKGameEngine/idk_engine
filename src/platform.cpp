@@ -6,12 +6,14 @@
 
 bool idk::platform::AppInit()
 {
+    namespace fs = std::filesystem;
+
     VLOG_INFO("[idk::platform::AppInit]");
 
     if (false == SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_CAMERA))
         VLOG_FATAL("{}", SDL_GetError());
 
-    std::filesystem::current_path(std::filesystem::path(SDL_GetBasePath()));
+    fs::current_path(fs::path(SDL_GetBasePath()) / fs::path(IDK_ASSETS_DIRNAME));
 
     if (!SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE))
         VLOG_ERROR("{}", SDL_GetError());
