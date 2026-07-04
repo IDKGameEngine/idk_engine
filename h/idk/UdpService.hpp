@@ -4,6 +4,8 @@
 #include "idk/core/file.hpp"
 #include "idk/core/InplaceList.hpp"
 #include "idk/engine/UdpRxer.hpp"
+#include "idk/engine/UdpTxer.hpp"
+#include "idk/config/udp/TimeSyncAddress.hpp"
 
 namespace idk
 {
@@ -18,8 +20,10 @@ namespace idk
         virtual void shutdown(idk::IEngine*) final;
 
     private:
-        idk::InplaceList<idk::UdpRxer, MAX_RXERS> mRxers;
-
+        idk::RaiiFunc<void()> mRaii;
+        // idk::InplaceList<idk::UdpRxer, MAX_RXERS> mRxers;
+        idk::UdpRxer2<config::udp::ServerTimeSyncAddress> mTimeSyncRxer;
+        idk::UdpTxer2<config::udp::ClientTimeSyncAddress> mTimeSyncTxer;
     };
 
 }

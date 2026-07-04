@@ -4,7 +4,7 @@
 
 namespace idk
 {
-    class UdpTxer : private idk::NonCopyable, private idk::NonMovable
+    class UdpTxer: private idk::NonCopyable, private idk::NonMovable
     {
     private:
         void *mSocket;
@@ -16,5 +16,21 @@ namespace idk
         ~UdpTxer();
         int sendmsg(const void *buf, int bufsz);
     };
+
+
+
+    template <typename AddressType>
+    class UdpTxer2: protected idk::UdpTxer
+    {
+    public:
+        using DataType = AddressType::DataType;
+        UdpTxer2(): UdpTxer(AddressType::PortNumber) {  };
+
+        bool sendmsg(const DataType &data)
+        {
+            return (0 != UdpTxer::sendmsg(&data, sizeof(DataType)));
+        }
+    };
+
 }
 
