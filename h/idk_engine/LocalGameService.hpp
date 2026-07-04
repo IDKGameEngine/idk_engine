@@ -34,12 +34,16 @@ public:
     using InputData = config::udp::ClientInputData;
 
 private:
+    uint64_t mPingMs;
+
     idk::PeriodicTimer mHealthTimer;
     idk::PeriodicTimer mInputTimer;
     HealthData mHealthData;
     InputData mInputData;
     UdpTxer2<config::udp::ClientHealthAddress> mHealthTx;
     UdpTxer2<config::udp::ClientInputAddress> mInputTx;
+    UdpRxer2<config::udp::ClientHealthAddress> mHealthRx;
+    UdpRxer2<config::udp::ClientInputAddress> mInputRx;
 
     LocalGameClient();
     void update();

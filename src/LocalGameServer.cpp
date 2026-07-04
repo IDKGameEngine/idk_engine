@@ -1,13 +1,27 @@
 #include "idk_engine/LocalGameServer.hpp"
 #include "idk/core/log.hpp"
 
+#include <thread>
+
+
+void idk::engine::LocalGameServer::udpListenFunc(LocalGameServer *server)
+{
+    while (server->isActive())
+    {
+        // server->mClients[0].
+    }
+}
+
 
 idk::engine::LocalGameServer::LocalGameServer()
+:   mActive{true}
 {
     if (!NET_Init())
     {
         VLOG_FATAL("{}", SDL_GetError());
     }
+
+    std::thread(LocalGameServer::udpListenFunc, this).detach();
 }
 
 

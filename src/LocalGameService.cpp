@@ -1,9 +1,12 @@
 #include "idk_engine/LocalGameService.hpp"
 #include "idk/core/stdmem.hpp"
 
+
 idk::engine::LocalGameClient::LocalGameClient()
-:   mHealthTimer(5),
-    mInputTimer(16)
+:   mPingMs(~0UL),
+    mHealthTimer(5), mInputTimer(16),
+    mHealthTx(), mInputTx(),
+    mHealthRx(), mInputRx()
 {
     idk_memset(&mHealthData, 0, sizeof(mHealthData));
     idk_memset(&mInputData, 0, sizeof(mInputData));
@@ -15,6 +18,14 @@ void idk::engine::LocalGameClient::update()
     {
         mHealthTimer.reset();
         mHealthTx.sendmsg(mHealthData);
+
+        if (mHealthRx.recvmsg(mHealthData))
+        {
+            // mHealthData.serverSendTime - mHealthData.clientSendTime
+            // mHealthData.clientSendTime;
+            // mHealthData.serverRecvTime;
+            // mHealthData.serverSendTime;
+        }
     }
 
     if (mInputTimer.expired())
