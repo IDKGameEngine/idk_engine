@@ -28,11 +28,6 @@ idk::Engine::Engine(std::initializer_list<core::Service*> services)
         srvs_.push_back(srv);
     }
 
-    for (auto *srv: srvs_)
-    {
-        srv->startup(this);
-    }
-
     VLOG_INFO("Engine Initialized");
 }
 

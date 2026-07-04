@@ -9,10 +9,10 @@
 
 namespace idk
 {
-    template <typename UdpRxerImpl>
+    template <typename Impl>
     class UdpRxerBase: private idk::NonCopyable, private idk::NonMovable
     {
-    private:
+    protected:
         NET_DatagramSocket *mSocket;
         uint16_t mPort;
 
@@ -48,7 +48,7 @@ namespace idk
                     return 0;
                 }
 
-                static_cast<UdpRxerImpl*>(this)->onRecvImpl(dgram);
+                static_cast<Impl*>(this)->recvImpl(dgram);
                 NET_DestroyDatagram(dgram);
 
                 return nbytes;
@@ -56,6 +56,19 @@ namespace idk
         }
     };
 
-
 }
+
+
+
+template <typename AddressType>
+class UdpRxerHandshake: public idk::UdpRxerBase<UdpRxerHandshake>
+{
+public:
+    UdpRxerHandshake(): idk::UdpRxerBase(AddressType::PortNumber) {  };
+
+    void recvImpl(const NET_Datagram &dgram)
+    {
+        // NET_SendDatagram(mSocket, dgram.addr, dgram.port, buf, bufsz);
+    }
+};
 
