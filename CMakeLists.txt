@@ -19,13 +19,9 @@ target_sources(
     "${CMAKE_CURRENT_SOURCE_DIR}/src/Engine.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/src/IoService.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/src/platform.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/LocalGameServer.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/LocalGameService.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/RemoteGameClient.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/RemoteGameServer.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/RemoteGameService.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/UdpRxer.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/UdpTxer.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/GameServerService.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/GameClientService.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/UdpRxTxer.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/src/World.cpp"
 )
 

@@ -1,7 +1,7 @@
 #include "idk_engine/Engine.hpp"
 #include "idk_engine/IoService.hpp"
-#include "idk_engine/LocalGameService.hpp"
-#include "idk_engine/RemoteGameService.hpp"
+#include "idk_engine/GameClientService.hpp"
+#include "idk_engine/GameServerService.hpp"
 
 #include "idk/core/assert.hpp"
 #include "idk/core/log.hpp"
@@ -26,8 +26,8 @@ idk::CfgParser &idk::IEngine::getCfgParser()
 idk::Engine::Engine(std::initializer_list<core::Service*> services)
 {
     srvs_.push_back(new idk::engine::IoService());
-    srvs_.push_back(new idk::engine::LocalGameService());
-    srvs_.push_back(new idk::engine::RemoteGameService());
+    srvs_.push_back(new idk::engine::GameClientService());
+    srvs_.push_back(new idk::engine::GameServerService());
 
     for (auto *srv: services)
     {

@@ -1,75 +1,41 @@
 #pragma once
 
-#include <SDL3_net/SDL_net.h>
-
-#include "idk/core/log.hpp"
 #include "idk/core/types.hpp"
+
+struct NET_DatagramSocket;
+struct NET_Datagram;
+struct NET_Address;
+
 
 namespace idk
 {
-    template <typename Impl>
-    class UdpRxTxer: private idk::NonCopyable, private idk::NonMovable
+    class UdpRxer: private idk::NonMobile
     {
-    protected:
+    private:
         NET_DatagramSocket *mSocket;
-        NET_Address *mServerAddr;
-        uint16_t mServerPort;
+        uint16_t mLocalPort;
 
     public:
-        UdpRxTxer(uint16_t serverPort)
-        :    mServerPort(serverPort)
-        {
-            mSocket = NET_CreateDatagramSocket(NULL, 0, 0);
-            if (!mSocket)
-            {
-                VLOG_FATAL("[UdpRxTxer::UdpRxTxer] Failure creating socket: %s", SDL_GetError());
-            }
+        UdpRxer(uint16_t localPort = 0);
+        ~UdpRxer();
+        NET_Datagram *beginRecvMsg(void *buf, size_t bufsz);
+        void endRecvMsg(NET_Datagram*);
+        void replyMsg(NET_Datagram*, const void *data, size_t size);
 
-            mServerAddr = NET_ResolveHostname("127.0.0.1");
-            if (!mServerAddr)
-            {
-                VLOG_FATAL("[UdpRxTxer::UdpRxTxer] Failure resolving host: %s", SDL_GetError());
-            }
-        }
-
-        ~UdpRxTxer()
-        {
-            NET_DestroyDatagramSocket(mSocket);
-        }
-
-        int sendmsg(const void *buf, int bufsz)
-        {
-            if (!NET_SendDatagram(mSocket, mServerAddr, mServerPort, buf, bufsz))
-            {
-                VLOG_WARN("[UdpRxTxer::sendmsg] Failed to send datagram: %s", SDL_GetError());
-                return 0;
-            }
-
-            return bufsz;
-        }
-
-        void update()
-        {
-            NET_Datagram *dgram = NULL;
-
-            while (NET_ReceiveDatagram(mSocket, &dgram))
-            {
-                if (!dgram)
-                {
-                    return 0;
-                }
-                if (dgram->buflen > bufsz)
-                {
-                    VLOG_WARN("[UdpRxTxer::recvmsg] datagram->buflen > bufsz");
-                    return 0;
-                }
-
-                static_cast<Impl*>(this)->onRecvImpl(dgram);
-                NET_DestroyDatagram(dgram);
-
-                return nbytes;
-            }  
-        }
     };
 
+    class UdpTxer: private idk::NonMobile
+    {
+    private:
+        static constexpr size_t MAX_HOSTNAME_LENGTH = 128;
+        void *mSocket;
+        void *mRemoteAddr;
+        uint16_t mRemotePort;
+        char mHostname[MAX_HOSTNAME_LENGTH];
+
+    public:
+        UdpTxer(const char *hostname, uint16_t hostport);
+        ~UdpTxer();
+        bool sendmsg(const void *data, size_t size);
+    };
 }
