@@ -1,6 +1,5 @@
 #pragma once
 
-#include "idk/core/types.hpp"
 #include "UdpPortNumber.hpp"
 
 namespace idk::config::udp

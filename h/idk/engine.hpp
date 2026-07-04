@@ -3,13 +3,7 @@
 #include "idk/core/engine.hpp"
 #include "idk/core/periodic_timer.hpp"
 
-#include <atomic>
-#include <barrier>
 #include <initializer_list>
-#include <mutex>
-#include <thread>
-#include <vector>
-
 
 namespace idk
 {

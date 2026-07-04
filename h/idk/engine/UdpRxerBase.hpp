@@ -3,10 +3,6 @@
 #include "idk/core/log.hpp"
 #include "idk/core/types.hpp"
 
-#include <SDL3/SDL.h>
-#include <SDL3_net/SDL_net.h>
-
-
 namespace idk
 {
     template <typename Impl>
@@ -48,7 +44,7 @@ namespace idk
                     return 0;
                 }
 
-                static_cast<Impl*>(this)->recvImpl(dgram);
+                static_cast<Impl*>(this)->onRecvImpl(dgram);
                 NET_DestroyDatagram(dgram);
 
                 return nbytes;
@@ -57,18 +53,3 @@ namespace idk
     };
 
 }
-
-
-
-template <typename AddressType>
-class UdpRxerHandshake: public idk::UdpRxerBase<UdpRxerHandshake>
-{
-public:
-    UdpRxerHandshake(): idk::UdpRxerBase(AddressType::PortNumber) {  };
-
-    void recvImpl(const NET_Datagram &dgram)
-    {
-        // NET_SendDatagram(mSocket, dgram.addr, dgram.port, buf, bufsz);
-    }
-};
-
