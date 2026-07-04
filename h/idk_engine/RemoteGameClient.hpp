@@ -3,8 +3,8 @@
 #include "idk/core/log.hpp"
 #include "idk/core/types.hpp"
 
-#include "idk/config/udp/ClientHealthAddress.hpp"
-#include "idk/engine/UdpRxTxer.hpp"
+#include "config/udp/ClientHealthAddress.hpp"
+#include "UdpRxTxer.hpp"
 
 
 namespace idk::engine

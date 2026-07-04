@@ -1,4 +1,4 @@
-#include "idk/engine/world.hpp"
+#include "idk_engine/world.hpp"
 
 
 idk::GameScene::GameScene()

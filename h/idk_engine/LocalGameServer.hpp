@@ -4,11 +4,11 @@
 #include "idk/core/InplaceList.hpp"
 #include "idk/core/types.hpp"
 
-#include "idk/engine/UdpRxer.hpp"
-#include "idk/engine/RemoteGameClient.hpp"
+#include "idk_engine/UdpRxer.hpp"
+#include "idk_engine/RemoteGameClient.hpp"
 
-// #include "idk/engine/UdpRxerBase.hpp"
-// #include "idk/config/udp/HandshakeAddress.hpp"
+// #include "idk_engine/UdpRxerBase.hpp"
+// #include "idk_engine/config/udp/HandshakeAddress.hpp"
 
 namespace idk::engine
 {

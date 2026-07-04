@@ -1,6 +1,6 @@
 #include <SDL3_net/SDL_net.h>
 
-#include "idk/engine/LocalGameServer.hpp"
+#include "idk_engine/LocalGameServer.hpp"
 
 
 idk::engine::LocalGameServer::LocalGameServer()
