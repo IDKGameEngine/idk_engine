@@ -8,33 +8,48 @@
 #include "idk/core/log.hpp"
 
 
-idk::UdpRxer::UdpRxer(uint16_t localPort)
-:   mLocalPort(localPort)
+idk::UdpRxTxer::UdpRxTxer(uint16_t localPort)
+:   mRemoteAddr(NULL),
+    mLocalPort(localPort),
+    mRemotePort(0)
 {
     mSocket = NET_CreateDatagramSocket(NULL, localPort, 0);
     if (!mSocket)
     {
-        VLOG_FATAL("[UdpRxer::UdpRxer] Failure creating socket: %s", SDL_GetError());
+        VLOG_FATAL("[UdpRxTxer::UdpRxTxer] Failure creating socket: {}", SDL_GetError());
     }
 
 }
 
 
-idk::UdpRxer::~UdpRxer()
+idk::UdpRxTxer::~UdpRxTxer()
 {
-    VLOG_INFO("[UdpRxer::~UdpRxer]");
+    VLOG_INFO("[UdpRxTxer::~UdpRxTxer]");
     NET_DestroyDatagramSocket(mSocket);
 }
 
 
-NET_Datagram *idk::UdpRxer::beginRecvMsg(void *buf, size_t bufsz)
+bool idk::UdpRxTxer::setRemote(const char *hostname, uint16_t port)
+{
+    mRemoteAddr = NET_ResolveHostname(hostname);
+    mRemotePort = port;
+    if (!mRemoteAddr)
+    {
+        VLOG_FATAL("[UdpRxTxer::UdpRxTxer] Failure resolving host: {}", SDL_GetError());
+        return false;
+    }
+    return true;
+}
+
+
+NET_Datagram *idk::UdpRxTxer::beginRecvMsg(void *buf, size_t bufsz)
 {
     NET_Datagram *dgram = NULL;
     if (NET_ReceiveDatagram(mSocket, &dgram) && dgram)
     {
         if (dgram->buflen > static_cast<int>(bufsz))
         {
-            VLOG_WARN("[UdpRxer::beginRecvMsg] datagram->buflen > bufsz");
+            VLOG_WARN("[UdpRxTxer::beginRecvMsg] datagram->buflen > bufsz");
             return nullptr;
         }
         int nbytes = dgram->buflen;
@@ -45,52 +60,33 @@ NET_Datagram *idk::UdpRxer::beginRecvMsg(void *buf, size_t bufsz)
 }
 
 
-void idk::UdpRxer::endRecvMsg(NET_Datagram *dgram)
+void idk::UdpRxTxer::endRecvMsg(NET_Datagram *dgram)
 {
     NET_DestroyDatagram(dgram);
 }
 
 
-void idk::UdpRxer::replyMsg(NET_Datagram *dgram, const void *data, size_t size)
+void idk::UdpRxTxer::replyMsg(NET_Datagram *dgram, const void *data, size_t size)
 {
     if (!NET_SendDatagram(mSocket, dgram->addr, dgram->port, data, size))
     {
-        VLOG_WARN("[UdpTxer::sendmsg] Failed to send datagram: %s", SDL_GetError());
+        VLOG_WARN("[UdpRxTxer::sendmsg] Failed to send datagram: {}", SDL_GetError());
     }
 }
 
 
-
-
-idk::UdpTxer::UdpTxer(const char *hostname, uint16_t hostport)
-:    mRemotePort(hostport)
+bool idk::UdpRxTxer::sendMsg(const void *data, size_t size)
 {
-    mSocket = NET_CreateDatagramSocket(NULL, 0, 0);
-    if (!mSocket)
-    {
-        VLOG_FATAL("[UdpTxer::UdpTxer] Failure creating socket: %s", SDL_GetError());
-    }
-
-    mRemoteAddr = NET_ResolveHostname(hostname);
     if (!mRemoteAddr)
     {
-        VLOG_FATAL("[UdpTxer::UdpTxer] Failure resolving host: %s", SDL_GetError());
+        VLOG_WARN("[UdpRxTxer::sendmsg] Remote address is NULL");
+        return false;
     }
-}
-
-idk::UdpTxer::~UdpTxer()
-{
-    NET_DestroyDatagramSocket((NET_DatagramSocket*)mSocket);
-}
-
-bool idk::UdpTxer::sendmsg(const void *data, size_t size)
-{
-    auto *sock = (NET_DatagramSocket*)mSocket;
-    auto *addr = (NET_Address*)mRemoteAddr;
-    if (!NET_SendDatagram(sock, addr, mRemotePort, data, size))
+    if (!NET_SendDatagram(mSocket, mRemoteAddr, mRemotePort, data, size))
     {
-        VLOG_WARN("[UdpTxer::sendmsg] Failed to send datagram: %s", SDL_GetError());
+        VLOG_WARN("[UdpRxTxer::sendmsg] Failed to send datagram: {}", SDL_GetError());
         return false;
     }
     return true;
 }
+

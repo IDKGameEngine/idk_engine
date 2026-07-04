@@ -1,11 +1,12 @@
 #include "idk_engine/Engine.hpp"
+#include "idk_engine/Allocator.hpp"
 #include "idk_engine/IoService.hpp"
-#include "idk_engine/GameClientService.hpp"
-#include "idk_engine/GameServerService.hpp"
+#include "idk_engine/NetService.hpp"
 
 #include "idk/core/assert.hpp"
 #include "idk/core/log.hpp"
 #include "idk/core/metric.hpp"
+#include "idk/core/Service.hpp"
 
 #include <atomic>
 #include <cstring>
@@ -25,9 +26,9 @@ idk::CfgParser &idk::IEngine::getCfgParser()
 
 idk::Engine::Engine(std::initializer_list<core::Service*> services)
 {
-    srvs_.push_back(new idk::engine::IoService());
-    srvs_.push_back(new idk::engine::GameClientService());
-    srvs_.push_back(new idk::engine::GameServerService());
+    namespace ie = idk::engine;
+    // srvs_.push_back(ie::New<ie::IoService>());
+    // srvs_.push_back(ie::New<ie::NetService>());
 
     for (auto *srv: services)
     {
@@ -65,4 +66,17 @@ void idk::Engine::update()
             srv->shutdown(this);
         }
     }
+}
+
+
+idk::core::Service *idk::Engine::_getService(idk::IdType id)
+{
+    for (idk::core::Service *srv: srvs_)
+    {
+        if (srv->getTypeId() == id)
+        {
+            return srv;
+        }
+    }
+    return nullptr;
 }

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "idk/core/engine.hpp"
+#include "idk/core/Engine.hpp"
 
 #include <atomic>
 #include <initializer_list>
@@ -17,6 +17,9 @@ namespace idk
 
     private:
         std::atomic<bool> running_;
+        std::vector<core::Service*> srvs_;
+
+        virtual core::Service *_getService(idk::IdType id) final;
 
     };
 

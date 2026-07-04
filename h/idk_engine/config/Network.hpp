@@ -6,6 +6,7 @@
 namespace idk::config::network
 {
     static constexpr size_t MAX_CLIENTS = 32;
+    static constexpr uint16_t SERVER_PORT = 7777;
 
     struct UdpRttPacket
     {
