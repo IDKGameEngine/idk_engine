@@ -1,4 +1,5 @@
-#include "idk_engine/engine.hpp"
+#include "idk_engine/Engine.hpp"
+#include "idk_engine/IoService.hpp"
 #include "idk_engine/LocalGameService.hpp"
 #include "idk_engine/RemoteGameService.hpp"
 
@@ -24,15 +25,16 @@ idk::CfgParser &idk::IEngine::getCfgParser()
 
 idk::Engine::Engine(std::initializer_list<core::Service*> services)
 {
-    running_.store(true);
+    srvs_.push_back(new idk::engine::IoService());
+    srvs_.push_back(new idk::engine::LocalGameService());
+    srvs_.push_back(new idk::engine::RemoteGameService());
 
     for (auto *srv: services)
     {
         srvs_.push_back(srv);
     }
 
-    srvs_.push_back()
-
+    running_.store(true);
     VLOG_INFO("Engine Initialized");
 }
 

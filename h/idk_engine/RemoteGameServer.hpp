@@ -1,10 +1,7 @@
 #pragma once
 
-#include "idk/core/log.hpp"
 #include "idk/core/types.hpp"
-
-#include "idk_engine/UdpRxerBase.hpp"
-
+#include <SDL3_net/SDL_net.h>
 
 namespace idk::engine
 {
@@ -17,7 +14,7 @@ namespace idk::engine
         void update();
 
     private:
-        void *mServerAddr;
+        NET_Address *mServerAddr;
         // char mHostname[MAX_HOSTNAME_LENGTH];
 
     };

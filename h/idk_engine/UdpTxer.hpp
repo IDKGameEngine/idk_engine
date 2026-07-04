@@ -18,7 +18,6 @@ namespace idk
     };
 
 
-
     template <typename AddressType>
     class UdpTxer2: protected idk::UdpTxer
     {

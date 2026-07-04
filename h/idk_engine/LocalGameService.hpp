@@ -1,22 +1,62 @@
 #pragma once
 
 #include "idk/core/engine.hpp"
-#include "LocalGameClient.hpp"
-#include "LocalGameServer.hpp"
+#include "idk/core/periodic_timer.hpp"
 
-namespace idk
+#include "config/udp/ClientHealthAddress.hpp"
+#include "config/udp/ClientInputAddress.hpp"
+
+#include "RemoteGameServer.hpp"
+#include "UdpRxer.hpp"
+#include "UdpTxer.hpp"
+
+
+namespace idk::engine
 {
-    class LocalGameService: public idk::core::Service
-    {
-    public:
-        LocalGameService();
-        virtual void update(idk::IEngine*) final;
-        virtual void shutdown(idk::IEngine*) final;
+    /**
+     * Representation of local game instance
+     */
+    class LocalGameClient;
 
-    private:
-        idk::RaiiFunc<void()> mRaii;
-        idk::engine::LocalGameClient mLocalClient;
-
-    };
+    /**
+     * Responsible for LocalGameClient and RemoteGameServer
+     */
+    class LocalGameService;
 
 }
+
+
+class idk::engine::LocalGameClient: private idk::NonMobile
+{
+public:
+    friend class idk::engine::LocalGameService;
+    using HealthData = config::udp::ClientHealthData;
+    using InputData = config::udp::ClientInputData;
+
+private:
+    idk::PeriodicTimer mHealthTimer;
+    idk::PeriodicTimer mInputTimer;
+    HealthData mHealthData;
+    InputData mInputData;
+    UdpTxer2<config::udp::ClientHealthAddress> mHealthTx;
+    UdpTxer2<config::udp::ClientInputAddress> mInputTx;
+
+    LocalGameClient();
+    void update();
+
+};
+
+
+class idk::engine::LocalGameService: public idk::core::Service
+{
+public:
+    LocalGameService();
+    virtual void update(idk::IEngine*) final;
+    virtual void shutdown(idk::IEngine*) final;
+
+private:
+    idk::RaiiFunc<void()> mRaii;
+    idk::engine::LocalGameClient mLocalClient;
+
+};
+

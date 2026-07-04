@@ -10,12 +10,20 @@ static void RemoteGameServiceRaiiFunc()
     }
 }
 
-
-idk::RemoteGameService::RemoteGameService()
-:   Service("RemoteGameService", idk_typeid<RemoteGameService>())
-    // mRaii(RemoteGameServiceRaiiFunc),
+idk::engine::RemoteGameService::RemoteGameService()
+:   IDK_SERVICE_CTOR(RemoteGameService),
+    mRaii(RemoteGameServiceRaiiFunc)
 {
     
 }
 
+void idk::engine::RemoteGameService::update(idk::IEngine*)
+{
+
+}
+
+void idk::engine::RemoteGameService::shutdown(idk::IEngine*)
+{
+
+}
 

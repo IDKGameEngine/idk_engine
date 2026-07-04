@@ -1,28 +1,25 @@
 #pragma once
 
-#include "idk/core/log.hpp"
 #include "idk/core/types.hpp"
-
 #include "config/udp/ClientHealthAddress.hpp"
-#include "UdpRxTxer.hpp"
 
 
 namespace idk::engine
 {
-    class ClientHealthRxTxer: public idk::UdpRxTxer<ClientHealthRxTxer>
-    {
-    public:
-        ClientHealthRxTxer()
-        :   UdpRxTxer(config::udp::ClientHealthAddress::PortNumber)
-        {
+    // class ClientHealthRxTxer: public idk::UdpRxTxer<ClientHealthRxTxer>
+    // {
+    // public:
+    //     ClientHealthRxTxer()
+    //     :   UdpRxTxer(config::udp::ClientHealthAddress::PortNumber)
+    //     {
             
-        }
+    //     }
 
-        void recvImpl(const NET_Datagram &dgram)
-        {
-            // NET_SendDatagram(mSocket, dgram.addr, dgram.port, buf, bufsz);
-        }
-    };
+    //     void recvImpl(const NET_Datagram &dgram)
+    //     {
+    //         // NET_SendDatagram(mSocket, dgram.addr, dgram.port, buf, bufsz);
+    //     }
+    // };
 
 
     class RemoteGameClient: private idk::NonMobile

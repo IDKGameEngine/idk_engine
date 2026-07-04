@@ -1,14 +1,10 @@
 #pragma once
 
-#include "idk/core/log.hpp"
+#include <SDL3_net/SDL_net.h>
+
+#include "RemoteGameClient.hpp"
 #include "idk/core/InplaceList.hpp"
-#include "idk/core/types.hpp"
 
-#include "idk_engine/UdpRxer.hpp"
-#include "idk_engine/RemoteGameClient.hpp"
-
-// #include "idk_engine/UdpRxerBase.hpp"
-// #include "idk_engine/config/udp/HandshakeAddress.hpp"
 
 namespace idk::engine
 {

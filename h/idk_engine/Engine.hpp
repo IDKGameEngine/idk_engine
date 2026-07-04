@@ -1,8 +1,8 @@
 #pragma once
 
 #include "idk/core/engine.hpp"
-#include "idk/core/periodic_timer.hpp"
 
+#include <atomic>
 #include <initializer_list>
 
 namespace idk

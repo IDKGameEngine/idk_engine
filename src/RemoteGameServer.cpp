@@ -1,4 +1,5 @@
 #include "idk_engine/RemoteGameServer.hpp"
+#include "idk/core/log.hpp"
 #include "idk/core/stdstr.hpp"
 
 

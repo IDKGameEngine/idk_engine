@@ -16,14 +16,17 @@ target_link_libraries(
 )
 target_sources(
     ${PROJECT_NAME} PRIVATE
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/engine.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/Engine.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/src/IoService.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/src/platform.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/UdpClientService.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/UdpServerService.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/engine/UdpRxer.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/engine/UdpTxer.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/engine/world.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/LocalGameServer.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/LocalGameService.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/RemoteGameClient.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/RemoteGameServer.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/RemoteGameService.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/UdpRxer.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/UdpTxer.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/World.cpp"
 )
 
 add_custom_target(

@@ -1,11 +1,13 @@
 #pragma once
 
 #include "idk/core/engine.hpp"
-#include "RemoteGameClient.hpp"
 #include "RemoteGameServer.hpp"
 
-namespace idk
+namespace idk::engine
 {
+    /**
+     * Responsible for RemoteGameClient and LocalGameServer 
+     */
     class RemoteGameService: public idk::core::Service
     {
     public:
@@ -14,7 +16,7 @@ namespace idk
         virtual void shutdown(idk::IEngine*) final;
 
     private:
-        // idk::RaiiFunc<void()> mRaii;
+        idk::RaiiFunc<void()> mRaii;
 
     };
 
