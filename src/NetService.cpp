@@ -1,7 +1,8 @@
 #include "idk_engine/NetService.hpp"
-#include "idk_engine/Allocator.hpp"
 #include "idk_engine/GameClient.hpp"
 #include "idk_engine/GameServer.hpp"
+
+#include "idk/core/New.hpp"
 #include "idk/core/stdmem.hpp"
 
 #include <SDL3/SDL.h>
@@ -12,6 +13,7 @@
 
 idk::engine::NetService::NetService()
 :   IDK_SERVICE_CTOR(NetService),
+    mServerPort(mCfg["SERVER_PORT"].toU16()),
     mGameClient(nullptr),
     mGameServer(nullptr)
 {
@@ -47,7 +49,7 @@ void idk::engine::NetService::shutdown(idk::IEngine*)
 bool idk::engine::NetService::startGameClient()
 {
     if (mGameClient) { return false; }
-    mGameClient = engine::New<GameClient>(mCfg["SERVER_PORT"].toU16());
+    mGameClient = idk::New<GameClient>(mServerPort);
     return true;
 }
 
@@ -55,7 +57,7 @@ bool idk::engine::NetService::startGameClient()
 bool idk::engine::NetService::startGameServer()
 {
     if (mGameServer) { return false; }
-    mGameServer = engine::New<GameServer>();
+    mGameServer = idk::New<GameServer>(mServerPort);
     return true;
 }
 

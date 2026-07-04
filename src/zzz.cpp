@@ -1,6 +1,6 @@
 // #include "idk/UdpServerService.hpp"
 // #include "idk/core/log.hpp"
-// #include "idk/core/platform.hpp"
+// #include "idk/core/Platform.hpp"
 // #include "idk/core/stdmem.hpp"
 
 // #include <SDL3/SDL.h>
@@ -69,7 +69,7 @@
 //     {
 //         uint64_t clientSendTime = timeSyncData.clientSendTime;
 //         VLOG_INFO("TimeSyncData::clientSendTime: {}", clientSendTime);
-//         timeSyncData.serverSendTime = idk::platform::GetSysTimeMs();
+//         timeSyncData.serverSendTime = idk::Platform::getSysTimeMs();
 //         mTimeSyncTxer.sendmsg(timeSyncData);
 //     }
 // }

@@ -1,10 +1,12 @@
 #include "idk_engine/PlatformService.hpp"
+#include "idk/core/Platform.hpp"
+
 #include <SDL3/SDL.h>
 #include <glad/glad.h>
 #include <filesystem>
 
 
-static void PlatformServiceRaiiFunc()
+static const char *PlatformServiceRaiiFunc()
 {
     namespace fs = std::filesystem;
 
@@ -50,20 +52,27 @@ static void PlatformServiceRaiiFunc()
     {
         VLOG_ERROR("{}", SDL_GetError());
     }
+
+    return "PlatformService";
+}
+
+uint64_t idk::Platform::getSysTimeMs()
+{
+    return SDL_GetTicks();
+}
+
+uint64_t idk::Platform::getSysTimeNs()
+{
+    return SDL_GetTicksNS();
 }
 
 
+
 idk::engine::PlatformService::PlatformService(bool headless)
-:   IPlatformService("PlatformService", idk_typeid<PlatformService>())
+:   IPlatformService(PlatformServiceRaiiFunc(), idk_typeid<PlatformService>())
 {
-    PlatformServiceRaiiFunc();
-
     SDL_WindowFlags flags = SDL_WINDOW_OPENGL;
-
-    if (headless)
-    {
-        flags |= SDL_WINDOW_HIDDEN;
-    }
+    if (headless) { flags |= SDL_WINDOW_HIDDEN; }
 
     const char *title = mCfg["WINDOW_TITLE"].toStr();
     int width = mCfg["WINDOW_WIDTH"].toI32();
@@ -160,3 +169,5 @@ void idk::engine::PlatformService::swapWindow()
 {
     SDL_GL_SwapWindow(mWin);
 }
+
+

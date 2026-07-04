@@ -1,10 +1,11 @@
 #pragma once
 
+#include "idk_engine/NetProtocol.hpp"
+
 #include "idk/core/Engine.hpp"
 #include "idk/core/periodic_timer.hpp"
 #include "idk/core/InplaceList.hpp"
 
-#include "config/Network.hpp"
 #include "UdpRxTxer.hpp"
 
 #include <atomic>
@@ -19,17 +20,18 @@ namespace idk::engine
 class idk::engine::GameServer: public idk::NonMobile
 {
 public:
-    GameServer();
+    GameServer(uint16_t port);
     void update(idk::IEngine*);
 
 private:
+    const uint16_t mPort;
+    // NetProtocol::UdpRttPacket mRttQueue[64];
+    // std::atomic<int64_t> mRttRd, mRttWt;
+
+    // NetProtocol::UdpInputPacket mCtrlQueue[64];
+    // std::atomic<int64_t> mCtrlRd, mCtrlWt;
+
     static void udpListenFunc(GameServer*);
-
-    config::network::UdpRttPacket mRttQueue[64];
-    std::atomic<int64_t> mRttRd, mRttWt;
-
-    config::network::UdpInputPacket mCtrlQueue[64];
-    std::atomic<int64_t> mCtrlRd, mCtrlWt;
 
 };
 

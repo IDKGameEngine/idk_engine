@@ -1,14 +1,9 @@
 #pragma once
 
+#include "idk_engine/NetProtocol.hpp"
+
 #include "idk/core/Engine.hpp"
 #include "idk/core/Service.hpp"
-#include "idk/core/periodic_timer.hpp"
-#include "idk/core/metric.hpp"
-#include "idk/core/Allocator.hpp"
-#include "idk/core/InplaceList.hpp"
-
-#include "config/Network.hpp"
-#include "UdpRxTxer.hpp"
 
 #include <atomic>
 
@@ -37,6 +32,7 @@ public:
     bool stopGameServer();
 
 private:
+    const uint16_t mServerPort;
     GameClient *mGameClient;
     GameServer *mGameServer;
 };

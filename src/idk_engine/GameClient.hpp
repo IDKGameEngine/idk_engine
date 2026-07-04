@@ -1,8 +1,7 @@
 #pragma once
 
+#include "idk_engine/NetProtocol.hpp"
 #include "idk/core/Engine.hpp"
-#include "idk/core/periodic_timer.hpp"
-#include "config/Network.hpp"
 #include "UdpRxTxer.hpp"
 
 namespace idk::engine
