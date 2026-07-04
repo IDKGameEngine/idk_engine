@@ -135,7 +135,6 @@ void idk::engine::PlatformService::update(idk::IEngine *E)
     {
         if (e.type == SDL_EVENT_QUIT)
         {
-            VLOG_INFO("SDL_EVENT_QUIT");
             E->shutdown();
         }
 
