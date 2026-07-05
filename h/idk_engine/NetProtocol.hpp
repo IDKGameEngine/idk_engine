@@ -11,7 +11,8 @@ namespace idk::engine::NetProtocol
         Invalid,
         RoundTripTime,
         UserCtrl,
-        WorldEvent
+        WorldEvent,
+        EntityEvent
     };
 
 
@@ -21,16 +22,16 @@ namespace idk::engine::NetProtocol
         uint8_t buf[512];
 
         template <typename T>
-        uint8_t *write(uint8_t *dst, const T &value)
+        uint8_t *write(uint8_t *dst, const T &src)
         {
-            idk_memcpy(dst, &value, sizeof(T));
+            idk_memcpy(dst, &src, sizeof(T));
             return dst + sizeof(T);
         }
 
         template <typename T>
-        uint8_t *read(T &value, uint8_t *src)
+        uint8_t *read(uint8_t *src, T &dst)
         {
-            idk_memcpy(&value, src, sizeof(T));
+            idk_memcpy(&dst, src, sizeof(T));
             return src + sizeof(T);
         }
     };
@@ -52,8 +53,8 @@ namespace idk::engine::NetProtocol
         void decode(Udpdata &data)
         {
             uint8_t *src = data.buf + sizeof(UdpTag);
-            src = data.read(clientSendTime, src);
-            src = data.read(serverSendTime, src);
+            src = data.read(src, clientSendTime);
+            src = data.read(src, serverSendTime);
         }
     };
 
@@ -84,13 +85,13 @@ namespace idk::engine::NetProtocol
         void decode(Udpdata &data)
         {
             uint8_t *src = data.buf + sizeof(UdpTag);
-            src = data.read(clientSendTime, src);
-            src = data.read(seqNo, src);
-            src = data.read(buttons, src);
-            src = data.read(moveX, src);
-            src = data.read(moveY, src);
-            src = data.read(lookYaw, src);
-            src = data.read(lookPitch, src);
+            src = data.read(src, clientSendTime);
+            src = data.read(src, seqNo);
+            src = data.read(src, buttons);
+            src = data.read(src, moveX);
+            src = data.read(src, moveY);
+            src = data.read(src, lookYaw);
+            src = data.read(src, lookPitch);
         }
     };
 
@@ -118,13 +119,38 @@ namespace idk::engine::NetProtocol
         void decode(Udpdata &data)
         {
             uint8_t *src = data.buf + sizeof(UdpTag);
-            src = data.read(clientSendTime, src);
-            src = data.read(seqNo, src);
-            src = data.read(entityCount, src);
+            src = data.read(src, clientSendTime);
+            src = data.read(src, seqNo);
+            src = data.read(src, entityCount);
             for (int i=0; i<entityCount; i++)
             {
-                src = data.read(entities[i], src);
+                src = data.read(src, entities[i]);
             }
+        }
+    };
+
+    struct EntityEventData
+    {
+        static constexpr UdpTag UDP_TAG = UdpTag::EntityEvent;
+        uint64_t clientSendTime;
+        uint32_t entityId;
+        uint32_t entityGen;
+
+        void encode(Udpdata &data)
+        {
+            uint8_t *dst = data.buf;
+            dst = data.write(dst, UDP_TAG);
+            dst = data.write(dst, clientSendTime);
+            dst = data.write(dst, entityId);
+            dst = data.write(dst, entityGen);
+        }
+
+        void decode(Udpdata &data)
+        {
+            uint8_t *src = data.buf + sizeof(UdpTag);
+            src = data.read(src, clientSendTime);
+            src = data.read(src, entityId);
+            src = data.read(src, entityGen);
         }
     };
 

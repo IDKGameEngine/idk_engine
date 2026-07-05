@@ -1,6 +1,7 @@
 #pragma once
 
 #include "idk/core/Engine.hpp"
+#include "idk/core/Service.hpp"
 
 #include <atomic>
 #include <initializer_list>

@@ -1,21 +1,32 @@
 #include "idk_engine/EntityManager.hpp"
+#include "idk_engine/EngineMsg.hpp"
 #include "idk_config/Memory.hpp"
 #include "idk/core/stdmem.hpp"
+
+
+void idk::engine::EntityManager::onEntityEvent(void *ctx, const EntityEvent &data)
+{
+    auto *obj = reinterpret_cast<EntityManager*>(ctx);
+    (void)obj;
+    VLOG_INFO("[EntityManager::onEntityEvent] EntityID={}", data.entity.idx);
+}
 
 
 idk::engine::EntityManager::EntityManager(size_t maxEntities)
 :   mMaxEntities(maxEntities),
     mNextIdx(0),
     mFreeListSize(0),
-    mFreeList(idk::NewArray<uint32_t>(mMaxEntities)),
-    mGen(idk::NewArray<uint32_t>(mMaxEntities)),
-    mAlive(idk::NewArray<bool>(mMaxEntities))
+    mFreeList(idk::NewArray<uint32_t>(maxEntities)),
+    mGen(idk::NewArray<uint32_t>(maxEntities)),
+    mAlive(idk::NewArray<bool>(maxEntities))
 {
-    idk_memset(mFreeList, 0, mMaxEntities);
-    idk_memset(mGen, 0, mMaxEntities);
-    idk_memset(mAlive, 0, mMaxEntities);
-}
+    idk_memset(mFreeList, 0, maxEntities);
+    idk_memset(mGen, 0, maxEntities);
+    idk_memset(mAlive, 0, maxEntities);
 
+    auto *entEventBus = reinterpret_cast<EventChannel<EntityEvent>*>(EngineMsg::get().entityEventTxer);
+    entEventBus->subscribe(EntityManager::onEntityEvent, this);
+}
 
 
 idk::engine::Entity idk::engine::EntityManager::createEntity()

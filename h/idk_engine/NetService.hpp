@@ -1,10 +1,8 @@
 #pragma once
 
+#include "idk_engine/Engine.hpp"
 #include "idk_engine/NetProtocol.hpp"
-
-#include "idk/core/Engine.hpp"
-#include "idk/core/Service.hpp"
-
+#include "idk/message/MessageRxTx.hpp"
 #include <atomic>
 
 

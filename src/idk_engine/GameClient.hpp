@@ -1,6 +1,6 @@
 #pragma once
 
-#include "idk_engine/NetProtocol.hpp"
+#include "idk_engine/NetService.hpp"
 #include "idk/core/Engine.hpp"
 #include "UdpRxTxer.hpp"
 
@@ -13,11 +13,10 @@ namespace idk::engine
         void update(idk::IEngine*);
 
     private:
-        static void udpListenFunc(GameClient*);
-
         UdpRxTxer mRxTxer;
         PeriodicTimer mRttTimer;
 
+        static void udpListenFunc(GameClient*);
     };
 
 }

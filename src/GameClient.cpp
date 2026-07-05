@@ -1,4 +1,5 @@
 #include "idk_engine/GameClient.hpp"
+#include "idk_engine/EngineMsg.hpp"
 
 #include "idk/core/Platform.hpp"
 #include "idk/core/stdmem.hpp"
@@ -7,9 +8,10 @@
 #include <thread>
 
 
-void idk::engine::GameClient::udpListenFunc(GameClient *srv)
+void idk::engine::GameClient::udpListenFunc(GameClient *gameClient)
 {
-    UdpRxTxer &rttRxTx = srv->mRxTxer;
+    UdpRxTxer &rttRxTx = gameClient->mRxTxer;
+    MessageTxer *entEventTxer = EngineMsg::get().entityEventTxer;
 
     while (true)
     {
@@ -23,10 +25,19 @@ void idk::engine::GameClient::udpListenFunc(GameClient *srv)
 
                 case UdpTag::RoundTripTime:
                 {
-                    static NetProtocol::RoundTripTimeData rttData;
+                    static RoundTripTimeData rttData;
                     rttData.decode(udpData);
                     uint64_t roundTripTime = Platform::getSysTimeNs() - rttData.clientSendTime;
                     VLOG_INFO("[GameClient] Ping: {} ns", roundTripTime);
+                    break;
+                }
+
+                case UdpTag::EntityEvent:
+                {
+                    static EntityEventData entEventData;
+                    entEventData.decode(udpData);
+                    VLOG_INFO("[GameClient] Recv EntityEvent");
+                    entEventTxer->sendMsg(&entEventData, sizeof(entEventData));
                     break;
                 }
 
