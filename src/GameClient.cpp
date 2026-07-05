@@ -42,10 +42,9 @@ void idk::engine::GameClient::udpListenFunc(GameClient *srv)
 
 
 idk::engine::GameClient::GameClient(uint16_t hostport)
-:   mRxTxer(),
+:   mRxTxer("127.0.0.1", hostport),
     mRttTimer(1)
 {
-    mRxTxer.setRemote("127.0.0.1", hostport);
     std::thread t(GameClient::udpListenFunc, this);
     t.detach();
 }

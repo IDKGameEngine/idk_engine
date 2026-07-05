@@ -9,16 +9,23 @@
 
 
 idk::UdpRxTxer::UdpRxTxer(uint16_t localPort)
-:   mRemoteAddr(NULL),
-    mLocalPort(localPort),
-    mRemotePort(0)
+:   mRemoteAddr(NULL), mRemotePort(0)
 {
-    mSocket = NET_CreateDatagramSocket(NULL, localPort, 0);
-    if (!mSocket)
+    if (!(mSocket = NET_CreateDatagramSocket(NULL, localPort, 0)))
     {
         VLOG_FATAL("[UdpRxTxer::UdpRxTxer] Failure creating socket: {}", SDL_GetError());
     }
+}
 
+
+idk::UdpRxTxer::UdpRxTxer(const char *hostname, uint16_t hostport)
+:   UdpRxTxer(0)
+{
+    if (!(mRemoteAddr = NET_ResolveHostname(hostname)))
+    {
+        VLOG_FATAL("[UdpRxTxer::UdpRxTxer] Failure resolving host: {}", SDL_GetError());
+    }
+    mRemotePort = hostport;
 }
 
 
@@ -26,19 +33,6 @@ idk::UdpRxTxer::~UdpRxTxer()
 {
     VLOG_INFO("[UdpRxTxer::~UdpRxTxer]");
     NET_DestroyDatagramSocket(mSocket);
-}
-
-
-bool idk::UdpRxTxer::setRemote(const char *hostname, uint16_t port)
-{
-    mRemoteAddr = NET_ResolveHostname(hostname);
-    mRemotePort = port;
-    if (!mRemoteAddr)
-    {
-        VLOG_FATAL("[UdpRxTxer::UdpRxTxer] Failure resolving host: {}", SDL_GetError());
-        return false;
-    }
-    return true;
 }
 
 

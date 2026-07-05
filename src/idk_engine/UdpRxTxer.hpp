@@ -14,15 +14,13 @@ namespace idk
     private:
         NET_DatagramSocket *mSocket;
         NET_Address *mRemoteAddr;
-        uint16_t mLocalPort;
         uint16_t mRemotePort;
 
     public:
         UdpRxTxer(uint16_t localPort=0);
+        UdpRxTxer(const char *hostname, uint16_t hostport);
         ~UdpRxTxer();
     
-        bool setRemote(const char *hostname, uint16_t port);
-
         NET_Datagram *beginRecvMsg(void *buf, size_t bufsz);
         void endRecvMsg(NET_Datagram*);
         void replyMsg(NET_Datagram*, const void *data, size_t size);
