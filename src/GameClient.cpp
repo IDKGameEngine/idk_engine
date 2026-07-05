@@ -1,5 +1,5 @@
 #include "idk_engine/GameClient.hpp"
-#include "idk_engine/EngineMsg.hpp"
+#include "idk_engine/NetProtocol.hpp"
 
 #include "idk_core/Platform.hpp"
 #include "idk_core/stdmem.hpp"
@@ -11,7 +11,6 @@
 void idk::engine::GameClient::udpListenFunc(GameClient *gameClient)
 {
     UdpRxTxer &rttRxTx = gameClient->mRxTxer;
-    MessageTxer *entEventTxer = EngineMsg::get().entityEventTxer;
 
     while (true)
     {
@@ -37,7 +36,7 @@ void idk::engine::GameClient::udpListenFunc(GameClient *gameClient)
                     static EntityEventData entEventData;
                     entEventData.decode(udpData);
                     VLOG_INFO("[GameClient] Recv EntityEvent");
-                    entEventTxer->sendMsg(&entEventData, sizeof(entEventData));
+                    // entEventTxer->sendMsg(&entEventData, sizeof(entEventData));
                     break;
                 }
 

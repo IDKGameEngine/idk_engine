@@ -1,4 +1,5 @@
 #include "idk_engine/GameServer.hpp"
+#include "idk_engine/NetProtocol.hpp"
 #include "idk_core/stdmem.hpp"
 
 #include <SDL3_net/SDL_net.h>
@@ -49,10 +50,6 @@ void idk::engine::GameServer::udpListenFunc(GameServer *server)
 
 idk::engine::GameServer::GameServer(uint16_t port)
 :   mPort(port)
-    // mRttRd{0},
-    // mRttWt{0},
-    // mCtrlRd{0},
-    // mCtrlWt{0}
 {
     std::thread t(GameServer::udpListenFunc, this);
     t.detach();

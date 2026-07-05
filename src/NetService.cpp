@@ -1,7 +1,7 @@
 #include "idk_engine/NetService.hpp"
 #include "idk_engine/GameClient.hpp"
 #include "idk_engine/GameServer.hpp"
-#include "idk_config/Memory.hpp"
+#include "idk_engine/New.hpp"
 #include "idk_core/stdmem.hpp"
 
 #include <SDL3/SDL.h>

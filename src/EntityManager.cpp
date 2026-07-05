@@ -1,6 +1,5 @@
 #include "idk_engine/EntityManager.hpp"
-#include "idk_engine/EngineMsg.hpp"
-#include "idk_config/Memory.hpp"
+#include "idk_engine/New.hpp"
 #include "idk_core/stdmem.hpp"
 
 
@@ -24,8 +23,8 @@ idk::engine::EntityManager::EntityManager(size_t maxEntities)
     idk_memset(mGen, 0, maxEntities);
     idk_memset(mAlive, 0, maxEntities);
 
-    auto *entEventBus = reinterpret_cast<EventChannel<EntityEvent>*>(EngineMsg::get().entityEventTxer);
-    entEventBus->subscribe(EntityManager::onEntityEvent, this);
+    // auto *entEventBus = reinterpret_cast<EventChannel<EntityEvent>*>(EngineMsg::get().entityEventTxer);
+    // entEventBus->subscribe(EntityManager::onEntityEvent, this);
 }
 
 
