@@ -2,7 +2,6 @@
 
 #include "idk/core/assert.hpp"
 #include "idk/core/log.hpp"
-#include "idk/core/New.hpp"
 #include "idk/core/Service.hpp"
 
 #include <atomic>

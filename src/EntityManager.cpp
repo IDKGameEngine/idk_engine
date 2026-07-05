@@ -1,10 +1,10 @@
-#include "idk_engine/EntityService.hpp"
-#include "idk/core/New.hpp"
+#include "idk_engine/EntityManager.hpp"
+#include "idk_config/Memory.hpp"
+#include "idk/core/stdmem.hpp"
 
 
-idk::engine::EntityService::EntityService()
-:   IDK_SERVICE_CTOR(EntityService),
-    mMaxEntities(mCfg["MAX_ENTITIES"].toU64()),
+idk::engine::EntityManager::EntityManager(size_t maxEntities)
+:   mMaxEntities(maxEntities),
     mNextIdx(0),
     mFreeListSize(0),
     mFreeList(idk::NewArray<uint32_t>(mMaxEntities)),
@@ -17,25 +17,8 @@ idk::engine::EntityService::EntityService()
 }
 
 
-idk::engine::EntityService::~EntityService()
-{
 
-}
-
-
-void idk::engine::EntityService::update(idk::IEngine*)
-{
-
-}
-
-
-void idk::engine::EntityService::shutdown(idk::IEngine*)
-{
-
-}
-
-
-idk::engine::Entity idk::engine::EntityService::createEntity()
+idk::engine::Entity idk::engine::EntityManager::createEntity()
 {
     uint32_t idx;
     if (mFreeListSize > 0)
@@ -51,7 +34,7 @@ idk::engine::Entity idk::engine::EntityService::createEntity()
 }
 
 
-void idk::engine::EntityService::destroyEntity(const Entity &E)
+void idk::engine::EntityManager::destroyEntity(const Entity &E)
 {
     if (isAlive(E))
     {
@@ -63,7 +46,7 @@ void idk::engine::EntityService::destroyEntity(const Entity &E)
 }
 
 
-bool idk::engine::EntityService::isAlive(const Entity &E)
+bool idk::engine::EntityManager::isAlive(const Entity &E)
 {
     const uint32_t idx = E.idx;
     return (idx < mMaxEntities) && (mAlive[idx]) && (mGen[idx] == E.gen);

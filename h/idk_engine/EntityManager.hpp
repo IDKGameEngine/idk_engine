@@ -1,9 +1,6 @@
 #pragma once
 
-#include "idk/core/Engine.hpp"
-#include "idk/core/Service.hpp"
-#include "idk/core/InplaceList.hpp"
-#include "idk/core/stdmem.hpp"
+#include "idk/core/types.hpp"
 
 
 namespace idk::engine
@@ -14,7 +11,7 @@ namespace idk::engine
         uint32_t gen;
     };
 
-    class EntityService: public idk::core::Service
+    class EntityManager: public idk::NonMobile
     {
     private:
         const size_t mMaxEntities;
@@ -25,16 +22,11 @@ namespace idk::engine
         bool     *mAlive;
 
     public:
-        EntityService();
-        ~EntityService();
-        virtual void update(idk::IEngine*) final;
-        virtual void shutdown(idk::IEngine*) final;
-
+        EntityManager(size_t maxEntities);
+        // void update();
         Entity createEntity();
         void destroyEntity(const Entity &E);
         bool isAlive(const Entity &E);
     };
 
 }
-
-
