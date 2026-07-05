@@ -11,7 +11,7 @@ void idk::engine::GameServer::udpListenFunc(GameServer *server)
 
     while (true)
     {
-        static NetProtocol::UdpPacket udpData;
+        static NetProtocol::Udpdata udpData;
 
         if (NET_Datagram *dgram = udpRxTxer.beginRecvMsg(&udpData, sizeof(udpData)))
         {
@@ -21,16 +21,19 @@ void idk::engine::GameServer::udpListenFunc(GameServer *server)
 
                 case UdpTag::RoundTripTime:
                 {
-                    udpData.as_RoundTripTime.serverSendTime = Platform::getSysTimeNs();
-                    uint64_t clientTime = udpData.as_RoundTripTime.clientSendTime;
-                    uint64_t serverTime = udpData.as_RoundTripTime.serverSendTime;
+                    static NetProtocol::RoundTripTimeData rttData;
+                    rttData.decode(udpData);
+                    rttData.serverSendTime = Platform::getSysTimeNs();
+                    rttData.encode(udpData);
                     udpRxTxer.replyMsg(dgram, &udpData, sizeof(udpData));
-                    VLOG_INFO("[GameServer] Reply RTT: {}, {}", clientTime, serverTime);
+                    VLOG_INFO("[GameServer] Reply RTT: {}, {}", rttData.clientSendTime, rttData.serverSendTime);
                     break;
                 }
 
                 case UdpTag::UserCtrl:
-                    VLOG_INFO("[GameServer] Ack UsrCtrl");
+                    static NetProtocol::UserCtrlData ctrlData;
+                    ctrlData.decode(udpData);
+                    VLOG_INFO("[GameServer] Ack UsrCtrl: {}", ctrlData.clientSendTime);
                     break;
                 
                 default:

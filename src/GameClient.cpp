@@ -13,7 +13,7 @@ void idk::engine::GameClient::udpListenFunc(GameClient *srv)
 
     while (true)
     {
-        static NetProtocol::UdpPacket udpData;
+        static NetProtocol::Udpdata udpData;
 
         if (NET_Datagram *dgram = rttRxTx.beginRecvMsg(&udpData, sizeof(udpData)))
         {
@@ -23,10 +23,10 @@ void idk::engine::GameClient::udpListenFunc(GameClient *srv)
 
                 case UdpTag::RoundTripTime:
                 {
-                    uint64_t clientTime = udpData.as_RoundTripTime.clientSendTime;
-                    // uint64_t serverTime = udpData.as_RoundTripTime.serverSendTime;
-                    uint64_t rdTripTime = Platform::getSysTimeNs() - clientTime;
-                    VLOG_INFO("[GameClient] Ping: {} ns", rdTripTime);
+                    static NetProtocol::RoundTripTimeData rttData;
+                    rttData.decode(udpData);
+                    uint64_t roundTripTime = Platform::getSysTimeNs() - rttData.clientSendTime;
+                    VLOG_INFO("[GameClient] Ping: {} ns", roundTripTime);
                     break;
                 }
 
@@ -52,21 +52,18 @@ idk::engine::GameClient::GameClient(uint16_t hostport)
 
 void idk::engine::GameClient::update(idk::IEngine*)
 {
-    static NetProtocol::UdpPacket udpData;
+    static NetProtocol::Udpdata udpData;
 
     if (mRttTimer.expired())
     {
-        mRttTimer.reset();
-
-        udpData = {
-            .tag = NetProtocol::UdpTag::RoundTripTime,
-            .as_RoundTripTime = {
-                .clientSendTime = Platform::getSysTimeNs(),
-                .serverSendTime = 0
-            }
+        NetProtocol::RoundTripTimeData rttData = {
+            .clientSendTime = Platform::getSysTimeNs(),
+            .serverSendTime = 0
         };
-
+        rttData.encode(udpData);
         mRxTxer.sendMsg(&udpData, sizeof(udpData));
+
+        mRttTimer.reset();
     }
 }
 
