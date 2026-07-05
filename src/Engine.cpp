@@ -1,8 +1,8 @@
 #include "idk_engine/Engine.hpp"
 
-#include "idk/core/assert.hpp"
-#include "idk/core/log.hpp"
-#include "idk/core/Service.hpp"
+#include "idk_core/assert.hpp"
+#include "idk_core/log.hpp"
+#include "idk_core/Service.hpp"
 
 #include <atomic>
 #include <cstring>

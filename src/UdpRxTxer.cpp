@@ -2,10 +2,10 @@
 
 #include "idk_engine/UdpRxTxer.hpp"
 
-#include "idk/core/stdmem.hpp"
-#include "idk/core/stdstr.hpp"
-#include "idk/core/math.hpp"
-#include "idk/core/log.hpp"
+#include "idk_core/stdmem.hpp"
+#include "idk_core/stdstr.hpp"
+#include "idk_core/math.hpp"
+#include "idk_core/log.hpp"
 
 
 idk::UdpRxTxer::UdpRxTxer(uint16_t localPort)

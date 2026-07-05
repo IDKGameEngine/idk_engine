@@ -1,7 +1,7 @@
 #pragma once
 
 #include "idk_engine/Engine.hpp"
-#include "idk/core/types.hpp"
+#include "idk_core/types.hpp"
 
 namespace idk::engine
 {

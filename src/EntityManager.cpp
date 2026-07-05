@@ -1,7 +1,7 @@
 #include "idk_engine/EntityManager.hpp"
 #include "idk_engine/EngineMsg.hpp"
 #include "idk_config/Memory.hpp"
-#include "idk/core/stdmem.hpp"
+#include "idk_core/stdmem.hpp"
 
 
 void idk::engine::EntityManager::onEntityEvent(void *ctx, const EntityEvent &data)

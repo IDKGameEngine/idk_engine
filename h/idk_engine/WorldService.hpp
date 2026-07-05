@@ -2,7 +2,7 @@
 
 #include "idk_engine/Engine.hpp"
 #include "idk_engine/EntityManager.hpp"
-#include "idk/core/InplaceList.hpp"
+#include "idk_core/InplaceList.hpp"
 
 namespace idk::engine
 {

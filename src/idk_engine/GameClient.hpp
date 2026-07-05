@@ -1,7 +1,7 @@
 #pragma once
 
 #include "idk_engine/NetService.hpp"
-#include "idk/core/Engine.hpp"
+#include "idk_core/Engine.hpp"
 #include "UdpRxTxer.hpp"
 
 namespace idk::engine

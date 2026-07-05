@@ -2,9 +2,9 @@
 
 #include "idk_engine/NetProtocol.hpp"
 
-#include "idk/core/Engine.hpp"
-#include "idk/core/Timer.hpp"
-#include "idk/core/InplaceList.hpp"
+#include "idk_core/Engine.hpp"
+#include "idk_core/Timer.hpp"
+#include "idk_core/InplaceList.hpp"
 
 #include "UdpRxTxer.hpp"
 

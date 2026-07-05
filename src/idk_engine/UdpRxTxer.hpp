@@ -1,6 +1,6 @@
 #pragma once
 
-#include "idk/core/types.hpp"
+#include "idk_core/types.hpp"
 
 struct NET_DatagramSocket;
 struct NET_Datagram;
@@ -30,8 +30,8 @@ namespace idk
 
 }
 
-// #include "idk/core/message/MessageEndpoint.hpp"
-// #include "idk/core/stdmem.hpp"
+// #include "idk_core/message/MessageEndpoint.hpp"
+// #include "idk_core/stdmem.hpp"
 
 // class RemoteEndpointRxer: public idk::core::MessageEndpoint
 // {

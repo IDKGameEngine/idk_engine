@@ -1,5 +1,5 @@
 #include "idk_engine/PlatformService.hpp"
-#include "idk/core/Platform.hpp"
+#include "idk_core/Platform.hpp"
 
 #include <SDL3/SDL.h>
 #include <glad/glad.h>

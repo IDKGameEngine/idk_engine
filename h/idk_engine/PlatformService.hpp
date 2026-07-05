@@ -1,7 +1,7 @@
 #pragma once
 
 #include "idk_engine/Engine.hpp"
-#include "idk/core/metric.hpp"
+#include "idk_core/metric.hpp"
 
 struct SDL_Window;
 

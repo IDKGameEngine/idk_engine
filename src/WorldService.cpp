@@ -1,6 +1,6 @@
 #include "idk_engine/WorldService.hpp"
 #include "idk_config/Memory.hpp"
-#include "idk/core/stdmem.hpp"
+#include "idk_core/stdmem.hpp"
 
 
 idk::engine::WorldService::WorldService()

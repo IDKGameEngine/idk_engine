@@ -1,5 +1,5 @@
 #include "idk_engine/GameServer.hpp"
-#include "idk/core/stdmem.hpp"
+#include "idk_core/stdmem.hpp"
 
 #include <SDL3_net/SDL_net.h>
 #include <thread>
