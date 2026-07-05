@@ -20,6 +20,7 @@ target_sources(
     "${CMAKE_CURRENT_SOURCE_DIR}/src/EntityService.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/src/GameClient.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/src/GameServer.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/GameWorld.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/src/NetService.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/src/PlatformService.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/src/UdpRxTxer.cpp"

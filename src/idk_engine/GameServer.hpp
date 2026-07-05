@@ -3,6 +3,7 @@
 #include "idk_engine/NetProtocol.hpp"
 
 #include "idk/core/Engine.hpp"
+#include "idk/core/Event.hpp"
 #include "idk/core/periodic_timer.hpp"
 #include "idk/core/InplaceList.hpp"
 
