@@ -12,18 +12,12 @@ target_include_directories(
     ${PROJECT_NAME} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/h"
 )
 target_link_libraries(
-    ${PROJECT_NAME} PUBLIC glad idk_core Jolt::Jolt SDL3::SDL3-shared SDL3_net::SDL3_net
+    ${PROJECT_NAME} PUBLIC libidk Jolt::Jolt
 )
 target_sources(
     ${PROJECT_NAME} PRIVATE
     "${CMAKE_CURRENT_SOURCE_DIR}/src/Engine.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/EntityManager.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/GameClient.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/GameServer.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/NetService.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/src/PlatformService.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/WorldService.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/UdpRxTxer.cpp"
 )
 
 add_custom_target(
