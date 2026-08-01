@@ -21,6 +21,11 @@ idk::CfgParser &idk::IEngine::getCfgParser()
 
 
 idk::Engine::Engine(std::initializer_list<core::Service*> services)
+:   mStateData(),
+    mControlTimer(4),
+    mStatusTimer(8),
+    mCtrlRx(5001),
+    mStatTx("127.0.0.1", 5002)
 {
     for (auto *srv: services)
     {
@@ -57,6 +62,29 @@ void idk::Engine::update()
             srv->shutdown(this);
         }
     }
+
+    if (mControlTimer.expired())
+    {
+        mControlTimer.reset();
+        while (mCtrlRx.readData(mStateData.controlCurr))
+        {
+            auto &prev = mStateData.controlPrev;
+            auto &curr = mStateData.controlCurr;
+            if (curr.x != prev.x) { VLOG_INFO("ctrl.x: {} -> {}", prev.x, curr.x); }
+            if (curr.y != prev.y) { VLOG_INFO("ctrl.y: {} -> {}", prev.y, curr.y); }
+            if (curr.z != prev.z) { VLOG_INFO("ctrl.z: {} -> {}", prev.z, curr.z); }
+            mStateData.controlPrev = mStateData.controlCurr;
+        }
+    }
+
+    if (mStatusTimer.expired())
+    {
+        mStatusTimer.reset();
+        mStateData.statusCurr.x = (mStateData.controlCurr.x == 1);
+        mStateData.statusCurr.y = (mStateData.controlCurr.y == 1);
+        mStateData.statusCurr.z = (mStateData.controlCurr.z == 1);
+        mStatTx.sendData(mStateData.statusCurr);
+    }
 }
 
 
@@ -71,3 +99,4 @@ idk::core::Service *idk::Engine::_getService(idk::IdType id)
     }
     return nullptr;
 }
+
