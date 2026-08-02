@@ -22,10 +22,12 @@ idk::CfgParser &idk::IEngine::getCfgParser()
 
 idk::Engine::Engine(std::initializer_list<core::Service*> services)
 :   mStateData(),
+    mStatusData(),
     mControlTimer(4),
     mStatusTimer(8),
     mCtrlRx(5001),
     mStatTx("127.0.0.1", 5002)
+    // mStatTx("IDKGameEngineIPC-EngineStatus", sizeof(EngineStatusData))
 {
     for (auto *srv: services)
     {
@@ -80,10 +82,11 @@ void idk::Engine::update()
     if (mStatusTimer.expired())
     {
         mStatusTimer.reset();
-        mStateData.statusCurr.x = (mStateData.controlCurr.x == 1);
-        mStateData.statusCurr.y = (mStateData.controlCurr.y == 1);
-        mStateData.statusCurr.z = (mStateData.controlCurr.z == 1);
-        mStatTx.sendMsg(mStateData.statusCurr);
+        mStatusData.allocatorMemoryUsage = idk::GetAllocatorMemoryUsage();
+        mStatusData.x = (mStateData.controlCurr.x == 1);
+        mStatusData.y = (mStateData.controlCurr.y == 1);
+        mStatusData.z = (mStateData.controlCurr.z == 1);
+        mStatTx.sendMsg(mStatusData);
     }
 }
 

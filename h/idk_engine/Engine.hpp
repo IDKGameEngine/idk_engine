@@ -20,6 +20,7 @@ namespace idk
 
     struct EngineStatusData
     {
+        float allocatorMemoryUsage;
         bool x;
         bool y;
         bool z;
@@ -28,7 +29,6 @@ namespace idk
     struct EngineStateData
     {
         EngineControlData controlPrev, controlCurr;
-        EngineStatusData statusPrev, statusCurr;
     };
 
     class Engine: public idk::IEngine
@@ -43,12 +43,12 @@ namespace idk
         std::atomic<bool> running_;
         std::vector<core::Service*> srvs_;
         EngineStateData mStateData;
+        EngineStatusData mStatusData;
         idk::PeriodicTimer mControlTimer;
         idk::PeriodicTimer mStatusTimer;
         idk::RemoteRxer mCtrlRx;
-        idk::RemoteTxer  mStatTx;
-        // idk::PortRxer<idk::RemoteRxer, EngineControlData> mCtrlRx;
-        // idk::PortTxer<idk::RemoteTxer, EngineStatusData>  mStatTx;
+        idk::RemoteTxer mStatTx;
+        // idk::SharedTxer mStatTx;
 
         virtual core::Service *_getService(idk::IdType id) final;
 
