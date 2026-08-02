@@ -39,17 +39,14 @@ idk::Engine::Engine(idk::platform::Platform &plat, std::initializer_list<core::S
     mCfg(IEngine::getCfgParser()["Engine"]),
     mCtrl(),
     mStat(),
-    mCtrlTimer(32),
-    mStatTimer(32),
-    mCtrlRxTx(nullptr, mCfg["CTRL_PORT"].toU16())
-    // mStatPort(mCfg["STAT_PORT"].toU16())
-    // mStatTx("127.0.0.1", mCfg["STAT_PORT"].toU16())
+    mCtrlTimer(4),
+    mStatTimer(4),
+    mRxTx(nullptr, mCfg["CTRL_PORT"].toU16())
 {
     for (auto *srv: services)
     {
-        srvs_.push_back(srv);
+        mSrvs.push_back(srv);
     }
-    // ((RemoteRxer*)mCtrlRx)->onRecvMsg = EngineOnRecvCtrl;
 
     VLOG_INFO("Engine Initialized");
 }
@@ -69,14 +66,14 @@ void idk::Engine::shutdown()
 
 void idk::Engine::update()
 {
-    for (auto *srv: srvs_)
+    for (auto *srv: mSrvs)
     {
         srv->update(this);
     }
 
     if (!running())
     {
-        for (auto *srv: srvs_)
+        for (auto *srv: mSrvs)
         {
             srv->shutdown(this);
         }
@@ -85,24 +82,23 @@ void idk::Engine::update()
     if (mCtrlTimer.expired())
     {
         mCtrlTimer.reset();
-        while (auto *msg = mCtrlRxTx.recvMsg())
+        while (auto *msg = mRxTx.recvMsg())
         {
             handleCtrlMessage(msg);
         }
     }
 
-    // if (mStatTimer.expired())
-    // {
-    //     mStatTimer.reset();
-
-    //     mStatTx->sendMsg(mStat);
-    // }
+    if (mStatTimer.expired())
+    {
+        mStatTimer.reset();
+        mRxTx.sendMsg(&mStat, sizeof(mStat), "STAT");
+    }
 }
 
 
 idk::core::Service *idk::Engine::_getService(idk::IdType id)
 {
-    for (idk::core::Service *srv: srvs_)
+    for (idk::core::Service *srv: mSrvs)
     {
         if (srv->getTypeId() == id)
         {
@@ -143,7 +139,5 @@ void idk::Engine::handleCtrlMessage(idk::MessageRecvInfo *msg)
     {
         this->shutdown();
     }
-
-    mCtrlRxTx.sendMsg(&mStat, sizeof(mStat), "STAT");
 }
 

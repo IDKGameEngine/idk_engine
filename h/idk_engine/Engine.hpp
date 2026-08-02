@@ -39,18 +39,16 @@ namespace idk
         virtual void update() final;
 
     private:
-        idk::platform::Platform   &mPlat;
-        RaiiFunc<void()>           mRaii;
-        const CfgParser::TreeNode &mCfg;
-        std::vector<core::Service*> srvs_;
-        EngineStateData     mStateData;
-        EngineCtrlData      mCtrl;
-        EngineStatData      mStat;
-        idk::PeriodicTimer  mCtrlTimer;
-        idk::PeriodicTimer  mStatTimer;
-        idk::RemoteRxTxer   mCtrlRxTx;
-        uint16_t            mStatPort;
-        // idk::RemoteTxer     mStatTx;
+        idk::platform::Platform    &mPlat;
+        RaiiFunc<void()>            mRaii;
+        const CfgParser::TreeNode  &mCfg;
+        std::vector<core::Service*> mSrvs;
+        EngineStateData             mStateData;
+        EngineCtrlData              mCtrl;
+        EngineStatData              mStat;
+        idk::PeriodicTimer          mCtrlTimer;
+        idk::PeriodicTimer          mStatTimer;
+        idk::RemoteRxTxer           mRxTx;
 
         virtual core::Service *_getService(idk::IdType id) final;
         void handleCtrlMessage(idk::MessageRecvInfo*);
