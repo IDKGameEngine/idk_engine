@@ -53,7 +53,7 @@ namespace idk
         // idk::RemoteTxer     mStatTx;
 
         virtual core::Service *_getService(idk::IdType id) final;
-        void handleCtrlMessage();
+        void handleCtrlMessage(idk::MessageRecvInfo*);
 
     };
 

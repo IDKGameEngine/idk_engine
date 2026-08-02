@@ -1,7 +1,6 @@
 #include "idk_engine/Engine.hpp"
 
 #include "libidk/message/RemoteRxTx.hpp"
-#include "libidk/message/SharedRxTx.hpp"
 
 #include "libidk/assert.hpp"
 #include "libidk/log.hpp"
@@ -86,9 +85,9 @@ void idk::Engine::update()
     if (mCtrlTimer.expired())
     {
         mCtrlTimer.reset();
-        while (mCtrlRxTx.recvMsg(mCtrl))
+        while (auto *msg = mCtrlRxTx.recvMsg())
         {
-            handleCtrlMessage();
+            handleCtrlMessage(msg);
         }
     }
 
@@ -114,8 +113,20 @@ idk::core::Service *idk::Engine::_getService(idk::IdType id)
 }
 
 
-void idk::Engine::handleCtrlMessage()
+void idk::Engine::handleCtrlMessage(idk::MessageRecvInfo *msg)
 {
+    if (!msg->isType("CTRL"))
+    {
+        return;
+    }
+
+    auto &h = msg->header;
+    if (h.payloadSize != sizeof(EngineCtrlData))
+    {
+        VLOG_WARN("[Engine::handleCtrlMessage] payloadSize != sizeof(EngineCtrlData)");
+        return;
+    }
+
     auto &prev = mStateData.controlPrev;
     if (mCtrl.x != prev.x) { VLOG_INFO("ctrl.x: {} -> {}", prev.x, mCtrl.x); }
     if (mCtrl.y != prev.y) { VLOG_INFO("ctrl.y: {} -> {}", prev.y, mCtrl.y); }
@@ -132,6 +143,6 @@ void idk::Engine::handleCtrlMessage()
         this->shutdown();
     }
 
-    mCtrlRxTx.replyMsg(&mStat, sizeof(mStat));
+    mCtrlRxTx.sendMsg(&mStat, sizeof(mStat), "STAT");
 }
 
