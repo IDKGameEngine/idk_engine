@@ -2,7 +2,7 @@
 
 #include "libidk/Engine.hpp"
 #include "libidk/Service.hpp"
-#include "libidk/message/MessageRxTx.hpp"
+#include "libidk/message/RemoteRxTx.hpp"
 
 #include <atomic>
 #include <initializer_list>
@@ -11,6 +11,7 @@ namespace idk
 {
     struct EngineCtrlData
     {
+        bool kill;
         int32_t x;
         int32_t y;
         int32_t z;
@@ -47,8 +48,9 @@ namespace idk
         EngineStatData      mStat;
         idk::PeriodicTimer  mCtrlTimer;
         idk::PeriodicTimer  mStatTimer;
-        idk::MessageRxer   *mCtrlRx;
-        // idk::MessageTxer   *mStatTx;
+        idk::RemoteRxer     mCtrlRx;
+        uint16_t            mStatPort;
+        // idk::RemoteTxer     mStatTx;
 
         virtual core::Service *_getService(idk::IdType id) final;
         void handleCtrlMessage();

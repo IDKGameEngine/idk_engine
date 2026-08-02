@@ -42,11 +42,9 @@ idk::Engine::Engine(idk::platform::Platform &plat, std::initializer_list<core::S
     mStat(),
     mCtrlTimer(4),
     mStatTimer(4),
-    mCtrlRx(idk::New<RemoteRxer>(mCfg["CTRL_PORT"].toU16()))
-    // mStatTx(idk::New<RemoteTxer>("127.0.0.1", mCfg["STAT_PORT"].toU16()))
-    // mStatTx(idk::New<RemoteTxer>("127.0.0.1", 5002))
-    // mCtrlRx(idk::New<SharedRxer>("IDKGameEngineIPC-EngineControl", sizeof(EngineCtrlData))),
-    // mStatTx(idk::New<SharedTxer>("IDKGameEngineIPC-EngineStatus", sizeof(EngineStatData)))
+    mCtrlRx(mCfg["CTRL_PORT"].toU16()),
+    mStatPort(mCfg["STAT_PORT"].toU16())
+    // mStatTx("127.0.0.1", mCfg["STAT_PORT"].toU16())
 {
     for (auto *srv: services)
     {
@@ -88,7 +86,7 @@ void idk::Engine::update()
     if (mCtrlTimer.expired())
     {
         mCtrlTimer.reset();
-        while (mCtrlRx->recvMsg(mCtrl))
+        while (mCtrlRx.recvMsg(mCtrl))
         {
             handleCtrlMessage();
         }
@@ -129,7 +127,11 @@ void idk::Engine::handleCtrlMessage()
     mStat.y = mCtrl.y;
     mStat.z = mCtrl.z;
 
-    // RemoteRxer &rx = *((RemoteRxer*)mCtrlRx);
-    ((RemoteRxer*)mCtrlRx)->replyMsg(&mStat, sizeof(mStat));
+    if (mCtrl.kill)
+    {
+        this->shutdown();
+    }
+
+    mCtrlRx.replyMsg(mStatPort, &mStat, sizeof(mStat));
 }
 
