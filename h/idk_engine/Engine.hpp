@@ -48,7 +48,7 @@ namespace idk
         EngineStatData      mStat;
         idk::PeriodicTimer  mCtrlTimer;
         idk::PeriodicTimer  mStatTimer;
-        idk::RemoteRxer     mCtrlRx;
+        idk::RemoteRxTxer   mCtrlRxTx;
         uint16_t            mStatPort;
         // idk::RemoteTxer     mStatTx;
 

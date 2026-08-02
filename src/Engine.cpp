@@ -42,7 +42,7 @@ idk::Engine::Engine(idk::platform::Platform &plat, std::initializer_list<core::S
     mStat(),
     mCtrlTimer(4),
     mStatTimer(4),
-    mCtrlRx(mCfg["CTRL_PORT"].toU16()),
+    mCtrlRxTx(nullptr, mCfg["CTRL_PORT"].toU16()),
     mStatPort(mCfg["STAT_PORT"].toU16())
     // mStatTx("127.0.0.1", mCfg["STAT_PORT"].toU16())
 {
@@ -86,7 +86,7 @@ void idk::Engine::update()
     if (mCtrlTimer.expired())
     {
         mCtrlTimer.reset();
-        while (mCtrlRx.recvMsg(mCtrl))
+        while (mCtrlRxTx.recvMsg(mCtrl))
         {
             handleCtrlMessage();
         }
@@ -132,6 +132,6 @@ void idk::Engine::handleCtrlMessage()
         this->shutdown();
     }
 
-    mCtrlRx.replyMsg(mStatPort, &mStat, sizeof(mStat));
+    mCtrlRxTx.replyMsg(&mStat, sizeof(mStat));
 }
 
