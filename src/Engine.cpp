@@ -104,9 +104,9 @@ void idk::Engine::update()
     {
         mStatusTimer.reset();
         mStatusData.allocatorMemoryUsage = idk::GetAllocatorMemoryUsage();
-        mStatusData.x = (mStateData.controlCurr.x == 1);
-        mStatusData.y = (mStateData.controlCurr.y == 1);
-        mStatusData.z = (mStateData.controlCurr.z == 1);
+        mStatusData.x = mStateData.controlCurr.x;
+        mStatusData.y = mStateData.controlCurr.y;
+        mStatusData.z = mStateData.controlCurr.z;
         mStatTx->sendMsg(mStatusData);
     }
 }
