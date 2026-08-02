@@ -43,7 +43,7 @@ idk::Engine::Engine(idk::platform::Platform &plat, std::initializer_list<core::S
     mControlTimer(4),
     mStatusTimer(8),
     mCtrlRx(idk::New<RemoteRxer>(mCfg["CTRL_PORT"].toU16())),
-    mStatTx(idk::New<RemoteTxer>("198.162.0.11", 5002))
+    mStatTx(idk::New<RemoteTxer>("192.168.0.11", 5002))
     // mStatTx(idk::New<RemoteTxer>("127.0.0.1", 5002))
     // mCtrlRx(idk::New<SharedRxer>("IDKGameEngineIPC-EngineControl", sizeof(EngineControlData))),
     // mStatTx(idk::New<SharedTxer>("IDKGameEngineIPC-EngineStatus", sizeof(EngineStatusData)))
