@@ -117,6 +117,7 @@ void idk::Engine::handleCtrlMessage(idk::MessageRecvInfo *msg)
 {
     if (!msg->isType("CTRL"))
     {
+        VLOG_WARN("[Engine::handleCtrlMessage] Recieved \"{}\"", msg->header.payloadType.ascii);
         return;
     }
 
