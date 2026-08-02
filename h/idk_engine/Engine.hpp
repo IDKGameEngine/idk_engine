@@ -38,7 +38,9 @@ namespace idk
         virtual void update() final;
 
     private:
-        idk::platform::Platform &mPlat;
+        idk::platform::Platform   &mPlat;
+        RaiiFunc<void()>           mRaii;
+        const CfgParser::TreeNode &mCfg;
         std::vector<core::Service*> srvs_;
         EngineStateData mStateData;
         EngineStatusData mStatusData;

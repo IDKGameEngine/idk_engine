@@ -23,14 +23,21 @@ idk::CfgParser &idk::IEngine::getCfgParser()
     return IEngine::getConfig().cfgParser;
 }
 
+static void EngineRaiiFunc()
+{
+    idk::IEngine::getCfgParser().load("Engine.cfg");
+}
+
 
 idk::Engine::Engine(idk::platform::Platform &plat, std::initializer_list<core::Service*> services)
 :   mPlat(plat),
+    mRaii(EngineRaiiFunc),
+    mCfg(IEngine::getCfgParser()["Engine"]),
     mStateData(),
     mStatusData(),
     mControlTimer(4),
     mStatusTimer(8),
-    mCtrlRx(idk::New<RemoteRxer>(5001)),
+    mCtrlRx(idk::New<RemoteRxer>(mCfg["CTRL_PORT"].toU16())),
     mStatTx(idk::New<RemoteTxer>("127.0.0.1", 5002))
     // mCtrlRx(idk::New<SharedRxer>("IDKGameEngineIPC-EngineControl", sizeof(EngineControlData))),
     // mStatTx(idk::New<SharedTxer>("IDKGameEngineIPC-EngineStatus", sizeof(EngineStatusData)))
