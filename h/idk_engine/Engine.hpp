@@ -19,9 +19,9 @@ namespace idk
     struct EngineStatusData
     {
         float allocatorMemoryUsage;
-        bool x;
-        bool y;
-        bool z;
+        int32_t x;
+        int32_t y;
+        int32_t z;
     };
 
     struct EngineStateData

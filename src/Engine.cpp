@@ -28,6 +28,11 @@ static void EngineRaiiFunc()
     idk::IEngine::getCfgParser().load("Engine.cfg");
 }
 
+// static size_t EngineOnRecvCtrl(void *req, size_t reqsz, void *res)
+// {
+//     return 0;
+// }
+
 
 idk::Engine::Engine(idk::platform::Platform &plat, std::initializer_list<core::Service*> services)
 :   mPlat(plat),
@@ -38,7 +43,8 @@ idk::Engine::Engine(idk::platform::Platform &plat, std::initializer_list<core::S
     mControlTimer(4),
     mStatusTimer(8),
     mCtrlRx(idk::New<RemoteRxer>(mCfg["CTRL_PORT"].toU16())),
-    mStatTx(idk::New<RemoteTxer>("127.0.0.1", 5002))
+    mStatTx(idk::New<RemoteTxer>("198.162.0.11", 5002))
+    // mStatTx(idk::New<RemoteTxer>("127.0.0.1", 5002))
     // mCtrlRx(idk::New<SharedRxer>("IDKGameEngineIPC-EngineControl", sizeof(EngineControlData))),
     // mStatTx(idk::New<SharedTxer>("IDKGameEngineIPC-EngineStatus", sizeof(EngineStatusData)))
 {
@@ -47,6 +53,8 @@ idk::Engine::Engine(idk::platform::Platform &plat, std::initializer_list<core::S
         srvs_.push_back(srv);
     }
     // running_.store(true);
+    // ((RemoteRxer*)mCtrlRx)->onRecvMsg = EngineOnRecvCtrl;
+
     VLOG_INFO("Engine Initialized");
 }
 
