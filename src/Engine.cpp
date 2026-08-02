@@ -39,8 +39,8 @@ idk::Engine::Engine(idk::platform::Platform &plat, std::initializer_list<core::S
     mCfg(IEngine::getCfgParser()["Engine"]),
     mCtrl(),
     mStat(),
-    mCtrlTimer(4),
-    mStatTimer(4),
+    mCtrlTimer(8),
+    mStatTimer(8),
     mRxTx(nullptr, mCfg["CTRL_STAT_PORT"].toU16())
 {
     for (auto *srv: services)
@@ -79,14 +79,14 @@ void idk::Engine::update()
         }
     }
 
-    if (mCtrlTimer.expired())
-    {
+    // if (mCtrlTimer.expired())
+    // {
         mCtrlTimer.reset();
         while (auto *msg = mRxTx.recvMsg())
         {
             handleCtrlMessage(msg);
         }
-    }
+    // }
 
     if (mStatTimer.expired())
     {
