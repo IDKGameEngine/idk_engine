@@ -39,10 +39,10 @@ idk::Engine::Engine(idk::platform::Platform &plat, std::initializer_list<core::S
     mCfg(IEngine::getCfgParser()["Engine"]),
     mCtrl(),
     mStat(),
-    mCtrlTimer(4),
-    mStatTimer(4),
-    mCtrlRxTx(nullptr, mCfg["CTRL_PORT"].toU16()),
-    mStatPort(mCfg["STAT_PORT"].toU16())
+    mCtrlTimer(32),
+    mStatTimer(32),
+    mCtrlRxTx(nullptr, mCfg["CTRL_PORT"].toU16())
+    // mStatPort(mCfg["STAT_PORT"].toU16())
     // mStatTx("127.0.0.1", mCfg["STAT_PORT"].toU16())
 {
     for (auto *srv: services)
@@ -115,18 +115,18 @@ idk::core::Service *idk::Engine::_getService(idk::IdType id)
 
 void idk::Engine::handleCtrlMessage(idk::MessageRecvInfo *msg)
 {
+    auto &h = msg->header;
     if (!msg->isType("CTRL"))
     {
-        VLOG_WARN("[Engine::handleCtrlMessage] Recieved \"{}\"", msg->header.payloadType.ascii);
+        VLOG_WARN("[Engine::handleCtrlMessage] Recieved \"{}\"", h.payloadType.ascii);
         return;
     }
-
-    auto &h = msg->header;
     if (h.payloadSize != sizeof(EngineCtrlData))
     {
         VLOG_WARN("[Engine::handleCtrlMessage] payloadSize != sizeof(EngineCtrlData)");
         return;
     }
+    idk_memcpy(&mCtrl, msg->payload, h.payloadSize);
 
     auto &prev = mStateData.controlPrev;
     if (mCtrl.x != prev.x) { VLOG_INFO("ctrl.x: {} -> {}", prev.x, mCtrl.x); }
