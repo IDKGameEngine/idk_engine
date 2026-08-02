@@ -38,21 +38,20 @@ idk::Engine::Engine(idk::platform::Platform &plat, std::initializer_list<core::S
 :   mPlat(plat),
     mRaii(EngineRaiiFunc),
     mCfg(IEngine::getCfgParser()["Engine"]),
-    mStateData(),
-    mStatusData(),
-    mControlTimer(4),
-    mStatusTimer(8),
-    mCtrlRx(idk::New<RemoteRxer>(mCfg["CTRL_PORT"].toU16())),
-    mStatTx(idk::New<RemoteTxer>("192.168.0.11", 5002))
+    mCtrl(),
+    mStat(),
+    mCtrlTimer(4),
+    mStatTimer(4),
+    mCtrlRx(idk::New<RemoteRxer>(mCfg["CTRL_PORT"].toU16()))
+    // mStatTx(idk::New<RemoteTxer>("127.0.0.1", mCfg["STAT_PORT"].toU16()))
     // mStatTx(idk::New<RemoteTxer>("127.0.0.1", 5002))
-    // mCtrlRx(idk::New<SharedRxer>("IDKGameEngineIPC-EngineControl", sizeof(EngineControlData))),
-    // mStatTx(idk::New<SharedTxer>("IDKGameEngineIPC-EngineStatus", sizeof(EngineStatusData)))
+    // mCtrlRx(idk::New<SharedRxer>("IDKGameEngineIPC-EngineControl", sizeof(EngineCtrlData))),
+    // mStatTx(idk::New<SharedTxer>("IDKGameEngineIPC-EngineStatus", sizeof(EngineStatData)))
 {
     for (auto *srv: services)
     {
         srvs_.push_back(srv);
     }
-    // running_.store(true);
     // ((RemoteRxer*)mCtrlRx)->onRecvMsg = EngineOnRecvCtrl;
 
     VLOG_INFO("Engine Initialized");
@@ -86,29 +85,21 @@ void idk::Engine::update()
         }
     }
 
-    if (mControlTimer.expired())
+    if (mCtrlTimer.expired())
     {
-        mControlTimer.reset();
-        while (mCtrlRx->recvMsg(mStateData.controlCurr))
+        mCtrlTimer.reset();
+        while (mCtrlRx->recvMsg(mCtrl))
         {
-            auto &prev = mStateData.controlPrev;
-            auto &curr = mStateData.controlCurr;
-            if (curr.x != prev.x) { VLOG_INFO("ctrl.x: {} -> {}", prev.x, curr.x); }
-            if (curr.y != prev.y) { VLOG_INFO("ctrl.y: {} -> {}", prev.y, curr.y); }
-            if (curr.z != prev.z) { VLOG_INFO("ctrl.z: {} -> {}", prev.z, curr.z); }
-            mStateData.controlPrev = mStateData.controlCurr;
+            handleCtrlMessage();
         }
     }
 
-    if (mStatusTimer.expired())
-    {
-        mStatusTimer.reset();
-        mStatusData.allocatorMemoryUsage = idk::GetAllocatorMemoryUsage();
-        mStatusData.x = mStateData.controlCurr.x;
-        mStatusData.y = mStateData.controlCurr.y;
-        mStatusData.z = mStateData.controlCurr.z;
-        mStatTx->sendMsg(mStatusData);
-    }
+    // if (mStatTimer.expired())
+    // {
+    //     mStatTimer.reset();
+
+    //     mStatTx->sendMsg(mStat);
+    // }
 }
 
 
@@ -122,5 +113,23 @@ idk::core::Service *idk::Engine::_getService(idk::IdType id)
         }
     }
     return nullptr;
+}
+
+
+void idk::Engine::handleCtrlMessage()
+{
+    auto &prev = mStateData.controlPrev;
+    if (mCtrl.x != prev.x) { VLOG_INFO("ctrl.x: {} -> {}", prev.x, mCtrl.x); }
+    if (mCtrl.y != prev.y) { VLOG_INFO("ctrl.y: {} -> {}", prev.y, mCtrl.y); }
+    if (mCtrl.z != prev.z) { VLOG_INFO("ctrl.z: {} -> {}", prev.z, mCtrl.z); }
+    prev = mCtrl;
+
+    mStat.allocatorMemoryUsage = idk::GetAllocatorMemoryUsage();
+    mStat.x = mCtrl.x;
+    mStat.y = mCtrl.y;
+    mStat.z = mCtrl.z;
+
+    // RemoteRxer &rx = *((RemoteRxer*)mCtrlRx);
+    ((RemoteRxer*)mCtrlRx)->replyMsg(&mStat, sizeof(mStat));
 }
 

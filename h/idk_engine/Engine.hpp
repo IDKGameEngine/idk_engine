@@ -9,14 +9,14 @@
 
 namespace idk
 {
-    struct EngineControlData
+    struct EngineCtrlData
     {
         int32_t x;
         int32_t y;
         int32_t z;
     };
 
-    struct EngineStatusData
+    struct EngineStatData
     {
         float allocatorMemoryUsage;
         int32_t x;
@@ -26,7 +26,7 @@ namespace idk
 
     struct EngineStateData
     {
-        EngineControlData controlPrev, controlCurr;
+        EngineCtrlData controlPrev, controlCurr;
     };
 
     class Engine: public idk::IEngine
@@ -42,14 +42,16 @@ namespace idk
         RaiiFunc<void()>           mRaii;
         const CfgParser::TreeNode &mCfg;
         std::vector<core::Service*> srvs_;
-        EngineStateData mStateData;
-        EngineStatusData mStatusData;
-        idk::PeriodicTimer mControlTimer;
-        idk::PeriodicTimer mStatusTimer;
-        idk::MessageRxer *mCtrlRx;
-        idk::MessageTxer *mStatTx;
+        EngineStateData     mStateData;
+        EngineCtrlData      mCtrl;
+        EngineStatData      mStat;
+        idk::PeriodicTimer  mCtrlTimer;
+        idk::PeriodicTimer  mStatTimer;
+        idk::MessageRxer   *mCtrlRx;
+        // idk::MessageTxer   *mStatTx;
 
         virtual core::Service *_getService(idk::IdType id) final;
+        void handleCtrlMessage();
 
     };
 
