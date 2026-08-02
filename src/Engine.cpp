@@ -41,7 +41,7 @@ idk::Engine::Engine(idk::platform::Platform &plat, std::initializer_list<core::S
     mStat(),
     mCtrlTimer(4),
     mStatTimer(4),
-    mRxTx(nullptr, mCfg["CTRL_PORT"].toU16())
+    mRxTx(nullptr, mCfg["CTRL_STAT_PORT"].toU16())
 {
     for (auto *srv: services)
     {
