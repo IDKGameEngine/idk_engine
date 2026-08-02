@@ -45,8 +45,10 @@ namespace idk
         EngineStateData mStateData;
         idk::PeriodicTimer mControlTimer;
         idk::PeriodicTimer mStatusTimer;
-        idk::PortRxer<idk::RemoteRxer, EngineControlData> mCtrlRx;
-        idk::PortTxer<idk::RemoteTxer, EngineStatusData>  mStatTx;
+        idk::RemoteRxer mCtrlRx;
+        idk::RemoteTxer  mStatTx;
+        // idk::PortRxer<idk::RemoteRxer, EngineControlData> mCtrlRx;
+        // idk::PortTxer<idk::RemoteTxer, EngineStatusData>  mStatTx;
 
         virtual core::Service *_getService(idk::IdType id) final;
 

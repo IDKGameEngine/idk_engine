@@ -66,7 +66,7 @@ void idk::Engine::update()
     if (mControlTimer.expired())
     {
         mControlTimer.reset();
-        while (mCtrlRx.readData(mStateData.controlCurr))
+        while (mCtrlRx.recvMsg(mStateData.controlCurr))
         {
             auto &prev = mStateData.controlPrev;
             auto &curr = mStateData.controlCurr;
@@ -83,7 +83,7 @@ void idk::Engine::update()
         mStateData.statusCurr.x = (mStateData.controlCurr.x == 1);
         mStateData.statusCurr.y = (mStateData.controlCurr.y == 1);
         mStateData.statusCurr.z = (mStateData.controlCurr.z == 1);
-        mStatTx.sendData(mStateData.statusCurr);
+        mStatTx.sendMsg(mStateData.statusCurr);
     }
 }
 
