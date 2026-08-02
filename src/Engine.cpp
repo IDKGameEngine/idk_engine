@@ -1,8 +1,12 @@
 #include "idk_engine/Engine.hpp"
 
+#include "libidk/message/RemoteRxTx.hpp"
+#include "libidk/message/SharedRxTx.hpp"
+
 #include "libidk/assert.hpp"
 #include "libidk/log.hpp"
 #include "libidk/Service.hpp"
+#include "libidk/New.hpp"
 
 #include <atomic>
 #include <cstring>
@@ -20,33 +24,35 @@ idk::CfgParser &idk::IEngine::getCfgParser()
 }
 
 
-idk::Engine::Engine(std::initializer_list<core::Service*> services)
-// :   mStateData(),
-//     mStatusData(),
-    // mControlTimer(4),
-    // mStatusTimer(8),
-    // mCtrlRx(5001),
-    // mStatTx("127.0.0.1", 5002)
-    // mStatTx("IDKGameEngineIPC-EngineStatus", sizeof(EngineStatusData))
+idk::Engine::Engine(idk::platform::Platform &plat, std::initializer_list<core::Service*> services)
+:   mPlat(plat),
+    mStateData(),
+    mStatusData(),
+    mControlTimer(4),
+    mStatusTimer(8),
+    mCtrlRx(idk::New<RemoteRxer>(5001)),
+    mStatTx(idk::New<RemoteTxer>("127.0.0.1", 5002))
+    // mCtrlRx(idk::New<SharedRxer>("IDKGameEngineIPC-EngineControl", sizeof(EngineControlData))),
+    // mStatTx(idk::New<SharedTxer>("IDKGameEngineIPC-EngineStatus", sizeof(EngineStatusData)))
 {
     for (auto *srv: services)
     {
         srvs_.push_back(srv);
     }
-    running_.store(true);
+    // running_.store(true);
     VLOG_INFO("Engine Initialized");
 }
 
 
 bool idk::Engine::running()
 {
-    return running_.load();
+    return mPlat.getStatus() == platform::Status::Running;
 }
 
 
 void idk::Engine::shutdown()
 {
-    running_.store(false);
+    mPlat.shutdown();
 }
 
 
@@ -65,29 +71,29 @@ void idk::Engine::update()
         }
     }
 
-    // if (mControlTimer.expired())
-    // {
-    //     mControlTimer.reset();
-    //     while (mCtrlRx.recvMsg(mStateData.controlCurr))
-    //     {
-    //         auto &prev = mStateData.controlPrev;
-    //         auto &curr = mStateData.controlCurr;
-    //         if (curr.x != prev.x) { VLOG_INFO("ctrl.x: {} -> {}", prev.x, curr.x); }
-    //         if (curr.y != prev.y) { VLOG_INFO("ctrl.y: {} -> {}", prev.y, curr.y); }
-    //         if (curr.z != prev.z) { VLOG_INFO("ctrl.z: {} -> {}", prev.z, curr.z); }
-    //         mStateData.controlPrev = mStateData.controlCurr;
-    //     }
-    // }
+    if (mControlTimer.expired())
+    {
+        mControlTimer.reset();
+        while (mCtrlRx->recvMsg(mStateData.controlCurr))
+        {
+            auto &prev = mStateData.controlPrev;
+            auto &curr = mStateData.controlCurr;
+            if (curr.x != prev.x) { VLOG_INFO("ctrl.x: {} -> {}", prev.x, curr.x); }
+            if (curr.y != prev.y) { VLOG_INFO("ctrl.y: {} -> {}", prev.y, curr.y); }
+            if (curr.z != prev.z) { VLOG_INFO("ctrl.z: {} -> {}", prev.z, curr.z); }
+            mStateData.controlPrev = mStateData.controlCurr;
+        }
+    }
 
-    // if (mStatusTimer.expired())
-    // {
-    //     mStatusTimer.reset();
-    //     mStatusData.allocatorMemoryUsage = idk::GetAllocatorMemoryUsage();
-    //     mStatusData.x = (mStateData.controlCurr.x == 1);
-    //     mStatusData.y = (mStateData.controlCurr.y == 1);
-    //     mStatusData.z = (mStateData.controlCurr.z == 1);
-    //     mStatTx.sendMsg(mStatusData);
-    // }
+    if (mStatusTimer.expired())
+    {
+        mStatusTimer.reset();
+        mStatusData.allocatorMemoryUsage = idk::GetAllocatorMemoryUsage();
+        mStatusData.x = (mStateData.controlCurr.x == 1);
+        mStatusData.y = (mStateData.controlCurr.y == 1);
+        mStatusData.z = (mStateData.controlCurr.z == 1);
+        mStatTx->sendMsg(mStatusData);
+    }
 }
 
 
