@@ -1,4 +1,4 @@
-#include "idk_engine/NetService.hpp"
+#include "idk/engine/NetService.hpp"
 
 
 idk::NetService::NetService(idk::platform::Platform &plat)
