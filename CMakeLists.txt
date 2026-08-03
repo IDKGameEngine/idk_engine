@@ -17,6 +17,8 @@ target_link_libraries(
 target_sources(
     ${PROJECT_NAME} PRIVATE
     "${CMAKE_CURRENT_SOURCE_DIR}/src/Engine.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/AudioService.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/NetService.cpp"
 )
 
 add_custom_target(
