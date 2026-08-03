@@ -1,7 +1,7 @@
 #include "idk/engine/AudioService.hpp"
 
 
-idk::AudioService::AudioService(idk::platform::Platform &plat)
+idk::AudioService::AudioService(idk::Platform &plat)
 :   IDK_SERVICE_CTOR(AudioService),
     mPlat(plat)
 {

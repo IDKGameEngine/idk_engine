@@ -8,10 +8,10 @@ namespace idk
     class NetService: public idk::core::Service
     {
     private:
-        idk::platform::Platform &mPlat;
+        idk::Platform &mPlat;
 
     public:
-        NetService(idk::platform::Platform&);
+        NetService(idk::Platform&);
         ~NetService();
 
         virtual void update(idk::IEngine*) final;

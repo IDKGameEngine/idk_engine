@@ -8,10 +8,10 @@ namespace idk
     class AudioService: public idk::core::Service
     {
     private:
-        idk::platform::Platform &mPlat;
+        idk::Platform &mPlat;
 
     public:
-        AudioService(idk::platform::Platform&);
+        AudioService(idk::Platform&);
         ~AudioService();
 
         virtual void update(idk::IEngine*) final;

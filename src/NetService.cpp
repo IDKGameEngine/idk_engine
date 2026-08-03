@@ -1,7 +1,7 @@
 #include "idk/engine/NetService.hpp"
 
 
-idk::NetService::NetService(idk::platform::Platform &plat)
+idk::NetService::NetService(idk::Platform &plat)
 :   IDK_SERVICE_CTOR(NetService),
     mPlat(plat)
 {

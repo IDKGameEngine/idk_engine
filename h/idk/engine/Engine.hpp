@@ -33,13 +33,13 @@ namespace idk
     class Engine: public idk::IEngine
     {
     public:
-        Engine(idk::platform::Platform &plat, std::initializer_list<core::Service*> services);
+        Engine(idk::Platform &plat, std::initializer_list<core::Service*> services);
         virtual bool running() final;
         virtual void shutdown() final;
         virtual void update() final;
 
     private:
-        idk::platform::Platform    &mPlat;
+        idk::Platform    &mPlat;
         RaiiFunc<void()>            mRaii;
         const CfgParser::TreeNode  &mCfg;
         std::vector<core::Service*> mSrvs;

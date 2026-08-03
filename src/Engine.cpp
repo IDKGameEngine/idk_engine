@@ -33,7 +33,7 @@ static void EngineRaiiFunc()
 // }
 
 
-idk::Engine::Engine(idk::platform::Platform &plat, std::initializer_list<core::Service*> services)
+idk::Engine::Engine(idk::Platform &plat, std::initializer_list<core::Service*> services)
 :   mPlat(plat),
     mRaii(EngineRaiiFunc),
     mCfg(IEngine::getCfgParser()["Engine"]),
