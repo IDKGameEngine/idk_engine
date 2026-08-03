@@ -1,59 +1,59 @@
-#pragma once
+// #pragma once
 
-#include "libidk/Engine.hpp"
-#include "libidk/Service.hpp"
-#include "libidk/message/RemoteRxTx.hpp"
+// #include "libidk/Engine.hpp"
+// #include "libidk/Service.hpp"
+// #include "libidk/message/RemoteRxTx.hpp"
 
-#include <atomic>
-#include <initializer_list>
+// #include <atomic>
+// #include <initializer_list>
 
-namespace idk
-{
-    struct EngineCtrlData
-    {
-        bool kill;
-        int32_t x;
-        int32_t y;
-        int32_t z;
-    };
+// namespace idk
+// {
+//     struct EngineCtrlData
+//     {
+//         bool kill;
+//         int32_t x;
+//         int32_t y;
+//         int32_t z;
+//     };
 
-    struct EngineStatData
-    {
-        float allocatorMemoryUsage;
-        int32_t x;
-        int32_t y;
-        int32_t z;
-    };
+//     struct EngineStatData
+//     {
+//         float allocatorMemoryUsage;
+//         int32_t x;
+//         int32_t y;
+//         int32_t z;
+//     };
 
-    struct EngineStateData
-    {
-        EngineCtrlData controlPrev, controlCurr;
-    };
+//     struct EngineStateData
+//     {
+//         EngineCtrlData controlPrev, controlCurr;
+//     };
 
-    class Engine: public idk::IEngine
-    {
-    public:
-        Engine(idk::Platform &plat, std::initializer_list<core::Service*> services);
-        virtual bool running() final;
-        virtual void shutdown() final;
-        virtual void update() final;
+//     class Engine: public idk::IEngine
+//     {
+//     public:
+//         Engine(idk::Platform &plat, std::initializer_list<core::Service*> services);
+//         virtual bool running() final;
+//         virtual void shutdown() final;
+//         virtual void update() final;
 
-    private:
-        idk::Platform    &mPlat;
-        RaiiFunc<void()>            mRaii;
-        const CfgParser::TreeNode  &mCfg;
-        std::vector<core::Service*> mSrvs;
-        EngineStateData             mStateData;
-        EngineCtrlData              mCtrl;
-        EngineStatData              mStat;
-        idk::PeriodicTimer          mCtrlTimer;
-        idk::PeriodicTimer          mStatTimer;
-        idk::RemoteRxTxer           mRxTx;
+//     private:
+//         idk::Platform    &mPlat;
+//         RaiiFunc<void()>            mRaii;
+//         const CfgParser::TreeNode  &mCfg;
+//         std::vector<core::Service*> mSrvs;
+//         EngineStateData             mStateData;
+//         EngineCtrlData              mCtrl;
+//         EngineStatData              mStat;
+//         idk::PeriodicTimer          mCtrlTimer;
+//         idk::PeriodicTimer          mStatTimer;
+//         idk::RemoteRxTxer           mRxTx;
 
-        virtual core::Service *_getService(idk::IdType id) final;
-        void handleCtrlMessage(idk::MessageRecvInfo*);
+//         virtual core::Service *_getService(idk::IdType id) final;
+//         void handleCtrlMessage(idk::MessageRecvInfo*);
 
-    };
+//     };
 
-}
+// }
 
