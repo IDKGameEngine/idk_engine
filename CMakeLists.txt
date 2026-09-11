@@ -2,9 +2,14 @@ cmake_minimum_required(VERSION 4.2)
 
 project(idk_engine VERSION 0.0.1)
 
-add_library(
-    ${PROJECT_NAME} STATIC
-)
+option(IDK_SHARED "Build as shared library" OFF)
+if(IDK_SHARED)
+    add_library(${PROJECT_NAME} SHARED)
+    set_target_properties(${PROJECT_NAME} PROPERTIES POSITION_INDEPENDENT_CODE ON)
+else()
+    add_library(${PROJECT_NAME} STATIC)
+endif()
+
 target_compile_features(
     ${PROJECT_NAME} PUBLIC cxx_std_23
 )
