@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 4.2)
 
-project(idk_engine VERSION 0.0.1)
+project(idkengine VERSION 0.0.1)
 
 option(IDK_SHARED "Build as shared library" OFF)
 if(IDK_SHARED)
@@ -21,7 +21,7 @@ target_link_libraries(
 )
 target_sources(
     ${PROJECT_NAME} PRIVATE
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/Entry.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/NetService.cpp"
 )
 
 add_custom_target(
