@@ -2,14 +2,7 @@ cmake_minimum_required(VERSION 3.31)
 
 project(idkengine VERSION 0.0.1)
 
-option(IDK_SHARED "Build as shared library" OFF)
-if(IDK_SHARED)
-    add_library(${PROJECT_NAME} SHARED)
-    set_target_properties(${PROJECT_NAME} PROPERTIES POSITION_INDEPENDENT_CODE ON)
-else()
-    add_library(${PROJECT_NAME} STATIC)
-endif()
-
+add_library(${PROJECT_NAME} STATIC)
 target_compile_features(
     ${PROJECT_NAME} PUBLIC cxx_std_23
 )
@@ -24,9 +17,9 @@ target_sources(
     "${CMAKE_CURRENT_SOURCE_DIR}/src/NetService.cpp"
 )
 
-add_custom_target(
-    idk_engine_data
-    COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different
-        ${CMAKE_CURRENT_SOURCE_DIR}/${IDK_ASSETS_DIRNAME} ${IDK_OUTPUT_DIR}/${IDK_ASSETS_DIRNAME}
-)
-add_dependencies(${PROJECT_NAME} idk_engine_data)
+# add_custom_target(
+#     idk_engine_data
+#     COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different
+#         ${CMAKE_CURRENT_SOURCE_DIR}/${IDK_ASSETS_DIRNAME} ${IDK_OUTPUT_DIR}/${IDK_ASSETS_DIRNAME}
+# )
+# add_dependencies(${PROJECT_NAME} idk_engine_data)
