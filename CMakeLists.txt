@@ -7,7 +7,7 @@ target_compile_features(
     ${PROJECT_NAME} PUBLIC cxx_std_23
 )
 target_include_directories(
-    ${PROJECT_NAME} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/h"
+    ${PROJECT_NAME} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include"
 )
 target_link_libraries(
     ${PROJECT_NAME} PUBLIC libidk Jolt::Jolt
