@@ -2,16 +2,17 @@
 
 #include "libidk/Engine.hpp"
 #include "libidk/Service.hpp"
+#include "libidk/platform/Platform.hpp"
 
 namespace idk
 {
     class NetService: public idk::core::Service
     {
     private:
-        idk::Platform &mPlat;
+        idk::platform::Platform &mPlat;
 
     public:
-        NetService(idk::Platform&);
+        NetService(idk::platform::Platform&);
         ~NetService();
 
         virtual void update(idk::IEngine*) final;
