@@ -1,59 +1,28 @@
-// #pragma once
+#pragma once
 
-// #include "libidk/Engine.hpp"
-// #include "libidk/Service.hpp"
-// #include "libidk/message/RemoteRxTx.hpp"
+#include "libidk/Types.hpp"
+#include "libidk/Service.hpp"
+#include "libidk/platform/IPlatformContext.hpp"
+#include <atomic>
 
-// #include <atomic>
-// #include <initializer_list>
 
-// namespace idk
-// {
-//     struct EngineCtrlData
-//     {
-//         bool kill;
-//         int32_t x;
-//         int32_t y;
-//         int32_t z;
-//     };
+namespace idk
+{
+    class Engine: public idk::Immobile
+    {
+    public:
+        Engine(idk::IPlatformContext *plat);
+        void start();
 
-//     struct EngineStatData
-//     {
-//         float allocatorMemoryUsage;
-//         int32_t x;
-//         int32_t y;
-//         int32_t z;
-//     };
+    private:
+        static constexpr size_t MAX_SERVICES = 16;
 
-//     struct EngineStateData
-//     {
-//         EngineCtrlData controlPrev, controlCurr;
-//     };
+        std::atomic_bool       mRunning;
+        idk::IPlatformContext *mPlat;
+        size_t                 mServiceIdx;
+        idk::core::Service    *mServices[MAX_SERVICES];
 
-//     class Engine: public idk::IEngine
-//     {
-//     public:
-//         Engine(idk::Platform &plat, std::initializer_list<core::Service*> services);
-//         virtual bool running() final;
-//         virtual void shutdown() final;
-//         virtual void update() final;
+    };
 
-//     private:
-//         idk::Platform    &mPlat;
-//         RaiiFunc<void()>            mRaii;
-//         const CfgParser::TreeNode  &mCfg;
-//         std::vector<core::Service*> mSrvs;
-//         EngineStateData             mStateData;
-//         EngineCtrlData              mCtrl;
-//         EngineStatData              mStat;
-//         idk::PeriodicTimer          mCtrlTimer;
-//         idk::PeriodicTimer          mStatTimer;
-//         idk::RemoteRxTxer           mRxTx;
-
-//         virtual core::Service *_getService(idk::IdType id) final;
-//         void handleCtrlMessage(idk::MessageRecvInfo*);
-
-//     };
-
-// }
+}
 

@@ -10,11 +10,11 @@ target_include_directories(
     ${PROJECT_NAME} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include"
 )
 target_link_libraries(
-    ${PROJECT_NAME} PUBLIC libidk Jolt::Jolt
+    ${PROJECT_NAME} PUBLIC libidk idkgfx Jolt::Jolt
 )
 target_sources(
     ${PROJECT_NAME} PRIVATE
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/NetService.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/Engine.cpp"
 )
 
 # add_custom_target(
