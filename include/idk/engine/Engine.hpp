@@ -1,28 +1,64 @@
 #pragma once
 
 #include "libidk/Types.hpp"
-#include "libidk/Service.hpp"
 #include "libidk/platform/IPlatformContext.hpp"
+#include "libidk/dsa/Queue.hpp"
 #include <atomic>
 
 
 namespace idk
 {
+    struct EngineContext
+    {
+        idk::core::Queue<int32_t, 64> testQueue;
+    };
+
+
+    class EngineComponent: public idk::Immobile
+    {
+    private:
+
+    public:
+        EngineComponent(EngineContext&) {  };
+        virtual ~EngineComponent() = default;
+        virtual void update() = 0;
+    };
+
+
     class Engine: public idk::Immobile
     {
+    private:
+        static constexpr size_t MAX_COMPONENTS = 16;
+        std::atomic_bool       mRunning;
+        idk::EngineContext     mContext;
+        idk::IPlatformContext *mPlat;
+        size_t                 mComponentIdx;
+        idk::EngineComponent  *mComponents[MAX_COMPONENTS];
+
     public:
         Engine(idk::IPlatformContext *plat);
+
         void start();
 
-    private:
-        static constexpr size_t MAX_SERVICES = 16;
+        template <typename ComponentType, typename... Args>
+        void addComponent(Args&&... args)
+        {
+            IDK_ASSERT(mComponentIdx<MAX_COMPONENTS, "[Engine::addComponent] Too many Components!");
+            mComponents[mComponentIdx++] = idk::New<ComponentType>(mContext, args...);
+        }
 
-        std::atomic_bool       mRunning;
-        idk::IPlatformContext *mPlat;
-        size_t                 mServiceIdx;
-        idk::core::Service    *mServices[MAX_SERVICES];
-
+        template <typename ComponentType>
+        ComponentType *getComponent() noexcept
+        {
+            for (size_t i=0; i<mComponentIdx; i++)
+            {
+                if (ComponentType *srv = dynamic_cast<ComponentType*>(mComponents[i]))
+                {
+                    return srv;
+                }
+            }
+            return nullptr;
+        }
     };
 
 }
-
