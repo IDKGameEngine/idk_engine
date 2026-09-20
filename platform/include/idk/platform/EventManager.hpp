@@ -8,9 +8,8 @@ namespace idk
     class EventManager: public idk::IPlatformFeature
     {
     private:
-        // static constexpr size_t MAX_CALLBACKS = 64;
-        // using EventCallback = void (*)(IEventManager*, void *event);
-        // idk::InplaceList<uintptr_t, MAX_CALLBACKS> mEventFuncs;
+        using EventCallback = void (*)(const void *event);
+        idk::InplaceList<uintptr_t, 64> mEventCallbacks;
 
     public:
         EventManager(PlatformContext &ctx);
@@ -18,15 +17,15 @@ namespace idk
         virtual void onInit(ServiceManager*) final;
         virtual void onUpdate(ServiceManager*) final;
 
-        // bool addEventCallback(EventCallback func)
-        // {
-        //     if (!mEventFuncs.full())
-        //     {
-        //         mEventFuncs.push(reinterpret_cast<uintptr_t>(func));
-        //         return true;
-        //     }
-        //     return false;
-        // }
+        bool addEventCallback(EventCallback func)
+        {
+            if (!mEventCallbacks.full())
+            {
+                mEventCallbacks.push(reinterpret_cast<uintptr_t>(func));
+                return true;
+            }
+            return false;
+        }
 
     };
 }

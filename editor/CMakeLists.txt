@@ -1,7 +1,5 @@
 project(editor)
 
-find_package(imgui REQUIRED)
-
 add_executable(
     ${PROJECT_NAME}
 )

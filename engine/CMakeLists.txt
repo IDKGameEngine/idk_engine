@@ -1,5 +1,7 @@
 project(idkengine_engine)
 
+find_package(Jolt REQUIRED)
+
 add_library(
     ${PROJECT_NAME} OBJECT
 )

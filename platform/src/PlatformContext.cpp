@@ -12,8 +12,6 @@
 
 
 idk::PlatformContext::PlatformContext(const PlatformConfig &cfg)
-// :   mRunning{true},
-//     mShutdown{false}
 {
     if (std::getenv("SteamEnv"))
     {

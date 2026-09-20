@@ -1,5 +1,5 @@
 #include "idk/gfx/GfxService.hpp"
-#include "RenderEngine.hpp"
+#include "idk/gfx/RenderEngine.hpp"
 
 #include "idk/platform/VideoManager.hpp"
 #include "libidk/New.hpp"
@@ -11,7 +11,7 @@
 
 idk::gfx::GfxService::GfxService(idk::PlatformContext &plat)
 :   mPlat(plat),
-    mRenderEngine(idk::New<RenderEngine>(plat))
+    mRenderEngine(plat)
 // :   mGfxDevice(idk::New<GraphicsDevice>())
 {
     Assimp::Importer importer;
@@ -42,7 +42,7 @@ void idk::gfx::GfxService::onInit(idk::ServiceManager*)
 
 void idk::gfx::GfxService::onUpdate(idk::ServiceManager*)
 {
-    mRenderEngine->update();
+    mRenderEngine.update();
 }
 
 

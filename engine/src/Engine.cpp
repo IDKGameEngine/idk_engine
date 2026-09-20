@@ -6,7 +6,6 @@
 idk::Engine::Engine()
 :   ServiceManager(),
     mShouldQuit(false)
-    // mPlat({"GameWindow", 1280, 720})
 {
     addService<idk::PlatformContext>(PlatformConfig{"GameWindow", 1280, 720});
     addService<idk::gfx::GfxService>(*getService<PlatformContext>());

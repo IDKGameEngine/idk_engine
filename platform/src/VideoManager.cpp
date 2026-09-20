@@ -5,7 +5,7 @@
 #include "libidk/log.hpp"
 
 #include <SDL3/SDL.h>
-#include <SDL3/SDL_vulkan.h>
+#include <SDL3/SDL_opengl.h>
 
 
 idk::VideoManager::VideoManager(PlatformContext &ctx, const char *title, int w, int h)
@@ -20,7 +20,14 @@ idk::VideoManager::VideoManager(PlatformContext &ctx, const char *title, int w, 
         VLOG_FATAL("{}", SDL_GetError());
     }
 
-    if (!(mWin = SDL_CreateWindow(title, mWidth, mHeight, SDL_WINDOW_VULKAN)))
+    SDL_WindowFlags windowFlags = 0;
+    // #ifdef IDK_OPENGL
+        windowFlags |= SDL_WINDOW_OPENGL;
+    // #else
+        // windowFlags |= SDL_WINDOW_VULKAN;
+    // #endif
+
+    if (!(mWin = SDL_CreateWindow(title, mWidth, mHeight, windowFlags)))
     {
         VLOG_FATAL("SDL_CreateWindow: {}", SDL_GetError());
     }

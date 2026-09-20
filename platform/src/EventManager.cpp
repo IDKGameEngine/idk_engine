@@ -30,10 +30,10 @@ void idk::EventManager::onUpdate(idk::ServiceManager*)
     SDL_Event e;
     while (SDL_PollEvent(&e))
     {
-        // for (uintptr_t addr: mEventFuncs)
-        // {
-        //     reinterpret_cast<EventCallback>(addr)(this, &e);
-        // }
+        for (uintptr_t addr: mEventCallbacks)
+        {
+            reinterpret_cast<EventCallback>(addr)(&e);
+        }
         if (e.type == SDL_EVENT_QUIT)
         {
             eq.push({EngineEvent::SHUTDOWN, 0});

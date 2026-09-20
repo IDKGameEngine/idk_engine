@@ -1,7 +1,8 @@
 project(idkengine_gfx)
 
+find_package(OpenGL REQUIRED)
 find_package(assimp REQUIRED)
-find_package(volk CONFIG REQUIRED)
+# find_package(volk CONFIG REQUIRED)
 
 add_library(
     ${PROJECT_NAME} OBJECT
@@ -15,12 +16,10 @@ target_compile_options(
 target_include_directories(
     ${PROJECT_NAME}
     PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include"
-    PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/vk-bootstrap"
 )
 target_link_libraries(
     ${PROJECT_NAME}
-    PUBLIC idkengine_common idkengine_platform
-    PRIVATE volk::volk assimp::assimp
+    PUBLIC glad OpenGL::GL idkengine_common idkengine_platform assimp::assimp
 )
 target_sources(
     ${PROJECT_NAME} PRIVATE
