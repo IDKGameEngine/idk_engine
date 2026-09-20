@@ -23,8 +23,8 @@ target_link_libraries(
 )
 target_sources(
     ${PROJECT_NAME} PRIVATE
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/vk/vk_mem_alloc.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/vk/VkBootstrap.cpp"
+    # "${CMAKE_CURRENT_SOURCE_DIR}/src/vk/vk_mem_alloc.cpp"
+    # "${CMAKE_CURRENT_SOURCE_DIR}/src/vk/VkBootstrap.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/src/GfxService.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/src/RenderEngine.cpp"
 )
