@@ -3,25 +3,32 @@
 #include "libidk/Types.hpp"
 #include "libidk/platform/IPlatformContext.hpp"
 #include "libidk/dsa/Queue.hpp"
+#include "libidk/dsa/List.hpp"
 #include <atomic>
 
 
 namespace idk
 {
+    struct EngineContext;
+    class EngineService;
+    class Engine;
+
+
     struct EngineContext
     {
         idk::core::Queue<int32_t, 64> testQueue;
     };
 
 
-    class EngineComponent: public idk::Immobile
+    class EngineService: public idk::Immobile
     {
     private:
 
     public:
-        EngineComponent(EngineContext&) {  };
-        virtual ~EngineComponent() = default;
-        virtual void update() = 0;
+        EngineService(EngineContext&) {  };
+        virtual ~EngineService() = default;
+        virtual void init(idk::Engine&) = 0;
+        virtual void update(idk::Engine&) = 0;
     };
 
 
@@ -32,29 +39,31 @@ namespace idk
         std::atomic_bool       mRunning;
         idk::EngineContext     mContext;
         idk::IPlatformContext *mPlat;
-        size_t                 mComponentIdx;
-        idk::EngineComponent  *mComponents[MAX_COMPONENTS];
+        idk::InplaceList<EngineService*, MAX_COMPONENTS> mComponents;
 
     public:
         Engine(idk::IPlatformContext *plat);
 
         void start();
 
+        idk::IPlatformContext *getPlatformContext() { return mPlat; }
+
         template <typename ComponentType, typename... Args>
         void addComponent(Args&&... args)
         {
-            IDK_ASSERT(mComponentIdx<MAX_COMPONENTS, "[Engine::addComponent] Too many Components!");
-            mComponents[mComponentIdx++] = idk::New<ComponentType>(mContext, args...);
+            // IDK_ASSERT(mComponentIdx<MAX_COMPONENTS, "[Engine::addComponent] Too many Components!");
+            // mComponents[mComponentIdx++] = idk::New<ComponentType>(mContext, args...);
+            mComponents.push(idk::New<ComponentType>(mContext, args...));
         }
 
         template <typename ComponentType>
         ComponentType *getComponent() noexcept
         {
-            for (size_t i=0; i<mComponentIdx; i++)
+            for (EngineService *C: mComponents)
             {
-                if (ComponentType *srv = dynamic_cast<ComponentType*>(mComponents[i]))
+                if (ComponentType *ptr = dynamic_cast<ComponentType*>(C))
                 {
-                    return srv;
+                    return ptr;
                 }
             }
             return nullptr;

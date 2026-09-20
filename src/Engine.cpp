@@ -2,21 +2,29 @@
 
 idk::Engine::Engine(idk::IPlatformContext *plat)
 :   mRunning(true),
-    mPlat(plat),
-    mComponentIdx(0)
+    mPlat(plat)
 {
 
 }
 
 void idk::Engine::start()
 {
+    for (EngineService *C: mComponents)
+    {
+        C->init(*this);
+    }
+
     while (mPlat->running())
     {
         mPlat->update();
 
-        for (size_t i=0; i<mComponentIdx; i++)
+        for (EngineService *C: mComponents)
         {
-            mComponents[i]->update();
+            C->update(*this);
         }
+        // for (size_t i=0; i<mComponentIdx; i++)
+        // {
+        //     mComponents[i]->update();
+        // }
     }
 }
