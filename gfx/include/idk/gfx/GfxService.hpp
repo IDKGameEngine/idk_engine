@@ -1,12 +1,13 @@
 #pragma once
 
-#include "libidk/Service.hpp"
+#include "idk/gfx/RenderEngine.hpp"
 #include "idk/platform/PlatformContext.hpp"
+#include "libidk/Service.hpp"
 
 
 namespace idk::gfx
 {
-    class VulkanContext;
+    class RenderEngine;
 
     class GfxService: public idk::Service
     {
@@ -19,8 +20,8 @@ namespace idk::gfx
         virtual void onEvent(ServiceManager*, const void*) final;
 
     private:
-        idk::PlatformContext    &mPlat;
-        idk::gfx::VulkanContext *mVulkanContext;
+        idk::PlatformContext   &mPlat;
+        idk::gfx::RenderEngine  mRenderEngine;
 
     };
 }

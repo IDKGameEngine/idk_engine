@@ -21,7 +21,7 @@ target_link_libraries(
 )
 target_sources(
     ${PROJECT_NAME} PRIVATE
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/vk/VulkanContext.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/src/GfxService.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/RenderEngine.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/vk-bootstrap/VkBootstrap.cpp"
 )

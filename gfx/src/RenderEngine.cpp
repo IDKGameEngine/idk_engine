@@ -1,0 +1,307 @@
+#include "idk/gfx/RenderEngine.hpp"
+
+#include "idk/platform/PlatformContext.hpp"
+#include "idk/platform/VideoManager.hpp"
+
+#include "libidk/Assert.hpp"
+#include "libidk/log.hpp"
+#include "VkBootstrap.h"
+
+#include <SDL3/SDL_vulkan.h>
+#include <vector>
+
+static constexpr bool bUseValidationLayers = false;
+
+
+idk::gfx::RenderEngine::RenderEngine(idk::PlatformContext &plat)
+:   mWinHandle(plat.getService<VideoManager>()->getWindowHandle()),
+    mInstance(VK_NULL_HANDLE),
+    mPhysicalDevice(VK_NULL_HANDLE),
+    mDevice(VK_NULL_HANDLE),
+    mSurface(VK_NULL_HANDLE)
+{
+    // Instance Creation
+    // ---------------------------------------------------------------------------------------------
+    VK_CHECK( volkInitialize() );
+
+    VkApplicationInfo appInfo = {
+        .sType = VK_STRUCTURE_TYPE_APPLICATION_INFO,
+        .pApplicationName = "How to Vulkan",
+        .apiVersion = VK_API_VERSION_1_3
+    };
+
+    uint32_t instanceExtCount = 0;
+    const char *const *instanceExtensions = SDL_Vulkan_GetInstanceExtensions(&instanceExtCount);
+    VkInstanceCreateInfo instanceCI = {
+        .sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
+        .pApplicationInfo = &appInfo,
+        .enabledExtensionCount = instanceExtCount,
+        .ppEnabledExtensionNames = instanceExtensions,
+    };
+
+    VK_CHECK( vkCreateInstance(&instanceCI, nullptr, &mInstance) );
+    volkLoadInstance(mInstance);
+    // ---------------------------------------------------------------------------------------------
+
+
+    // Device Enumeration
+    // ---------------------------------------------------------------------------------------------
+    uint32_t deviceCount = 0;
+    uint32_t deviceIndex = 0;
+    VK_CHECK( vkEnumeratePhysicalDevices(mInstance, &deviceCount, nullptr) );
+
+    mPhysicalDevices.resize(deviceCount);
+    VK_CHECK( vkEnumeratePhysicalDevices(mInstance, &deviceCount, &mPhysicalDevices[0]) );
+
+    VkPhysicalDeviceProperties2 props = {
+        .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2
+    };
+    vkGetPhysicalDeviceProperties2(mPhysicalDevices[deviceIndex], &props);
+
+    VLOG_INFO("[RenderEngine::RenderEngine] deviceCount: {}", deviceCount);
+    VLOG_INFO("[RenderEngine::RenderEngine] deviceName:  {}", props.properties.deviceName);
+    // ---------------------------------------------------------------------------------------------
+
+
+    // Queue Creation
+    // ---------------------------------------------------------------------------------------------
+    uint32_t queueFamilyCount = 0;
+
+    vkGetPhysicalDeviceQueueFamilyProperties(mPhysicalDevices[deviceIndex], &queueFamilyCount, nullptr);
+    VLOG_INFO("queueFamilyCount: {}", queueFamilyCount);
+    
+    std::vector<VkQueueFamilyProperties> queueFamilies(queueFamilyCount);
+    vkGetPhysicalDeviceQueueFamilyProperties(mPhysicalDevices[deviceIndex], &queueFamilyCount, queueFamilies.data());
+
+    for (size_t i=0; i<queueFamilies.size(); i++)
+    {
+        if (queueFamilies[i].queueFlags & VK_QUEUE_GRAPHICS_BIT)
+        {
+            mQueueFamily = uint32_t(i);
+            break;
+        }
+    }
+
+    IDK_ASSERT(
+        SDL_Vulkan_GetPresentationSupport(mInstance, mPhysicalDevices[deviceIndex], mQueueFamily),
+        "[RenderEngine::RenderEngine] Failure on SDL_Vulkan_GetPresentationSupport"
+    );
+
+    const float qfpriorities { 1.0f };
+    VkDeviceQueueCreateInfo queueCI {
+        .sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,
+        .queueFamilyIndex = mQueueFamily,
+        .queueCount = 1,
+        .pQueuePriorities = &qfpriorities
+    };
+    // ---------------------------------------------------------------------------------------------
+
+
+    // Device Setup
+    // ---------------------------------------------------------------------------------------------
+    const std::vector<const char*> deviceExtensions{ VK_KHR_SWAPCHAIN_EXTENSION_NAME };
+    VkPhysicalDeviceVulkan12Features enabledVk12Features {
+        .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_2_FEATURES,
+        .descriptorIndexing = true,
+        .shaderSampledImageArrayNonUniformIndexing = true,
+        .descriptorBindingVariableDescriptorCount = true,
+        .runtimeDescriptorArray = true,
+        .bufferDeviceAddress = true
+    };
+    VkPhysicalDeviceVulkan13Features enabledVk13Features{
+        .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_3_FEATURES,
+        .pNext = &enabledVk12Features,
+        .synchronization2 = true,
+        .dynamicRendering = true,
+    };
+
+    VkPhysicalDeviceFeatures enabledVk10Features{
+        .samplerAnisotropy = VK_TRUE
+    };
+
+    VkDeviceCreateInfo deviceCI{
+        .sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
+        .pNext = &enabledVk13Features,
+        .queueCreateInfoCount = 1,
+        .pQueueCreateInfos = &queueCI,
+        .enabledExtensionCount = static_cast<uint32_t>(deviceExtensions.size()),
+        .ppEnabledExtensionNames = deviceExtensions.data(),
+        .pEnabledFeatures = &enabledVk10Features
+    };
+
+    VK_CHECK( vkCreateDevice(mPhysicalDevices[deviceIndex], &deviceCI, nullptr, &mDevice) );
+
+    vkGetDeviceQueue(mDevice, mQueueFamily, 0, &mGraphicsQueue);
+    // ---------------------------------------------------------------------------------------------
+}
+
+
+idk::gfx::RenderEngine::~RenderEngine()
+{
+    if (mInstance != VK_NULL_HANDLE)
+    {
+
+    }
+}
+
+
+
+/*
+
+#include "idk/gfx/RenderEngine.hpp"
+
+#include "idk/platform/PlatformContext.hpp"
+#include "idk/platform/VideoManager.hpp"
+
+#include "libidk/Assert.hpp"
+#include "libidk/log.hpp"
+#include "VkBootstrap.h"
+
+#include <SDL3/SDL_vulkan.h>
+#include <vector>
+
+static constexpr bool bUseValidationLayers = false;
+
+
+idk::gfx::RenderEngine::RenderEngine(idk::PlatformContext &plat)
+:   mWinHandle(plat.getService<VideoManager>()->getWindowHandle()),
+    mInstance(VK_NULL_HANDLE),
+    mPhysicalDevice(VK_NULL_HANDLE),
+    mDevice(VK_NULL_HANDLE),
+    mSurface(VK_NULL_HANDLE)
+{
+	init_vulkan();
+	init_swapchain();
+	init_commands();
+	init_sync_structures();
+}
+
+
+idk::gfx::RenderEngine::~RenderEngine()
+{
+    if (mInstance != VK_NULL_HANDLE)
+    {
+        vkDeviceWaitIdle(mDevice);
+		for (size_t i=0; i<NUM_FRAMES; i++)
+        {
+			vkDestroyCommandPool(mDevice, mFrames[i].commandPool, nullptr);
+		}
+
+        vkDestroyInstance(mInstance, nullptr);
+        mInstance = VK_NULL_HANDLE;
+
+        destroy_swapchain();
+    
+        vkDestroyDevice(mDevice, nullptr);
+        vkDestroySurfaceKHR(mInstance, mSurface, nullptr);
+        vkb::destroy_debug_utils_messenger(mInstance, mDebugMessenger);
+    }
+}
+
+
+void idk::gfx::RenderEngine::init_vulkan()
+{
+	vkb::InstanceBuilder builder;
+
+	// Make the vulkan instance, with basic debug features
+	auto inst_ret = builder
+        .set_app_name("Example Vulkan Application")
+        .request_validation_layers(bUseValidationLayers)
+        .use_default_debug_messenger()
+        .require_api_version(1, 3, 0)
+        .build();
+
+	vkb::Instance vkb_inst = inst_ret.value();
+
+	// Grab the instance 
+	mInstance = vkb_inst.instance;
+	mDebugMessenger = vkb_inst.debug_messenger;
+
+
+	SDL_Vulkan_CreateSurface((SDL_Window*)mWinHandle, mInstance, NULL, &mSurface);
+
+	// Vulkan 1.3 features
+	VkPhysicalDeviceVulkan13Features features{ .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_3_FEATURES };
+	features.dynamicRendering = true;
+	features.synchronization2 = true;
+
+	// Use vkbootstrap to select a gpu. 
+	// We want a gpu that can write to the SDL surface and supports vulkan 1.3 with the correct features
+	vkb::PhysicalDeviceSelector selector{ vkb_inst };
+	vkb::PhysicalDevice physicalDevice = selector
+		.set_minimum_version(1, 3)
+		.set_required_features_13(features)
+		.set_surface(mSurface)
+		.select()
+		.value();
+
+	// Create the final vulkan device
+	vkb::DeviceBuilder deviceBuilder{ physicalDevice };
+
+	vkb::Device vkbDevice = deviceBuilder.build().value();
+
+	// Get the VkDevice handle used in the rest of a vulkan application
+	mDevice = vkbDevice.device;
+	mPhysicalDevice = physicalDevice.physical_device;
+
+    // Use vkbootstrap to get a Graphics queue
+	mGraphicsQueue = vkbDevice.get_queue(vkb::QueueType::graphics).value();
+	mGraphicsQueueFamily = vkbDevice.get_queue_index(vkb::QueueType::graphics).value();
+
+}
+
+
+void idk::gfx::RenderEngine::init_swapchain()
+{
+    int w=0, h=0;
+    SDL_GetWindowSize((SDL_Window*)mWinHandle, &w, &h);
+    create_swapchain(w, h);
+}
+
+
+void idk::gfx::RenderEngine::init_commands()
+{
+
+}
+
+
+void idk::gfx::RenderEngine::init_sync_structures()
+{
+
+}
+
+
+void idk::gfx::RenderEngine::create_swapchain(uint32_t w, uint32_t h)
+{
+	vkb::SwapchainBuilder swapchainBuilder { mPhysicalDevice, mDevice, mSurface };
+
+	mSwapchainImageFormat = VK_FORMAT_B8G8R8A8_UNORM;
+
+	vkb::Swapchain vkbSwapchain = swapchainBuilder
+		//.use_default_format_selection()
+		.set_desired_format(VkSurfaceFormatKHR{ .format = mSwapchainImageFormat, .colorSpace = VK_COLOR_SPACE_SRGB_NONLINEAR_KHR })
+		//use vsync present mode
+		.set_desired_present_mode(VK_PRESENT_MODE_FIFO_KHR)
+		.set_desired_extent(w, h)
+		.add_image_usage_flags(VK_IMAGE_USAGE_TRANSFER_DST_BIT)
+		.build()
+		.value();
+
+    mSwapchainExtent = vkbSwapchain.extent;
+    //store swapchain and its related images
+	mSwapchain = vkbSwapchain.swapchain;
+	mSwapchainImages = vkbSwapchain.get_images().value();
+	mSwapchainImageViews = vkbSwapchain.get_image_views().value();
+}
+
+
+void idk::gfx::RenderEngine::destroy_swapchain()
+{
+	vkDestroySwapchainKHR(mDevice, mSwapchain, nullptr);
+	for (size_t i=0; i<mSwapchainImageViews.size(); i++)
+    {
+		vkDestroyImageView(mDevice, mSwapchainImageViews[i], nullptr);
+	}
+}
+
+*/
