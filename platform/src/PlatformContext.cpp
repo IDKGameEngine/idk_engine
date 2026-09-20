@@ -8,7 +8,7 @@
 #include <steam/steam_api.h>
 
 
-idk::PlatformContextSdl3::PlatformContextSdl3(const PlatformConfig &cfg)
+idk::PlatformContext::PlatformContext(const PlatformConfig &cfg)
 {
     if (std::getenv("SteamEnv"))
     {
@@ -30,7 +30,7 @@ idk::PlatformContextSdl3::PlatformContextSdl3(const PlatformConfig &cfg)
     addFeature<idk::VideoManager>(cfg.windowTitle, cfg.windowWidth, cfg.windowHeight);
 }
 
-idk::PlatformContextSdl3::~PlatformContextSdl3()
+idk::PlatformContext::~PlatformContext()
 {
     SDL_Quit();
 }

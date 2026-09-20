@@ -1,7 +1,7 @@
 #pragma once
 
 #include "idk/engine/IApplication.hpp"
-#include "idk/platform/IPlatformContext.hpp"
+#include "idk/platform/PlatformContext.hpp"
 #include "libidk/Service.hpp"
 
 namespace idk
@@ -13,12 +13,12 @@ namespace idk
 class idk::Engine: public idk::ServiceManager
 {
 public:
-    Engine(idk::IPlatformContext *plat);
+    Engine();
     void run(idk::IApplication *app);
     IPlatformContext *getPlatformContext();
 
 private:
-    idk::IPlatformContext *mPlat;
+    PlatformContext mPlat;
 
     bool should_quit();
 

@@ -2,9 +2,9 @@
 #include "idk/gfx/GfxService.hpp"
 
 
-idk::Engine::Engine(idk::IPlatformContext *plat)
+idk::Engine::Engine()
 :   ServiceManager(),
-    mPlat(plat)
+    mPlat({"GameWindow", 1280, 720})
 {
     this->addService<idk::gfx::GfxService>();
 }
@@ -20,7 +20,7 @@ void idk::Engine::run(idk::IApplication *app)
 
     while (!should_quit())
     {
-        mPlat->update();
+        mPlat.update();
         for (idk::Service *srv: mServices)
         {
             srv->update(this);
@@ -34,13 +34,13 @@ void idk::Engine::run(idk::IApplication *app)
 
 idk::IPlatformContext *idk::Engine::getPlatformContext()
 {
-    return mPlat;
+    return &mPlat;
 }
 
 
 bool idk::Engine::should_quit()
 {
-    if (!mPlat->running())
+    if (!mPlat.running())
     {
         return true;
     }

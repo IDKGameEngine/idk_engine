@@ -12,11 +12,11 @@ namespace idk
         int windowHeight;
     };
 
-    class PlatformContextSdl3: public idk::IPlatformContext
+    class PlatformContext: public idk::IPlatformContext
     {
     public:
-        PlatformContextSdl3(const PlatformConfig &cfg);
-        ~PlatformContextSdl3();
+        PlatformContext(const PlatformConfig &cfg);
+        ~PlatformContext();
     };
 
 }
