@@ -1,29 +1,49 @@
 #include "idk/engine/Engine.hpp"
+#include "idk/gfx/GfxService.hpp"
 
 
 idk::Engine::Engine(idk::IPlatformContext *plat)
 :   ServiceManager(),
     mPlat(plat)
 {
-
+    this->addService<idk::gfx::GfxService>();
 }
 
 
-void idk::Engine::start()
+void idk::Engine::run(idk::IApplication *app)
 {
     for (idk::Service *srv: mServices)
     {
         srv->init(this);
     }
+    app->onInit(*this);
 
-    while (mPlat->running())
+    while (!should_quit())
     {
         mPlat->update();
-
         for (idk::Service *srv: mServices)
         {
             srv->update(this);
         }
+        app->onUpdate(*this);
     }
+
+    app->onShutdown(*this);
 }
 
+
+idk::IPlatformContext *idk::Engine::getPlatformContext()
+{
+    return mPlat;
+}
+
+
+bool idk::Engine::should_quit()
+{
+    if (!mPlat->running())
+    {
+        return true;
+    }
+
+    return false;
+}

@@ -1,22 +1,25 @@
 #pragma once
 
-#include "libidk/Service.hpp"
+#include "idk/engine/IApplication.hpp"
 #include "idk/platform/IPlatformContext.hpp"
-
+#include "libidk/Service.hpp"
 
 namespace idk
 {
-    class Engine: public idk::ServiceManager
-    {
-    private:
-        // idk::EngineContext     mContext;
-        idk::IPlatformContext *mPlat;
-
-    public:
-        Engine(idk::IPlatformContext *plat);
-        void start();
-
-        IPlatformContext *getPlatformContext() { return mPlat; }
-    };
-
+    class Engine;
 }
+
+
+class idk::Engine: public idk::ServiceManager
+{
+public:
+    Engine(idk::IPlatformContext *plat);
+    void run(idk::IApplication *app);
+    IPlatformContext *getPlatformContext();
+
+private:
+    idk::IPlatformContext *mPlat;
+
+    bool should_quit();
+
+};
