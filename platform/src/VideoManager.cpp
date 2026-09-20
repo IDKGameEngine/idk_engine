@@ -68,11 +68,15 @@ idk::VideoManager::~VideoManager()
 }
 
 
-void idk::VideoManager::update(idk::IPlatformContext *ctx)
+void idk::VideoManager::onUpdate(idk::PlatformContext &ctx)
 {
     (void)ctx;
 }
 
+void idk::VideoManager::setWindowFullscreen(bool fullscreen)
+{
+    SDL_SetWindowFullscreen((SDL_Window*)mWin, fullscreen);
+}
 
 void idk::VideoManager::setWindowVisibility(bool visible)
 {

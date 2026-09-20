@@ -25,7 +25,6 @@ target_sources(
     "${CMAKE_CURRENT_SOURCE_DIR}/src/EventManager.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/src/FilesystemManager.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/src/InputManager.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/IPlatformContext.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/src/PlatformContext.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/src/VideoManager.cpp"
 )

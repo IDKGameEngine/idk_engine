@@ -12,7 +12,8 @@ namespace idk
     public:
         InputManager();
 
-        virtual void update(idk::IPlatformContext*) final;
+        virtual void onUpdate(idk::PlatformContext&) final;
+        virtual void onEvent(idk::PlatformContext&, const void*) final;
 
         bool isKeyDown(int keycode) const;
         bool isMouseButtonDown(int button) const;

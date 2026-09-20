@@ -1,61 +1,56 @@
 #pragma once
 
-#include "CharacterController.hpp"
-
-
-namespace idk
+namespace idk::engine
 {
-    class Command
+    struct CharacterInput
     {
-    public:
-        virtual ~Command() {}
-        virtual void execute(CharacterController*) = 0;
+        float moveX = 0.0f;
+        float moveY = 0.0f;
+
+        float lookX = 0.0f;
+        float lookY = 0.0f;
+
+        bool jump = false;
+        bool sprint = false;
     };
 
+
+    // class Actor
+    // {
+    // public:
+        
+    // };
+
+    // class CharacterController
+    // {
+    // public:
+    //     virtual ~CharacterController() = default;
+    //     virtual void Update(float dt, const CharacterInput& input) = 0;
+    // };
+
+    // class PlayerCharacterController : public CharacterController
+    // {
+    // private:
+    //     Actor *mActor;
+
+    // public:
+    //     PlayerCharacterController(Actor *A): mActor(A) {  };
+
+    //     void Update(float dt, const CharacterInput& input) override
+    //     {
+    //         mActor->move(input.moveX, input.moveY, dt);
+    //         mActor->look(input.lookX, input.lookY, dt);
+
+    //         if (input.jump)
+    //         {
+    //             mActor->jump();
+    //         }
+
+    //         if (input.sprint)
+    //         {
+    //             mActor->sprint();
+    //         }
+    //     }
+    // };
 }
 
-
-// class JumpCommand : public idk::Command
-// {
-// public:
-//     virtual void execute(idk::CharacterController *ctl) { ctl->jump(); }
-// };
-
-// class AttackCommand : public idk::Command
-// {
-// public:
-//     virtual void execute(idk::CharacterController *ctl) { ctl->attack(); }
-// };
-
-
-
-// class InputHandler
-// {
-// private:
-//     idk::Command *mBtnX;
-//     idk::Command *mBtnY;
-//     idk::Command *mBtnA;
-//     idk::Command *mBtnB;
-
-// public:
-//     idk::Command *handleInput()
-//     {
-//         if (0) return mBtnX;
-//         if (0) return mBtnY;
-//         if (0) return mBtnA;
-//         if (0) return mBtnB;
-//         return nullptr;
-//     }
-// };
-
-
-// void sauftad()
-// {
-//     using namespace idk;
-//     InputHandler ih;
-
-//     if (Command *cmd = ih.handleInput())
-//     {
-//         cmd->execute(actor);
-//     }
-// }

@@ -32,7 +32,7 @@ void idk::Engine::run(idk::IApplication *app)
 }
 
 
-idk::IPlatformContext *idk::Engine::getPlatformContext()
+idk::PlatformContext *idk::Engine::getPlatformContext()
 {
     return &mPlat;
 }

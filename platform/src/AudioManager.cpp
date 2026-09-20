@@ -25,7 +25,7 @@ idk::AudioManager::~AudioManager()
     MIX_Quit();
 }
 
-void idk::AudioManager::update(idk::IPlatformContext *ctx)
+void idk::AudioManager::onUpdate(idk::PlatformContext &ctx)
 {
     (void)ctx;
 }

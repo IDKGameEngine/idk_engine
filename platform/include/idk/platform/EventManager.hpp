@@ -15,7 +15,7 @@ namespace idk
     public:
         EventManager();
 
-        virtual void update(idk::IPlatformContext*) final;
+        virtual void onUpdate(idk::PlatformContext&) final;
 
         // bool addEventCallback(EventCallback func)
         // {

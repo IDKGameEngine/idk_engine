@@ -15,10 +15,8 @@ idk::EventManager::EventManager()
 }
 
 
-void idk::EventManager::update(idk::IPlatformContext *ctx)
+void idk::EventManager::onUpdate(idk::PlatformContext &ctx)
 {
-    // (void)ctx;
-
     SDL_Event e;
     while (SDL_PollEvent(&e))
     {
@@ -26,18 +24,17 @@ void idk::EventManager::update(idk::IPlatformContext *ctx)
         // {
         //     reinterpret_cast<EventCallback>(addr)(this, &e);
         // }
-
         if (e.type == SDL_EVENT_QUIT)
         {
-            ctx->shutdown();
+            ctx.shutdown();
         }
-
-        if (e.type == SDL_EVENT_KEY_UP)
+        else if ((e.type == SDL_EVENT_KEY_UP) && (e.key.scancode == SDL_SCANCODE_ESCAPE))
         {
-            if (e.key.scancode == SDL_SCANCODE_ESCAPE)
-            {
-                ctx->shutdown();
-            }
+            ctx.shutdown();
+        }
+        else
+        {
+            ctx.processEvent(&e);
         }
     }
 }

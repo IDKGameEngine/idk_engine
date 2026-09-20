@@ -25,7 +25,7 @@ namespace idk
         AudioManager();
         ~AudioManager();
 
-        virtual void update(idk::IPlatformContext*) final;
+        virtual void onUpdate(idk::PlatformContext&) final;
         virtual SoundType *createSound(const char *filepath);
         virtual void destroySound(SoundType*) final;
         virtual void startSound(SoundType*) final;

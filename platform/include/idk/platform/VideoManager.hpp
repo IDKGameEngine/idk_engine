@@ -27,10 +27,12 @@ namespace idk
         VideoManager(const char *title, int w, int h);
         ~VideoManager();
 
-        virtual void  update(idk::IPlatformContext*) final;
+        virtual void onUpdate(idk::PlatformContext&) final;
 
         int   getWidth()  { return mWidth; };
         int   getHeight() { return mHeight; };
+
+        void  setWindowFullscreen(bool fullscreen);
         void  setWindowVisibility(bool visible);
         void  setWindowResolution(int w, int h);
         void  setRenderResolution(int w, int h);
