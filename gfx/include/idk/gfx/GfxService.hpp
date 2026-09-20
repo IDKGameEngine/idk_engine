@@ -6,7 +6,7 @@
 
 namespace idk::gfx
 {
-    class GraphicsDevice;
+    class VulkanContext;
 
     class GfxService: public idk::Service
     {
@@ -19,8 +19,8 @@ namespace idk::gfx
         virtual void onEvent(ServiceManager*, const void*) final;
 
     private:
-        idk::PlatformContext &mPlat;
-        GraphicsDevice *mGfxDevice;
+        idk::PlatformContext    &mPlat;
+        idk::gfx::VulkanContext *mVulkanContext;
 
     };
 }

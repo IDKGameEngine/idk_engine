@@ -1,8 +1,8 @@
 #pragma once
 
-#define VK_NO_PROTOTYPES
-#include <volk/volk.h>
- 
+#include "libidk/gpu/vk.hpp"
+
+
 namespace idk::gfx
 {
     class GraphicsDevice

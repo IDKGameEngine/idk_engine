@@ -12,13 +12,16 @@ target_compile_options(
     ${PROJECT_NAME} PRIVATE -Wno-missing-field-initializers
 )
 target_include_directories(
-    ${PROJECT_NAME} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include"
+    ${PROJECT_NAME}
+    PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include"
+    PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/vk-bootstrap"
 )
 target_link_libraries(
     ${PROJECT_NAME} PUBLIC idkengine_common idkengine_platform PRIVATE volk::volk 
 )
 target_sources(
     ${PROJECT_NAME} PRIVATE
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/vk/GraphicsDevice.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/vk/VulkanContext.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/src/GfxService.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/vk-bootstrap/VkBootstrap.cpp"
 )

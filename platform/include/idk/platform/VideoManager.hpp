@@ -2,11 +2,6 @@
 
 #include "IPlatformFeature.hpp"
 
-#define VK_NO_PROTOTYPES
-#include <vulkan/vulkan.h>
-
-#include <vector>
-
 
 namespace idk
 {
@@ -15,11 +10,6 @@ namespace idk
     private:
         const char      *mTitle;
         void            *mWin;
-        VkInstance       mInstance;
-        // VkSurfaceKHR     mSurface;
-        // VkPhysicalDevice mPhysicalDevice;
-        // VkDevice         mDevice;
-        // VkQueue          mGraphicsQueue;
         int32_t          mWidth;
         int32_t          mHeight;
 
@@ -28,6 +18,8 @@ namespace idk
         ~VideoManager();
 
         virtual void onUpdate(ServiceManager*) final;
+
+        void *getWindowHandle() { return mWin; }
 
         int   getWidth()  { return mWidth; };
         int   getHeight() { return mHeight; };

@@ -20,7 +20,7 @@ idk::PlatformContext::PlatformContext(const PlatformConfig &cfg)
         SteamErrMsg errMsg = { 0 };
         if (SteamAPI_InitEx(&errMsg) == k_ESteamAPIInitResult_OK)
         {
-            VLOG_FATAL("SteamAPI init success");
+            VLOG_INFO("SteamAPI init success");
         }
         else
         {
