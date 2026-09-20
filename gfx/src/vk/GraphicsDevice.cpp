@@ -1,7 +1,9 @@
 #include "GraphicsDevice.hpp"
 #include "libidk/Assert.hpp"
+#include "libidk/log.hpp"
 
 #include <vulkan/vulkan.h>
+#include <vulkan/vulkan.hpp>
 #include <SDL3/SDL_vulkan.h>
 
 
@@ -34,6 +36,20 @@ idk::gfx::GraphicsDevice::GraphicsDevice()
         VK_SUCCESS == vkCreateInstance(&instanceCI, nullptr, &mInstance),
         "[GraphicsDevice::GraphicsDevice] vkCreateInstance failure"
     );
+
+    volkLoadInstance(mInstance);
+
+
+    uint32_t deviceCount = 0;
+    IDK_ASSERT(
+        VK_SUCCESS == vkEnumeratePhysicalDevices(mInstance, &deviceCount, nullptr),
+        "[GraphicsDevice::GraphicsDevice] vkEnumeratePhysicalDevices failure"
+    );
+
+    VLOG_INFO("[GraphicsDevice::GraphicsDevice] mDeviceCount=={}", deviceCount);
+
+    // std::vector<VkPhysicalDevice> devices(deviceCount);
+    // chk(vkEnumeratePhysicalDevices(instance, &deviceCount, devices.data()));
 }
 
 

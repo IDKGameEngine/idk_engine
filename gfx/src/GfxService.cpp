@@ -3,7 +3,9 @@
 #include "libidk/New.hpp"
 
 
-idk::gfx::GfxService::GfxService()
+idk::gfx::GfxService::GfxService(idk::PlatformContext &plat)
+:   mPlat(plat),
+    mGfxDevice(nullptr)
 // :   mGfxDevice(idk::New<GraphicsDevice>())
 {
 
@@ -14,19 +16,19 @@ idk::gfx::GfxService::~GfxService()
 
 }
 
-void idk::gfx::GfxService::onInit(idk::ServiceManager *sm)
+void idk::gfx::GfxService::onInit(idk::ServiceManager*)
 {
-    (void)sm;
+    mGfxDevice = idk::New<GraphicsDevice>();
 }
 
-void idk::gfx::GfxService::onUpdate(idk::ServiceManager *sm)
+void idk::gfx::GfxService::onUpdate(idk::ServiceManager*)
 {
-    (void)sm;
+    
 }
 
-void idk::gfx::GfxService::onShutdown(idk::ServiceManager *sm)
+void idk::gfx::GfxService::onShutdown(idk::ServiceManager*)
 {
-    (void)sm;
+    
 }
 
 void idk::gfx::GfxService::onEvent(ServiceManager*, const void*)

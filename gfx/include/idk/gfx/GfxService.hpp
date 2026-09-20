@@ -1,14 +1,17 @@
 #pragma once
 
 #include "libidk/Service.hpp"
+#include "idk/platform/PlatformContext.hpp"
 
 
 namespace idk::gfx
 {
+    class GraphicsDevice;
+
     class GfxService: public idk::Service
     {
     public:
-        GfxService();
+        GfxService(idk::PlatformContext&);
         ~GfxService();
         virtual void onInit(ServiceManager*) final;
         virtual void onUpdate(ServiceManager*) final;
@@ -16,7 +19,8 @@ namespace idk::gfx
         virtual void onEvent(ServiceManager*, const void*) final;
 
     private:
-        // GraphicsDevice *mGfxDevice;
+        idk::PlatformContext &mPlat;
+        GraphicsDevice *mGfxDevice;
 
     };
 }
