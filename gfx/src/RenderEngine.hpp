@@ -2,7 +2,6 @@
 
 #include "libidk/gpu/vk.hpp"
 #include "libidk/dsa/List.hpp"
-#include <vk_mem_alloc.h>
 
 
 namespace idk
@@ -45,6 +44,8 @@ private:
     VkExtent2D                          mSwapchainExtent{ 0, 0 };
 
     InplaceList<VkPhysicalDevice, 16>   mDevices;
+    uint32_t                            mDeviceCount;
+    uint32_t                            mDeviceIndex;
 
     void                               *mWinHandle;
     VkInstance                          mInstance;

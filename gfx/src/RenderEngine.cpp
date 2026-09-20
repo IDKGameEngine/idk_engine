@@ -1,10 +1,7 @@
-#include "idk/gfx/RenderEngine.hpp"
+#include "RenderEngine.hpp"
 
 #include "idk/platform/PlatformContext.hpp"
 #include "idk/platform/VideoManager.hpp"
-
-#include "libidk/Assert.hpp"
-#include "libidk/log.hpp"
 
 #include <SDL3/SDL_vulkan.h>
 
@@ -22,22 +19,27 @@ idk::gfx::RenderEngine::RenderEngine(idk::PlatformContext &plat)
     // ---------------------------------------------------------------------------------------------
     VK_CHECK( volkInitialize() );
 
-    VkApplicationInfo appInfo = {
+    VkApplicationInfo appInfo {
         .sType = VK_STRUCTURE_TYPE_APPLICATION_INFO,
         .pApplicationName = "How to Vulkan",
-        .apiVersion = VK_API_VERSION_1_3
+        .apiVersion = VK_API_VERSION_1_3,
     };
 
-    uint32_t instanceExtCount = 0;
-    const char *const *instanceExtensions = SDL_Vulkan_GetInstanceExtensions(&instanceExtCount);
-    VkInstanceCreateInfo instanceCI = {
+    uint32_t instanceExtensionCount = 0;
+    const char *const *instanceExtensions = SDL_Vulkan_GetInstanceExtensions(&instanceExtensionCount);
+
+    for (uint32_t i=0; i<instanceExtensionCount; i++)
+    {
+        VLOG_INFO("[RenderEngine::RenderEngine] instanceExtensions[{}]: {}", i, instanceExtensions[i]);
+    }
+
+    VkInstanceCreateInfo instanceCI {
         .sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
         .pApplicationInfo = &appInfo,
-        .enabledExtensionCount = instanceExtCount,
+        .enabledExtensionCount = instanceExtensionCount,
         .ppEnabledExtensionNames = instanceExtensions,
     };
     VK_CHECK( vkCreateInstance(&instanceCI, nullptr, &mInstance) );
-
     volkLoadInstance(mInstance);
     // ---------------------------------------------------------------------------------------------
 
@@ -51,7 +53,7 @@ idk::gfx::RenderEngine::RenderEngine(idk::PlatformContext &plat)
     mDevices.resize(deviceCount);
     VK_CHECK( vkEnumeratePhysicalDevices(mInstance, &deviceCount, &mDevices[0]) );
 
-    VkPhysicalDeviceProperties2 props = {
+    VkPhysicalDeviceProperties2 props {
         .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2
     };
     vkGetPhysicalDeviceProperties2(mDevices[deviceIndex], &props);
@@ -560,4 +562,5 @@ void idk::gfx::RenderEngine::shutdown()
         }
     }
 }
+
 

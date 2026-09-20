@@ -1,7 +1,7 @@
 project(idkengine_gfx)
 
+find_package(assimp REQUIRED)
 find_package(volk CONFIG REQUIRED)
-find_package(VulkanMemoryAllocator CONFIG REQUIRED)
 
 add_library(
     ${PROJECT_NAME} OBJECT
@@ -20,11 +20,12 @@ target_include_directories(
 target_link_libraries(
     ${PROJECT_NAME}
     PUBLIC idkengine_common idkengine_platform
-    PRIVATE volk::volk GPUOpen::VulkanMemoryAllocator
+    PRIVATE volk::volk assimp::assimp
 )
 target_sources(
     ${PROJECT_NAME} PRIVATE
     "${CMAKE_CURRENT_SOURCE_DIR}/src/vk/vk_mem_alloc.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/vk/VkBootstrap.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/src/GfxService.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/src/RenderEngine.cpp"
 )

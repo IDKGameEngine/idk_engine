@@ -1,8 +1,7 @@
 #pragma once
 
-#include "idk/gfx/RenderEngine.hpp"
-#include "idk/platform/PlatformContext.hpp"
 #include "libidk/Service.hpp"
+#include "idk/platform/PlatformContext.hpp"
 
 
 namespace idk::gfx
@@ -21,7 +20,7 @@ namespace idk::gfx
 
     private:
         idk::PlatformContext   &mPlat;
-        idk::gfx::RenderEngine  mRenderEngine;
+        idk::gfx::RenderEngine *mRenderEngine;
 
     };
 }
