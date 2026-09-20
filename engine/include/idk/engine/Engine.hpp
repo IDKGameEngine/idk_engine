@@ -15,7 +15,7 @@ class idk::Engine: public idk::ServiceManager
 public:
     Engine();
     void run(idk::IApplication *app);
-    PlatformContext *getPlatformContext();
+    PlatformContext *getPlatform();
 
 private:
     PlatformContext mPlat;
