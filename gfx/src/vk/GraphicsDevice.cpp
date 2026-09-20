@@ -41,6 +41,7 @@ idk::gfx::GraphicsDevice::GraphicsDevice()
 
 
     uint32_t deviceCount = 0;
+    VkPhysicalDevice devices[8];
     IDK_ASSERT(
         VK_SUCCESS == vkEnumeratePhysicalDevices(mInstance, &deviceCount, nullptr),
         "[GraphicsDevice::GraphicsDevice] vkEnumeratePhysicalDevices failure"
@@ -48,8 +49,17 @@ idk::gfx::GraphicsDevice::GraphicsDevice()
 
     VLOG_INFO("[GraphicsDevice::GraphicsDevice] mDeviceCount=={}", deviceCount);
 
-    // std::vector<VkPhysicalDevice> devices(deviceCount);
-    // chk(vkEnumeratePhysicalDevices(instance, &deviceCount, devices.data()));
+    IDK_ASSERT(
+        VK_SUCCESS == vkEnumeratePhysicalDevices(mInstance, &deviceCount, &devices[0]),
+        "[GraphicsDevice::GraphicsDevice] vkEnumeratePhysicalDevices failure"
+    );
+
+    VkPhysicalDeviceProperties2 props = {
+        .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2
+    };
+    vkGetPhysicalDeviceProperties2(devices[0], &props);
+    VLOG_INFO("[GraphicsDevice::GraphicsDevice] props.properties.deviceName=={}", props.properties.deviceName);
+    
 }
 
 
