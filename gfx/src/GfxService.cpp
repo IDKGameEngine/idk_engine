@@ -14,12 +14,22 @@ idk::gfx::GfxService::~GfxService()
 
 }
 
-void idk::gfx::GfxService::init(idk::ServiceManager *sm)
+void idk::gfx::GfxService::onInit(idk::ServiceManager *sm)
 {
     (void)sm;
 }
 
-void idk::gfx::GfxService::update(idk::ServiceManager *sm)
+void idk::gfx::GfxService::onUpdate(idk::ServiceManager *sm)
 {
     (void)sm;
+}
+
+void idk::gfx::GfxService::onShutdown(idk::ServiceManager *sm)
+{
+    (void)sm;
+}
+
+void idk::gfx::GfxService::onEvent(ServiceManager*, const void*)
+{
+
 }

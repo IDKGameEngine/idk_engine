@@ -1,49 +1,58 @@
 #include "idk/engine/Engine.hpp"
+#include "idk/engine-message/EventQueue.hpp"
 #include "idk/gfx/GfxService.hpp"
 
 
 idk::Engine::Engine()
 :   ServiceManager(),
-    mPlat({"GameWindow", 1280, 720})
+    mShouldQuit(false)
+    // mPlat({"GameWindow", 1280, 720})
 {
-    this->addService<idk::gfx::GfxService>();
+    addService<idk::PlatformContext>(PlatformConfig{"GameWindow", 1280, 720});
+    addService<idk::gfx::GfxService>();
 }
 
 
 void idk::Engine::run(idk::IApplication *app)
 {
-    for (idk::Service *srv: mServices)
-    {
-        srv->init(this);
-    }
+    // mPlat.initServices();
+    initServices();
     app->onInit(*this);
 
-    while (!should_quit())
+    while (mShouldQuit.load() == false)
     {
-        mPlat.update();
-        for (idk::Service *srv: mServices)
-        {
-            srv->update(this);
-        }
+        // mPlat.update();
+        updateServices();
         app->onUpdate(*this);
+
+        EngineEvent e;
+        while (EngineEvent::gEngineEventQueue.pop(e))
+        {
+            process_engine_event(e);
+        }
     }
 
     app->onShutdown(*this);
+    shutdownServices();
 }
 
 
-idk::PlatformContext *idk::Engine::getPlatform()
-{
-    return &mPlat;
-}
+// idk::PlatformContext *idk::Engine::getPlatform()
+// {
+//     return &mPlat;
+// }
 
 
-bool idk::Engine::should_quit()
+void idk::Engine::process_engine_event(const EngineEvent &e)
 {
-    if (!mPlat.running())
+    switch (e.type)
     {
-        return true;
+        case EngineEvent::PAUSE:
+            break;
+        case EngineEvent::RESUME:
+            break;
+        case EngineEvent::SHUTDOWN:
+            mShouldQuit.store(true);
+            break;
     }
-
-    return false;
 }

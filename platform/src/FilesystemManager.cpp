@@ -20,7 +20,8 @@ static void fsCloseFile(std::FILE *fh)
 }
 
 
-idk::FilesystemManager::FilesystemManager()
+idk::FilesystemManager::FilesystemManager(PlatformContext &ctx)
+:   IPlatformFeature(ctx)
 {
     namespace fs = std::filesystem;
     fs::current_path(fs::path(SDL_GetBasePath()) / fs::path(IDK_CONTENT_BASEPATH));

@@ -4,24 +4,22 @@
 #include <SDL3/SDL.h>
 
 
-idk::InputManager::InputManager()
+idk::InputManager::InputManager(PlatformContext &ctx)
+:   IPlatformFeature(ctx)
 {
 
 }
 
 
-void idk::InputManager::onUpdate(idk::PlatformContext &ctx)
+void idk::InputManager::onUpdate(idk::ServiceManager*)
 {
-    (void)ctx;
-
     // SDL_GetKeyboardState();
     // SDL_GetGamepadAxis()
 }
 
 
-void idk::InputManager::onEvent(idk::PlatformContext &ctx, const void *event)
+void idk::InputManager::onEvent(idk::ServiceManager*, const void *event)
 {
-    (void)ctx;
     const SDL_Event &e = *static_cast<const SDL_Event*>(event);
 
     switch (e.type)

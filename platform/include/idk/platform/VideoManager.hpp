@@ -24,10 +24,10 @@ namespace idk
         int32_t          mHeight;
 
     public:
-        VideoManager(const char *title, int w, int h);
+        VideoManager(PlatformContext &ctx, const char *title, int w, int h);
         ~VideoManager();
 
-        virtual void onUpdate(idk::PlatformContext&) final;
+        virtual void onUpdate(ServiceManager*) final;
 
         int   getWidth()  { return mWidth; };
         int   getHeight() { return mHeight; };

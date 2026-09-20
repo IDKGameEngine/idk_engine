@@ -1,20 +1,23 @@
 #pragma once
 
-#include "libidk/Types.hpp"
+#include "libidk/Service.hpp"
 
 
 namespace idk
 {
     class PlatformContext;
 
-    class IPlatformFeature: public idk::Immobile
+    class IPlatformFeature: public idk::Service
     {
+    protected:
+        idk::PlatformContext &mCtx;
+
     public:
-        IPlatformFeature() = default;
+        IPlatformFeature(idk::PlatformContext &ctx): mCtx(ctx) {  };
         virtual ~IPlatformFeature() = default;
-        virtual void onInit(idk::PlatformContext&) {  };
-        virtual void onUpdate(idk::PlatformContext&) {  };
-        virtual void onShutdown(idk::PlatformContext&) {  };
-        virtual void onEvent(idk::PlatformContext&, const void*) {  };
+        virtual void onInit(idk::ServiceManager*) override {  };
+        virtual void onUpdate(idk::ServiceManager*) override {  };
+        virtual void onShutdown(idk::ServiceManager*) override {  };
+        virtual void onEvent(idk::ServiceManager*, const void*) override {  };
     };
 }

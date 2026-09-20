@@ -22,10 +22,11 @@ namespace idk
             uint16_t   mIdx;
         };
 
-        AudioManager();
-        ~AudioManager();
+        AudioManager(PlatformContext &ctx);
+        virtual ~AudioManager();
 
-        virtual void onUpdate(idk::PlatformContext&) final;
+        virtual void onUpdate(ServiceManager*) final;
+
         virtual SoundType *createSound(const char *filepath);
         virtual void destroySound(SoundType*) final;
         virtual void startSound(SoundType*) final;

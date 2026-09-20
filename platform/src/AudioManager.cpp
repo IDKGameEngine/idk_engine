@@ -4,7 +4,8 @@
 #include <SDL3/SDL.h>
 
 
-idk::AudioManager::AudioManager()
+idk::AudioManager::AudioManager(PlatformContext &ctx)
+:   IPlatformFeature(ctx)
 {
     if (false == MIX_Init())
     {
@@ -20,15 +21,18 @@ idk::AudioManager::AudioManager()
     }
 }
 
+
 idk::AudioManager::~AudioManager()
 {
     MIX_Quit();
 }
 
-void idk::AudioManager::onUpdate(idk::PlatformContext &ctx)
+
+void idk::AudioManager::onUpdate(idk::ServiceManager*)
 {
-    (void)ctx;
+
 }
+
 
 idk::AudioManager::SoundType *idk::AudioManager::createSound(const char *filepath)
 {
@@ -52,6 +56,7 @@ idk::AudioManager::SoundType *idk::AudioManager::createSound(const char *filepat
     return snd;
 }
 
+
 void idk::AudioManager::destroySound(SoundType *isnd)
 {
     auto *snd = dynamic_cast<SoundType*>(isnd);
@@ -61,11 +66,13 @@ void idk::AudioManager::destroySound(SoundType *isnd)
     mUsedlist.remove(snd->mIdx);
 }
 
+
 void idk::AudioManager::startSound(SoundType *isnd)
 {
     auto *snd = dynamic_cast<SoundType*>(isnd);
     MIX_PlayTrack(snd->mTrack, 0);
 }
+
 
 void idk::AudioManager::stopSound(SoundType *isnd)
 {
@@ -73,11 +80,13 @@ void idk::AudioManager::stopSound(SoundType *isnd)
     MIX_StopTrack(snd->mTrack, 0);
 }
 
+
 void idk::AudioManager::pauseSound(SoundType *isnd)
 {
     auto *snd = dynamic_cast<SoundType*>(isnd);
     MIX_PauseTrack(snd->mTrack);
 }
+
 
 void idk::AudioManager::resumeSound(SoundType *isnd)
 {

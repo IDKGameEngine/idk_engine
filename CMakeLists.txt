@@ -2,10 +2,12 @@ cmake_minimum_required(VERSION 3.31)
 
 project(idkengine VERSION 0.0.1)
 
+add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/common")
 add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/editor")
 add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/engine")
 add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/gfx")
 add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/platform")
+
 
 add_library(
     ${PROJECT_NAME} STATIC
@@ -13,5 +15,5 @@ add_library(
 
 target_link_libraries(
     ${PROJECT_NAME}
-    PUBLIC idkengine_platform idkengine_gfx idkengine_engine idkengine_editor
+    PUBLIC idkengine_common idkengine_platform idkengine_gfx idkengine_engine
 )

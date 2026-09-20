@@ -8,8 +8,9 @@
 #include <SDL3/SDL_vulkan.h>
 
 
-idk::VideoManager::VideoManager(const char *title, int w, int h)
-:   mTitle(title),
+idk::VideoManager::VideoManager(PlatformContext &ctx, const char *title, int w, int h)
+:   IPlatformFeature(ctx),
+    mTitle(title),
     mWin(nullptr),
     mInstance(VK_NULL_HANDLE),
     mWidth(w),
@@ -68,9 +69,9 @@ idk::VideoManager::~VideoManager()
 }
 
 
-void idk::VideoManager::onUpdate(idk::PlatformContext &ctx)
+void idk::VideoManager::onUpdate(idk::ServiceManager*)
 {
-    (void)ctx;
+
 }
 
 void idk::VideoManager::setWindowFullscreen(bool fullscreen)

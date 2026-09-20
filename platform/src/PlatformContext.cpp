@@ -12,8 +12,8 @@
 
 
 idk::PlatformContext::PlatformContext(const PlatformConfig &cfg)
-:   mRunning{true},
-    mShutdown{false}
+// :   mRunning{true},
+//     mShutdown{false}
 {
     if (std::getenv("SteamEnv"))
     {
@@ -28,11 +28,13 @@ idk::PlatformContext::PlatformContext(const PlatformConfig &cfg)
         }
     }
 
-    addFeature<idk::AudioManager>();
-    addFeature<idk::EventManager>();
-    addFeature<idk::FilesystemManager>();
-    addFeature<idk::InputManager>();
-    addFeature<idk::VideoManager>(cfg.windowTitle, cfg.windowWidth, cfg.windowHeight);
+    addService<idk::AudioManager>(*this);
+    addService<idk::EventManager>(*this);
+    addService<idk::FilesystemManager>(*this);
+    addService<idk::InputManager>(*this);
+    addService<idk::VideoManager>(*this, cfg.windowTitle, cfg.windowWidth, cfg.windowHeight);
+
+    this->initServices();
 }
 
 
@@ -42,52 +44,47 @@ idk::PlatformContext::~PlatformContext()
 }
 
 
-bool idk::PlatformContext::running()
+// bool idk::PlatformContext::running()
+// {
+//     return mRunning.load(std::memory_order_acquire);
+// }
+
+
+// void idk::PlatformContext::shutdown()
+// {
+//     mShutdown.store(true, std::memory_order_release);
+// }
+
+
+// void idk::PlatformContext::update()
+// {
+//     this->updateServices();
+
+//     if (mShutdown.load(std::memory_order_acquire))
+//     {
+//         this->shutdownServices();
+//         mRunning.store(false, std::memory_order_release);
+//     }
+// }
+
+
+void idk::PlatformContext::onInit(ServiceManager*)
 {
-    return mRunning.load(std::memory_order_acquire);
+    initServices();
 }
 
-
-void idk::PlatformContext::shutdown()
+void idk::PlatformContext::onUpdate(ServiceManager*)
 {
-    mShutdown.store(true, std::memory_order_release);
+    updateServices();
 }
 
-
-void idk::PlatformContext::update()
+void idk::PlatformContext::onShutdown(ServiceManager*)
 {
-    update_features();
-
-    if (mShutdown.load(std::memory_order_acquire))
-    {
-        kill_features();
-        mRunning.store(false, std::memory_order_release);
-    }
+    shutdownServices();
 }
 
-
-void idk::PlatformContext::processEvent(const void *event)
+void idk::PlatformContext::onEvent(ServiceManager*, const void*)
 {
-    for (IPlatformFeature *feature: mFeatures)
-    {
-        feature->onEvent(*this, event);
-    }
+
 }
 
-
-void idk::PlatformContext::update_features()
-{
-    for (IPlatformFeature *feature: mFeatures)
-    {
-        feature->onUpdate(*this);
-    }
-}
-
-
-void idk::PlatformContext::kill_features()
-{
-    for (IPlatformFeature *feature: mFeatures)
-    {
-        feature->~IPlatformFeature();
-    }
-}

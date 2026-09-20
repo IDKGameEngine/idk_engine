@@ -13,9 +13,10 @@ namespace idk
         // idk::InplaceList<uintptr_t, MAX_CALLBACKS> mEventFuncs;
 
     public:
-        EventManager();
+        EventManager(PlatformContext &ctx);
 
-        virtual void onUpdate(idk::PlatformContext&) final;
+        virtual void onInit(ServiceManager*) final;
+        virtual void onUpdate(ServiceManager*) final;
 
         // bool addEventCallback(EventCallback func)
         // {

@@ -10,10 +10,10 @@ namespace idk
     private:
 
     public:
-        InputManager();
+        InputManager(PlatformContext &ctx);
 
-        virtual void onUpdate(idk::PlatformContext&) final;
-        virtual void onEvent(idk::PlatformContext&, const void*) final;
+        virtual void onUpdate(ServiceManager*) final;
+        virtual void onEvent(ServiceManager*, const void*) final;
 
         bool isKeyDown(int keycode) const;
         bool isMouseButtonDown(int button) const;

@@ -1,12 +1,14 @@
 #include "idk/platform/EventManager.hpp"
 #include "idk/platform/PlatformContext.hpp"
-
 #include "libidk/log.hpp"
+
+#include "idk/engine-message/EventQueue.hpp"
 
 #include <SDL3/SDL.h>
 
 
-idk::EventManager::EventManager()
+idk::EventManager::EventManager(PlatformContext &ctx)
+:   IPlatformFeature(ctx)
 {
     if (false == SDL_Init(SDL_INIT_EVENTS))
     {
@@ -15,8 +17,16 @@ idk::EventManager::EventManager()
 }
 
 
-void idk::EventManager::onUpdate(idk::PlatformContext &ctx)
+void idk::EventManager::onInit(idk::ServiceManager*)
 {
+
+}
+
+
+void idk::EventManager::onUpdate(idk::ServiceManager*)
+{
+    auto &eq = idk::EngineEvent::gEngineEventQueue;
+
     SDL_Event e;
     while (SDL_PollEvent(&e))
     {
@@ -26,15 +36,15 @@ void idk::EventManager::onUpdate(idk::PlatformContext &ctx)
         // }
         if (e.type == SDL_EVENT_QUIT)
         {
-            ctx.shutdown();
+            eq.push({EngineEvent::SHUTDOWN, 0});
         }
         else if ((e.type == SDL_EVENT_KEY_UP) && (e.key.scancode == SDL_SCANCODE_ESCAPE))
         {
-            ctx.shutdown();
+            eq.push({EngineEvent::SHUTDOWN, 0});
         }
         else
         {
-            ctx.processEvent(&e);
+            mCtx.broadcastEvent(&e);
         }
     }
 }

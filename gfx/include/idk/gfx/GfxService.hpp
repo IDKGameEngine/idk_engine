@@ -10,8 +10,10 @@ namespace idk::gfx
     public:
         GfxService();
         ~GfxService();
-        virtual void init(ServiceManager*) final;
-        virtual void update(ServiceManager*) final;
+        virtual void onInit(ServiceManager*) final;
+        virtual void onUpdate(ServiceManager*) final;
+        virtual void onShutdown(ServiceManager*) final;
+        virtual void onEvent(ServiceManager*, const void*) final;
 
     private:
         // GraphicsDevice *mGfxDevice;

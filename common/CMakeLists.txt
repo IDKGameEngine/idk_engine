@@ -1,4 +1,4 @@
-project(idkengine_engine)
+project(idkengine_common)
 
 add_library(
     ${PROJECT_NAME} OBJECT
@@ -10,11 +10,9 @@ target_include_directories(
     ${PROJECT_NAME} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include"
 )
 target_link_libraries(
-    ${PROJECT_NAME}
-    PUBLIC idkengine_common idkengine_platform idkengine_gfx
-    PRIVATE Jolt::Jolt
+    ${PROJECT_NAME} PUBLIC libidk
 )
 target_sources(
     ${PROJECT_NAME} PRIVATE
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/Engine.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/EventQueue.cpp"
 )

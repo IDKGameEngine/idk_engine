@@ -10,8 +10,7 @@ namespace idk
     private:
         
     public:
-        FilesystemManager();
-        virtual void onUpdate(idk::PlatformContext&) final {  };
+        FilesystemManager(PlatformContext &ctx);
         virtual size_t getFileSize(const char *filepath) final;
         virtual size_t loadFile(const char *filepath, void *buf, size_t bufsz) final;
     };

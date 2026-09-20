@@ -16,7 +16,7 @@ target_include_directories(
 )
 target_link_libraries(
     ${PROJECT_NAME}
-    PUBLIC libidk SDL3 SDL3_net SDL3_mixer
+    PUBLIC SDL3 SDL3_net SDL3_mixer libidk idkengine_common
     PRIVATE Steamworks::Steamworks
 )
 target_sources(
