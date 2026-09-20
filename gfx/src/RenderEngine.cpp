@@ -6,14 +6,10 @@
 #include "libidk/Assert.hpp"
 #include "libidk/log.hpp"
 
-#include <vk_mem_alloc.h>
 #include <SDL3/SDL_vulkan.h>
 
 #include <vector>
 
-
-static VmaAllocator  mAllocator {  };
-static VmaAllocation mDepthImageAllocation {  };
 
 
 idk::gfx::RenderEngine::RenderEngine(idk::PlatformContext &plat)
@@ -129,6 +125,7 @@ idk::gfx::RenderEngine::RenderEngine(idk::PlatformContext &plat)
         .pEnabledFeatures = &enabledVk10Features
     };
     VK_CHECK( vkCreateDevice(mDevices[deviceIndex], &deviceCI, nullptr, &mDevice) );
+    volkLoadDevice(mDevice);
     vkGetDeviceQueue(mDevice, mQueueFamily, 0, &mGraphicsQueue);
     // ---------------------------------------------------------------------------------------------
 
@@ -240,175 +237,327 @@ idk::gfx::RenderEngine::RenderEngine(idk::PlatformContext &plat)
     VK_CHECK( vkCreateImageView(mDevice, &depthViewCI, nullptr, &mDepthImageView) );
     // ---------------------------------------------------------------------------------------------
 
-}
 
+    mSwapchainExtent = swapchainExtent;
+    mSwapchainImageFormat = imageFormat;
 
-idk::gfx::RenderEngine::~RenderEngine()
-{
-    if (mInstance != VK_NULL_HANDLE)
+    // Swapchain image views
+    mSwapchainImageViews.resize(imageCount);
+    for (uint32_t i = 0; i < imageCount; ++i)
     {
+        VkImageViewCreateInfo viewCI {
+            .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
+            .image = mSwapchainImages[i],
+            .viewType = VK_IMAGE_VIEW_TYPE_2D,
+            .format = imageFormat,
+            .subresourceRange {
+                .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+                .baseMipLevel = 0,
+                .levelCount = 1,
+                .baseArrayLayer = 0,
+                .layerCount = 1
+            }
+        };
 
+        VK_CHECK( vkCreateImageView(mDevice, &viewCI, nullptr, &mSwapchainImageViews[i]) );
+    }
+
+    // Render pass
+    VkAttachmentDescription colorAttachment {
+        .format = imageFormat,
+        .samples = VK_SAMPLE_COUNT_1_BIT,
+        .loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
+        .storeOp = VK_ATTACHMENT_STORE_OP_STORE,
+        .stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+        .stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE,
+        .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
+        .finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR
+    };
+
+    VkAttachmentReference colorAttachmentRef {
+        .attachment = 0,
+        .layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
+    };
+
+    VkAttachmentDescription depthAttachment {
+        .format = depthFormat,
+        .samples = VK_SAMPLE_COUNT_1_BIT,
+        .loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
+        .storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE,
+        .stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+        .stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE,
+        .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
+        .finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL
+    };
+
+    VkAttachmentReference depthAttachmentRef {
+        .attachment = 1,
+        .layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL
+    };
+
+    VkSubpassDescription subpass {
+        .pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS,
+        .colorAttachmentCount = 1,
+        .pColorAttachments = &colorAttachmentRef,
+        .pDepthStencilAttachment = &depthAttachmentRef
+    };
+
+    VkSubpassDependency dependency {
+        .srcSubpass = VK_SUBPASS_EXTERNAL,
+        .dstSubpass = 0,
+        .srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT,
+        .dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT,
+        .srcAccessMask = 0,
+        .dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT
+    };
+
+    std::array<VkAttachmentDescription, 2> attachments = {
+        colorAttachment,
+        depthAttachment
+    };
+
+    VkRenderPassCreateInfo renderPassCI {
+        .sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,
+        .attachmentCount = static_cast<uint32_t>(attachments.size()),
+        .pAttachments = attachments.data(),
+        .subpassCount = 1,
+        .pSubpasses = &subpass,
+        .dependencyCount = 1,
+        .pDependencies = &dependency
+    };
+
+    VK_CHECK( vkCreateRenderPass(mDevice, &renderPassCI, nullptr, &mRenderPass) );
+
+    // Framebuffers
+    mFramebuffers.resize(imageCount);
+    for (uint32_t i = 0; i < imageCount; ++i)
+    {
+        std::array<VkImageView, 2> attachments = {
+            mSwapchainImageViews[i],
+            mDepthImageView
+        };
+
+        VkFramebufferCreateInfo fbCI {
+            .sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,
+            .renderPass = mRenderPass,
+            .attachmentCount = static_cast<uint32_t>(attachments.size()),
+            .pAttachments = attachments.data(),
+            .width = mSwapchainExtent.width,
+            .height = mSwapchainExtent.height,
+            .layers = 1
+        };
+
+        VK_CHECK( vkCreateFramebuffer(mDevice, &fbCI, nullptr, &mFramebuffers[i]) );
+    }
+
+    // Per-frame command pools / semaphores / fences
+    for (uint32_t i = 0; i < NUM_FRAMES_IN_FLIGHT; ++i)
+    {
+        FrameData &frame = mFrames[i];
+
+        VkCommandPoolCreateInfo poolCI {
+            .sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
+            .flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT,
+            .queueFamilyIndex = mQueueFamily
+        };
+        VK_CHECK( vkCreateCommandPool(mDevice, &poolCI, nullptr, &frame.commandPool) );
+
+        VkCommandBufferAllocateInfo allocCI {
+            .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
+            .commandPool = frame.commandPool,
+            .level = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
+            .commandBufferCount = 1
+        };
+        VK_CHECK( vkAllocateCommandBuffers(mDevice, &allocCI, &frame.commandBuffer) );
+
+        VkSemaphoreCreateInfo semCI {
+            .sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO
+        };
+        VK_CHECK( vkCreateSemaphore(mDevice, &semCI, nullptr, &frame.imageAvailable) );
+        VK_CHECK( vkCreateSemaphore(mDevice, &semCI, nullptr, &frame.renderFinished) );
+
+        VkFenceCreateInfo fenceCI {
+            .sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO,
+            .flags = VK_FENCE_CREATE_SIGNALED_BIT
+        };
+        VK_CHECK( vkCreateFence(mDevice, &fenceCI, nullptr, &frame.inFlightFence) );
     }
 }
 
 
-
-/*
-
-#include "idk/gfx/RenderEngine.hpp"
-
-#include "idk/platform/PlatformContext.hpp"
-#include "idk/platform/VideoManager.hpp"
-
-#include "libidk/Assert.hpp"
-#include "libidk/log.hpp"
-#include "VkBootstrap.h"
-
-#include <SDL3/SDL_vulkan.h>
-#include <vector>
-
-static constexpr bool bUseValidationLayers = false;
-
-
-idk::gfx::RenderEngine::RenderEngine(idk::PlatformContext &plat)
-:   mWinHandle(plat.getService<VideoManager>()->getWindowHandle()),
-    mInstance(VK_NULL_HANDLE),
-    mPhysicalDevice(VK_NULL_HANDLE),
-    mDevice(VK_NULL_HANDLE),
-    mSurface(VK_NULL_HANDLE)
+idk::gfx::RenderEngine::~RenderEngine()
 {
-	init_vulkan();
-	init_swapchain();
-	init_commands();
-	init_sync_structures();
+
 }
 
 
-idk::gfx::RenderEngine::~RenderEngine()
+void idk::gfx::RenderEngine::update()
 {
-    if (mInstance != VK_NULL_HANDLE)
+    FrameData &frame = mFrames[mFrameIdx];
+
+    VK_CHECK( vkWaitForFences(mDevice, 1, &frame.inFlightFence, VK_TRUE, UINT64_MAX) );
+    VK_CHECK( vkResetFences(mDevice, 1, &frame.inFlightFence) );
+
+    uint32_t imageIndex = 0;
+    VkResult acquireResult = vkAcquireNextImageKHR(
+        mDevice,
+        mSwapchain,
+        UINT64_MAX,
+        frame.imageAvailable,
+        VK_NULL_HANDLE,
+        &imageIndex
+    );
+
+    if (acquireResult == VK_ERROR_OUT_OF_DATE_KHR || acquireResult == VK_SUBOPTIMAL_KHR)
+    {
+        return;
+    }
+
+    VK_CHECK( acquireResult );
+
+    VK_CHECK( vkResetCommandPool(mDevice, frame.commandPool, 0) );
+
+    VkCommandBufferBeginInfo beginInfo {
+        .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
+        .flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT
+    };
+    VK_CHECK( vkBeginCommandBuffer(frame.commandBuffer, &beginInfo) );
+
+    VkClearValue clearValues[2] = {};
+    clearValues[0].color.float32[0] = 0.22f;
+    clearValues[0].color.float32[1] = 0.42f;
+    clearValues[0].color.float32[2] = 0.54f;
+    clearValues[0].color.float32[3] = 1.0f;
+    clearValues[1].depthStencil = { .depth = 1.0f, .stencil = 0 };
+
+    VkRenderPassBeginInfo renderPassBegin {
+        .sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
+        .renderPass = mRenderPass,
+        .framebuffer = mFramebuffers[imageIndex],
+        .renderArea = { { 0, 0 }, mSwapchainExtent },
+        .clearValueCount = 2,
+        .pClearValues = clearValues
+    };
+
+    vkCmdBeginRenderPass(frame.commandBuffer, &renderPassBegin, VK_SUBPASS_CONTENTS_INLINE);
+
+    // placeholder draw call
+    // vkCmdDraw(...)
+
+    vkCmdEndRenderPass(frame.commandBuffer);
+    VK_CHECK( vkEndCommandBuffer(frame.commandBuffer) );
+
+    VkPipelineStageFlags waitStage = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+
+    VkSubmitInfo submitInfo {
+        .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
+        .waitSemaphoreCount = 1,
+        .pWaitSemaphores = &frame.imageAvailable,
+        .pWaitDstStageMask = &waitStage,
+        .commandBufferCount = 1,
+        .pCommandBuffers = &frame.commandBuffer,
+        .signalSemaphoreCount = 1,
+        .pSignalSemaphores = &frame.renderFinished
+    };
+
+    VK_CHECK( vkQueueSubmit(mGraphicsQueue, 1, &submitInfo, frame.inFlightFence) );
+
+    VkPresentInfoKHR presentInfo {
+        .sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR,
+        .waitSemaphoreCount = 1,
+        .pWaitSemaphores = &frame.renderFinished,
+        .swapchainCount = 1,
+        .pSwapchains = &mSwapchain,
+        .pImageIndices = &imageIndex
+    };
+
+    VkResult presentResult = vkQueuePresentKHR(mGraphicsQueue, &presentInfo);
+    if (presentResult == VK_ERROR_OUT_OF_DATE_KHR || presentResult == VK_SUBOPTIMAL_KHR)
+    {
+        return;
+    }
+
+    VK_CHECK( presentResult );
+
+    mFrameIdx = (mFrameIdx + 1U) % NUM_FRAMES_IN_FLIGHT;
+}
+
+
+void idk::gfx::RenderEngine::shutdown()
+{
+    if (mDevice != VK_NULL_HANDLE)
     {
         vkDeviceWaitIdle(mDevice);
-		for (size_t i=0; i<NUM_FRAMES; i++)
+
+        for (uint32_t i=0; i<NUM_FRAMES_IN_FLIGHT; ++i)
         {
-			vkDestroyCommandPool(mDevice, mFrames[i].commandPool, nullptr);
-		}
+            FrameData &frame = mFrames[i];
+            if (frame.renderFinished != VK_NULL_HANDLE)
+            {
+                vkDestroySemaphore(mDevice, frame.renderFinished, nullptr);
+            }
+            if (frame.imageAvailable != VK_NULL_HANDLE)
+            {
+                vkDestroySemaphore(mDevice, frame.imageAvailable, nullptr);
+            }
+            if (frame.inFlightFence != VK_NULL_HANDLE)
+            {
+                vkDestroyFence(mDevice, frame.inFlightFence, nullptr);
+            }
+            if (frame.commandPool != VK_NULL_HANDLE)
+            {
+                vkDestroyCommandPool(mDevice, frame.commandPool, nullptr);
+            }
+        }
 
-        vkDestroyInstance(mInstance, nullptr);
-        mInstance = VK_NULL_HANDLE;
+        for (uint32_t i=0; i<mSwapchainImageViews.size(); ++i)
+        {
+            if (mSwapchainImageViews[i] != VK_NULL_HANDLE)
+            {
+                vkDestroyImageView(mDevice, mSwapchainImageViews[i], nullptr);
+            }
+        }
 
-        destroy_swapchain();
-    
-        vkDestroyDevice(mDevice, nullptr);
-        vkDestroySurfaceKHR(mInstance, mSurface, nullptr);
-        vkb::destroy_debug_utils_messenger(mInstance, mDebugMessenger);
+        for (uint32_t i=0; i<mFramebuffers.size(); ++i)
+        {
+            if (mFramebuffers[i] != VK_NULL_HANDLE)
+            {
+                vkDestroyFramebuffer(mDevice, mFramebuffers[i], nullptr);
+            }
+        }
+
+        if (mDepthImageView != VK_NULL_HANDLE)
+        {
+            vkDestroyImageView(mDevice, mDepthImageView, nullptr);
+        }
+        if (mDepthImage != VK_NULL_HANDLE && mAllocator != VK_NULL_HANDLE)
+        {
+            vmaDestroyImage(mAllocator, mDepthImage, mDepthImageAllocation);
+        }
+        if (mRenderPass != VK_NULL_HANDLE)
+        {
+            vkDestroyRenderPass(mDevice, mRenderPass, nullptr);
+        }
+        if (mSwapchain != VK_NULL_HANDLE)
+        {
+            vkDestroySwapchainKHR(mDevice, mSwapchain, nullptr);
+        }
+        if (mSurface != VK_NULL_HANDLE)
+        {
+            vkDestroySurfaceKHR(mInstance, mSurface, nullptr);
+        }
+        if (mDevice != VK_NULL_HANDLE)
+        {
+            vkDestroyDevice(mDevice, nullptr);
+        }
+        if (mAllocator != VK_NULL_HANDLE)
+        {
+            vmaDestroyAllocator(mAllocator);
+        }
+        if (mInstance != VK_NULL_HANDLE)
+        {
+            vkDestroyInstance(mInstance, nullptr);
+        }
     }
 }
 
-
-void idk::gfx::RenderEngine::init_vulkan()
-{
-	vkb::InstanceBuilder builder;
-
-	// Make the vulkan instance, with basic debug features
-	auto inst_ret = builder
-        .set_app_name("Example Vulkan Application")
-        .request_validation_layers(bUseValidationLayers)
-        .use_default_debug_messenger()
-        .require_api_version(1, 3, 0)
-        .build();
-
-	vkb::Instance vkb_inst = inst_ret.value();
-
-	// Grab the instance 
-	mInstance = vkb_inst.instance;
-	mDebugMessenger = vkb_inst.debug_messenger;
-
-
-	SDL_Vulkan_CreateSurface((SDL_Window*)mWinHandle, mInstance, NULL, &mSurface);
-
-	// Vulkan 1.3 features
-	VkPhysicalDeviceVulkan13Features features{ .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_3_FEATURES };
-	features.dynamicRendering = true;
-	features.synchronization2 = true;
-
-	// Use vkbootstrap to select a gpu. 
-	// We want a gpu that can write to the SDL surface and supports vulkan 1.3 with the correct features
-	vkb::PhysicalDeviceSelector selector{ vkb_inst };
-	vkb::PhysicalDevice physicalDevice = selector
-		.set_minimum_version(1, 3)
-		.set_required_features_13(features)
-		.set_surface(mSurface)
-		.select()
-		.value();
-
-	// Create the final vulkan device
-	vkb::DeviceBuilder deviceBuilder{ physicalDevice };
-
-	vkb::Device vkbDevice = deviceBuilder.build().value();
-
-	// Get the VkDevice handle used in the rest of a vulkan application
-	mDevice = vkbDevice.device;
-	mPhysicalDevice = physicalDevice.physical_device;
-
-    // Use vkbootstrap to get a Graphics queue
-	mGraphicsQueue = vkbDevice.get_queue(vkb::QueueType::graphics).value();
-	mGraphicsQueueFamily = vkbDevice.get_queue_index(vkb::QueueType::graphics).value();
-
-}
-
-
-void idk::gfx::RenderEngine::init_swapchain()
-{
-    int w=0, h=0;
-    SDL_GetWindowSize((SDL_Window*)mWinHandle, &w, &h);
-    create_swapchain(w, h);
-}
-
-
-void idk::gfx::RenderEngine::init_commands()
-{
-
-}
-
-
-void idk::gfx::RenderEngine::init_sync_structures()
-{
-
-}
-
-
-void idk::gfx::RenderEngine::create_swapchain(uint32_t w, uint32_t h)
-{
-	vkb::SwapchainBuilder swapchainBuilder { mPhysicalDevice, mDevice, mSurface };
-
-	mSwapchainImageFormat = VK_FORMAT_B8G8R8A8_UNORM;
-
-	vkb::Swapchain vkbSwapchain = swapchainBuilder
-		//.use_default_format_selection()
-		.set_desired_format(VkSurfaceFormatKHR{ .format = mSwapchainImageFormat, .colorSpace = VK_COLOR_SPACE_SRGB_NONLINEAR_KHR })
-		//use vsync present mode
-		.set_desired_present_mode(VK_PRESENT_MODE_FIFO_KHR)
-		.set_desired_extent(w, h)
-		.add_image_usage_flags(VK_IMAGE_USAGE_TRANSFER_DST_BIT)
-		.build()
-		.value();
-
-    mSwapchainExtent = vkbSwapchain.extent;
-    //store swapchain and its related images
-	mSwapchain = vkbSwapchain.swapchain;
-	mSwapchainImages = vkbSwapchain.get_images().value();
-	mSwapchainImageViews = vkbSwapchain.get_image_views().value();
-}
-
-
-void idk::gfx::RenderEngine::destroy_swapchain()
-{
-	vkDestroySwapchainKHR(mDevice, mSwapchain, nullptr);
-	for (size_t i=0; i<mSwapchainImageViews.size(); i++)
-    {
-		vkDestroyImageView(mDevice, mSwapchainImageViews[i], nullptr);
-	}
-}
-
-*/
