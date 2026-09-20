@@ -1,30 +1,29 @@
 #include "idk/engine/Engine.hpp"
 
+
 idk::Engine::Engine(idk::IPlatformContext *plat)
-:   mRunning(true),
+:   ServiceManager(),
     mPlat(plat)
 {
 
 }
 
+
 void idk::Engine::start()
 {
-    for (EngineService *C: mComponents)
+    for (idk::Service *srv: mServices)
     {
-        C->init(*this);
+        srv->init(this);
     }
 
     while (mPlat->running())
     {
         mPlat->update();
 
-        for (EngineService *C: mComponents)
+        for (idk::Service *srv: mServices)
         {
-            C->update(*this);
+            srv->update(this);
         }
-        // for (size_t i=0; i<mComponentIdx; i++)
-        // {
-        //     mComponents[i]->update();
-        // }
     }
 }
+

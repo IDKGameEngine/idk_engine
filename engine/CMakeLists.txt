@@ -10,7 +10,9 @@ target_include_directories(
     ${PROJECT_NAME} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include"
 )
 target_link_libraries(
-    ${PROJECT_NAME} PUBLIC libidk idkengine_gfx Jolt::Jolt
+    ${PROJECT_NAME}
+    PUBLIC idkengine_platform idkengine_gfx
+    PRIVATE Jolt::Jolt
 )
 target_sources(
     ${PROJECT_NAME} PRIVATE

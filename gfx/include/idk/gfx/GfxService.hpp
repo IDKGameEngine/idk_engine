@@ -1,21 +1,20 @@
 #pragma once
 
-#include "idk/gfx/fwd.hpp"
-#include "idk/engine/Engine.hpp"
+#include "libidk/Service.hpp"
 
 
 namespace idk::gfx
 {
-    class GfxService: public idk::EngineService
+    class GfxService: public idk::Service
     {
     public:
-        GfxService(idk::EngineContext&);
+        GfxService();
         ~GfxService();
-        virtual void init(idk::Engine&) final;
-        virtual void update(idk::Engine&) final;
+        virtual void init(ServiceManager*) final;
+        virtual void update(ServiceManager*) final;
 
     private:
-        GraphicsDevice *mGfxDevice;
+        // GraphicsDevice *mGfxDevice;
 
     };
 }

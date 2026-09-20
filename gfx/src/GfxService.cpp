@@ -3,9 +3,8 @@
 #include "libidk/New.hpp"
 
 
-idk::gfx::GfxService::GfxService(idk::EngineContext &ctx)
-:   EngineService(ctx),
-    mGfxDevice(idk::New<GraphicsDevice>())
+idk::gfx::GfxService::GfxService()
+// :   mGfxDevice(idk::New<GraphicsDevice>())
 {
 
 }
@@ -15,12 +14,12 @@ idk::gfx::GfxService::~GfxService()
 
 }
 
-void idk::gfx::GfxService::init(idk::Engine &E)
+void idk::gfx::GfxService::init(idk::ServiceManager *sm)
 {
-    (void)E;
+    (void)sm;
 }
 
-void idk::gfx::GfxService::update(idk::Engine &E)
+void idk::gfx::GfxService::update(idk::ServiceManager *sm)
 {
-    (void)E;
+    (void)sm;
 }
