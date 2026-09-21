@@ -45,13 +45,14 @@ idk::Engine::Engine()
 
 void idk::Engine::run(idk::IApplication *app)
 {
+    addService(app);
     initServices(mApi);
-    app->onInit(mApi);
+    // app->onInit(mApi);
 
     while (mShouldQuit.load() == false)
     {
         updatePreFrame(mApi);
-        app->onPreFrame(mApi);
+        // app->onPreFrame(mApi);
 
         EngineEvent e;
         while (mApi.mEventQueue.pop(e))
@@ -60,13 +61,13 @@ void idk::Engine::run(idk::IApplication *app)
         }
 
         updateMidFrame(mApi);
-        app->onMidFrame(mApi);
+        // app->onMidFrame(mApi);
 
         updatePostFrame(mApi);
-        app->onPostFrame(mApi);
+        // app->onPostFrame(mApi);
     }
 
-    app->onShutdown(mApi);
+    // app->onShutdown(mApi);
     shutdownServices(mApi);
 }
 
