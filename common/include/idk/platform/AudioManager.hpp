@@ -26,29 +26,26 @@ namespace idk
             SoundType(): SoundType(nullptr, nullptr) {  };
             SoundType(MIX_Audio *a, MIX_Track *t): mAudio(a), mTrack(t), mStarted(false), mFinished(false) {  };
         };
+        using SoundHandle = idk::ResourceHandle<SoundType>;
 
         virtual void onInit(EngineAPI&) final;
         virtual void onShutdown(EngineAPI&) final;
         virtual void onPreFrame(EngineAPI&) final;
 
-        ResourceHandle createSound(const char *filepath);
-        void destroySound(ResourceHandle);
-        void startSound(ResourceHandle);
-        void stopSound(ResourceHandle);
-        void pauseSound(ResourceHandle);
-        void resumeSound(ResourceHandle);
+        SoundHandle createSound(const char *filepath);
+        void destroySound(SoundHandle);
+        void startSound(SoundHandle);
+        void stopSound(SoundHandle);
+        void pauseSound(SoundHandle);
+        void resumeSound(SoundHandle);
 
-        bool isSoundPlaying(ResourceHandle);
-        bool isSoundFinished(ResourceHandle);
+        bool isSoundPlaying(SoundHandle);
+        bool isSoundFinished(SoundHandle);
 
 
     private:
         MIX_Mixer *mMixer;
-
         idk::ResourceManager<SoundType, MAX_SOUNDS> mSounds;
-        // idk::ArrayType<SoundType, MAX_SOUNDS>   mSounds;
-        // idk::InplaceStack<uint16_t, MAX_SOUNDS> mFreelist;
-        // idk::InplaceStack<uint16_t, MAX_SOUNDS> mUsedlist;
 
     };
 

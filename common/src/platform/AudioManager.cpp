@@ -23,6 +23,14 @@ void idk::AudioManager::onShutdown(EngineAPI&)
 
 void idk::AudioManager::onPreFrame(EngineAPI&)
 {
+    for (const auto &[handle, snd]: mSounds)
+    {
+        if (snd.mStarted && !snd.mFinished && !MIX_TrackPlaying(snd.mTrack))
+        {
+            VLOG_INFO("[AudioManager::onPreFrame] sound {} finished", handle.idx);
+            snd.mFinished = true;
+        }
+    }
     // for (uint16_t i=0; i<MAX_SOUNDS; i++)
     // {
     //     auto &snd = mSounds[i];
@@ -38,7 +46,7 @@ void idk::AudioManager::onPreFrame(EngineAPI&)
 }
 
 
-idk::ResourceHandle idk::AudioManager::createSound(const char *filepath)
+idk::AudioManager::SoundHandle idk::AudioManager::createSound(const char *filepath)
 {
     MIX_Audio *audio = MIX_LoadAudio(mMixer, filepath, false);
     IDK_ASSERT(audio != NULL, "[AudioManager::loadSound] {}", SDL_GetError());
@@ -53,7 +61,7 @@ idk::ResourceHandle idk::AudioManager::createSound(const char *filepath)
 }
 
 
-void idk::AudioManager::destroySound(ResourceHandle H)
+void idk::AudioManager::destroySound(SoundHandle H)
 {
     auto *snd = mSounds.get(H);
     MIX_DestroyTrack(snd->mTrack);
@@ -62,7 +70,7 @@ void idk::AudioManager::destroySound(ResourceHandle H)
 }
 
 
-void idk::AudioManager::startSound(ResourceHandle H)
+void idk::AudioManager::startSound(SoundHandle H)
 {
     auto *snd = mSounds.get(H);
     snd->mStarted = true;
@@ -70,35 +78,35 @@ void idk::AudioManager::startSound(ResourceHandle H)
 }
 
 
-void idk::AudioManager::stopSound(ResourceHandle H)
+void idk::AudioManager::stopSound(SoundHandle H)
 {
     auto *snd = mSounds.get(H);
     MIX_StopTrack(snd->mTrack, 0);
 }
 
 
-void idk::AudioManager::pauseSound(ResourceHandle H)
+void idk::AudioManager::pauseSound(SoundHandle H)
 {
     auto *snd = mSounds.get(H);
     MIX_PauseTrack(snd->mTrack);
 }
 
 
-void idk::AudioManager::resumeSound(ResourceHandle H)
+void idk::AudioManager::resumeSound(SoundHandle H)
 {
     auto *snd = mSounds.get(H);
     MIX_ResumeTrack(snd->mTrack);
 }
 
 
-bool idk::AudioManager::isSoundPlaying(ResourceHandle H)
+bool idk::AudioManager::isSoundPlaying(SoundHandle H)
 {
     auto *snd = mSounds.get(H);
     return MIX_TrackPlaying(snd->mTrack);
 }
 
 
-bool idk::AudioManager::isSoundFinished(ResourceHandle H)
+bool idk::AudioManager::isSoundFinished(SoundHandle H)
 {
     auto *snd = mSounds.get(H);
     return snd->mFinished;
