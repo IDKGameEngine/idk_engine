@@ -40,20 +40,23 @@ namespace idk
         InputManager   *mInput;
         VideoManager   *mVideo;
 
-        EngineAPI(ServiceManager*);
+        EngineAPI(ServiceManager *owner): EngineAPI(owner, nullptr, nullptr, nullptr, nullptr) {  };
         EngineAPI(ServiceManager*, AudioManager*, EventManager*, InputManager*, VideoManager*);
-        EngineAPI(const EngineAPI&) = default;
-        EngineAPI(EngineAPI&&) = default;
 
-        bool pushEvent(int32_t type, int32_t subtype=0UL, uint64_t data=0UL);
-        void broadcastEvent(int32_t type, int32_t subtype=0UL, uint64_t data=0UL);
+        void dispatchEvent(int32_t type, int32_t subtype=0UL, uint64_t data=0UL);
+        double getDeltaTimeSec();
+        double getFixedDeltaTimeSec();
 
         template <typename ServiceType>
         ServiceType *getService() { return mOwner->getService<ServiceType>(); }
 
     private:
         friend class idk::Engine;
-        idk::core::Queue<EngineEvent, 128> mEventQueue;
+        using EventQueue = idk::core::Queue<EngineEvent, 128>;
+
+        EventQueue  mEventQueue;
+        double      mDeltaTimeSec{ 0.01 };
+        double      mFixedDeltaTimeSec{ 0.01 };
 
     };
 

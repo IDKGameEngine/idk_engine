@@ -19,7 +19,7 @@ void idk::EventManager::onShutdown(idk::EngineAPI&)
 }
 
 
-void idk::EventManager::onMidFrame(idk::EngineAPI &api)
+void idk::EventManager::onUpdate(idk::EngineAPI &api)
 {
     SDL_Event e;
     while (SDL_PollEvent(&e))
@@ -30,15 +30,15 @@ void idk::EventManager::onMidFrame(idk::EngineAPI &api)
         }
         if (e.type == SDL_EVENT_QUIT)
         {
-            api.pushEvent(EngineEvent::T_EngineCtl, EngineEvent::S_Shutdown);
+            api.dispatchEvent(EngineEvent::T_EngineCtl, EngineEvent::S_Shutdown);
         }
         else if ((e.type == SDL_EVENT_KEY_UP) && (e.key.scancode == SDL_SCANCODE_ESCAPE))
         {
-            api.pushEvent(EngineEvent::T_EngineCtl, EngineEvent::S_Shutdown);
+            api.dispatchEvent(EngineEvent::T_EngineCtl, EngineEvent::S_Shutdown);
         }
         else
         {
-            api.broadcastEvent(EngineEvent::T_Platform, 0, reinterpret_cast<uint64_t>(&e));
+            api.dispatchEvent(EngineEvent::T_Platform, 0, reinterpret_cast<uint64_t>(&e));
         }
     }
 }

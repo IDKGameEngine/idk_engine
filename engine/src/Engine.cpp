@@ -27,6 +27,8 @@ idk::Engine::Engine()
 
     fs::current_path(fs::path(SDL_GetBasePath()) / fs::path(IDK_CONTENT_BASEPATH));
 
+    setFixedUpdateRate(30.0);
+
     addService<idk::AudioManager>();
     addService<idk::EventManager>();
     addService<idk::InputManager>();
@@ -40,38 +42,56 @@ idk::Engine::Engine()
         getService<InputManager>(),
         getService<VideoManager>()
     );
+
 }
 
 
-void idk::Engine::run(idk::IApplication *app)
+void idk::Engine::setFixedUpdateRate(double rateHz)
+{
+    mFixedAccumulator.setRateHz(rateHz);
+    mApi.mFixedDeltaTimeSec = mFixedAccumulator.getStepSec();
+}
+
+
+void idk::Engine::startApplication(idk::Service *app)
 {
     addService(app);
-    initServices(mApi);
+    dispatchInit(mApi);
 
-    while (mShouldQuit.load() == false)
+    while (!mShouldQuit.load())
     {
-        updatePreFrame(mApi);
-        // app->onPreFrame(mApi);
+        constexpr double MaxDeltaTimeSec = 0.25;
+        mApi.mDeltaTimeSec = std::min(mClock.tick(), MaxDeltaTimeSec);
 
-        EngineEvent e;
-        while (mApi.mEventQueue.pop(e))
+        processEvents();
+        dispatchUpdate(mApi);
+
+        mFixedAccumulator.addDeltaTimeSec(mApi.getDeltaTimeSec());
+        while (mFixedAccumulator.step())
         {
-            process_engine_event(e);
+            dispatchFixedUpdate(mApi);
         }
 
-        updateMidFrame(mApi);
-        // app->onMidFrame(mApi);
-
-        updatePostFrame(mApi);
-        // app->onPostFrame(mApi);
+        dispatchPreRender(mApi);
+        dispatchMidRender(mApi);
+        dispatchPostRender(mApi);
     }
 
-    // app->onShutdown(mApi);
-    shutdownServices(mApi);
+    dispatchShutdown(mApi);
 }
 
 
-void idk::Engine::process_engine_event(const EngineEvent &e)
+void idk::Engine::processEvents()
+{
+    EngineEvent e;
+    while (mApi.mEventQueue.pop(e))
+    {
+        processEvent(e);
+    }
+}
+
+
+void idk::Engine::processEvent(const EngineEvent &e)
 {
     if (e.type == EngineEvent::T_EngineCtl)
     {

@@ -1,8 +1,8 @@
 #pragma once
 
 #include "idk/EngineAPI.hpp"
-#include "idk/engine/IApplication.hpp"
-
+#include "idk/EngineClock.hpp"
+#include "libidk/dsa/PeriodicTimer.hpp"
 
 namespace idk
 {
@@ -12,13 +12,17 @@ namespace idk
     {
     public:
         Engine();
-        void run(idk::IApplication *app);
+        void setFixedUpdateRate(double rateHz);
+        void startApplication(idk::Service *app);
 
     private:
         std::atomic<bool>       mShouldQuit;
         idk::EngineAPI          mApi;
+        idk::EngineClock        mClock{};
+        idk::FixedAccumulator   mFixedAccumulator;
 
-        void process_engine_event(const EngineEvent&);
+        void processEvents();
+        void processEvent(const EngineEvent&);
 
     };
 }

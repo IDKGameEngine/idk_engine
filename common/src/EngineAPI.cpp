@@ -1,17 +1,6 @@
 #include "idk/EngineAPI.hpp"
 
 
-idk::EngineAPI::EngineAPI(ServiceManager *owner)
-:   mOwner(owner),
-    mAudio(nullptr),
-    mEvent(nullptr),
-    mInput(nullptr),
-    mVideo(nullptr)
-{
-
-}
-
-
 idk::EngineAPI::EngineAPI(ServiceManager *o, AudioManager *a, EventManager *e, InputManager *i, VideoManager *v)
 :   mOwner(o),
     mAudio(a),
@@ -23,14 +12,26 @@ idk::EngineAPI::EngineAPI(ServiceManager *o, AudioManager *a, EventManager *e, I
 }
 
 
-bool idk::EngineAPI::pushEvent(int32_t type, int32_t subtype, uint64_t data)
+void idk::EngineAPI::dispatchEvent(int32_t type, int32_t subtype, uint64_t data)
 {
-    return mEventQueue.push(EngineEvent{type, subtype, data});
+    if (type == EngineEvent::T_Platform)
+    {
+        mOwner->dispatchEvent(*this, reinterpret_cast<const void*>(data));
+    }
+    else
+    {
+        mEventQueue.push(EngineEvent{type, subtype, data});
+    }
 }
 
 
-void idk::EngineAPI::broadcastEvent(int32_t, int32_t, uint64_t data)
+double idk::EngineAPI::getDeltaTimeSec()
 {
-    mOwner->broadcastEvent(*this, (const void*)data);
+    return mDeltaTimeSec;
+}
+
+double idk::EngineAPI::getFixedDeltaTimeSec()
+{
+    return mFixedDeltaTimeSec;
 }
 

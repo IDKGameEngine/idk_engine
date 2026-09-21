@@ -7,7 +7,7 @@ int main(int argc, char **argv)
 
     idk::Engine engine;
     idk::editor::EditorApplication editor;
-    engine.run(&editor);
+    engine.startApplication(&editor);
 
     return 0;
 }

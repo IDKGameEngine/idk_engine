@@ -54,7 +54,7 @@ void idk::gfx::RenderEngine::onShutdown(EngineAPI&)
 }
 
 
-void idk::gfx::RenderEngine::onPreFrame(EngineAPI&)
+void idk::gfx::RenderEngine::onPreRender(EngineAPI&)
 {
     SDL_GL_MakeCurrent((SDL_Window*)mWinCtx, (SDL_GLContext)mGlCtx);
     gl::ClearColor(0.25f, 0.25f, 0.50f, 1.0f);
@@ -63,13 +63,13 @@ void idk::gfx::RenderEngine::onPreFrame(EngineAPI&)
 }
 
 
-void idk::gfx::RenderEngine::onMidFrame(EngineAPI&)
+void idk::gfx::RenderEngine::onMidRender(EngineAPI&)
 {
 
 }
 
 
-void idk::gfx::RenderEngine::onPostFrame(EngineAPI&)
+void idk::gfx::RenderEngine::onPostRender(EngineAPI&)
 {
     SDL_GL_SwapWindow((SDL_Window*)mWinCtx);
 }

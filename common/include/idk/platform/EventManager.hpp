@@ -14,7 +14,7 @@ namespace idk
     public:
         virtual void onInit(EngineAPI&) final;
         virtual void onShutdown(EngineAPI&) final;
-        virtual void onMidFrame(EngineAPI&) final;
+        virtual void onUpdate(EngineAPI&) final;
 
         bool addEventCallback(EventCallback func)
         {

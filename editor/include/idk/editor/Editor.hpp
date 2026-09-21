@@ -1,18 +1,17 @@
 #pragma once
 
-#include "idk/engine/IApplication.hpp"
+#include "libidk/Service.hpp"
 
 
 namespace idk::editor
 {
-    class EditorApplication: public idk::IApplication
+    class EditorApplication: public idk::Service
     {
     public:
         virtual void onInit(idk::EngineAPI&) final;
         virtual void onShutdown(idk::EngineAPI&) final;
-        virtual void onPreFrame(idk::EngineAPI&) final;
-        virtual void onMidFrame(idk::EngineAPI&) final;
-        virtual void onPostFrame(idk::EngineAPI&) final;
+        virtual void onPreRender(idk::EngineAPI&) final;
+        virtual void onMidRender(idk::EngineAPI&) final;
         virtual void onEvent(idk::EngineAPI&, const void*) final;
 
     private:

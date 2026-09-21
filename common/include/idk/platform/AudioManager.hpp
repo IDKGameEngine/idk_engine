@@ -30,7 +30,7 @@ namespace idk
 
         virtual void onInit(EngineAPI&) final;
         virtual void onShutdown(EngineAPI&) final;
-        virtual void onPreFrame(EngineAPI&) final;
+        virtual void onUpdate(EngineAPI&) final;
 
         SoundHandle createSound(const char *filepath);
         void destroySound(SoundHandle);

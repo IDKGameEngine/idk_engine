@@ -94,9 +94,9 @@ namespace idk::gfx
     public:
         virtual void onInit(EngineAPI&) final;
         virtual void onShutdown(EngineAPI&) final;
-        virtual void onPreFrame(EngineAPI&) final;
-        virtual void onMidFrame(EngineAPI&) final;
-        virtual void onPostFrame(EngineAPI&) final;
+        virtual void onPreRender(EngineAPI&) final;
+        virtual void onMidRender(EngineAPI&) final;
+        virtual void onPostRender(EngineAPI&) final;
         virtual void onEvent(EngineAPI&, const void*) final;
 
 

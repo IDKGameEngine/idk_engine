@@ -61,7 +61,7 @@ void idk::editor::EditorApplication::onShutdown(EngineAPI &api)
 }
 
 
-void idk::editor::EditorApplication::onPreFrame(EngineAPI&)
+void idk::editor::EditorApplication::onPreRender(EngineAPI&)
 {
     static bool show_demo_window = true;
     static bool show_another_window = false;
@@ -121,7 +121,7 @@ void idk::editor::EditorApplication::onPreFrame(EngineAPI&)
 }
 
 
-void idk::editor::EditorApplication::onMidFrame(EngineAPI&)
+void idk::editor::EditorApplication::onMidRender(EngineAPI&)
 {
     // Rendering
     ImGui::Render();
@@ -139,13 +139,6 @@ void idk::editor::EditorApplication::onMidFrame(EngineAPI&)
     //     SDL_GL_MakeCurrent(backup_current_window, backup_current_context);
     // }
 }
-
-
-void idk::editor::EditorApplication::onPostFrame(EngineAPI &api)
-{
-    (void)api;
-}
-
 
 
 void idk::editor::EditorApplication::onEvent(EngineAPI&, const void *event)

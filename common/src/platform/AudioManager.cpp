@@ -21,13 +21,13 @@ void idk::AudioManager::onShutdown(EngineAPI&)
 }
 
 
-void idk::AudioManager::onPreFrame(EngineAPI&)
+void idk::AudioManager::onUpdate(EngineAPI&)
 {
     for (const auto &[handle, snd]: mSounds)
     {
         if (snd.mStarted && !snd.mFinished && !MIX_TrackPlaying(snd.mTrack))
         {
-            VLOG_INFO("[AudioManager::onPreFrame] sound {} finished", handle.idx);
+            VLOG_INFO("[AudioManager::onFixedUpdate] sound {} finished", handle.idx);
             snd.mFinished = true;
         }
     }

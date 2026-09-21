@@ -39,24 +39,6 @@ void idk::VideoManager::onShutdown(idk::EngineAPI&)
 }
 
 
-void idk::VideoManager::onPreFrame(idk::EngineAPI&)
-{
-
-}
-
-
-void idk::VideoManager::onPostFrame(idk::EngineAPI&)
-{
-
-}
-
-
-void idk::VideoManager::onEvent(idk::EngineAPI&, const void*)
-{
-
-}
-
-
 void idk::VideoManager::setWindowFullscreen(bool fullscreen)
 {
     SDL_SetWindowFullscreen((SDL_Window*)mWin, fullscreen);
