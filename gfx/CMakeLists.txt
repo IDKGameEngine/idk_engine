@@ -18,7 +18,7 @@ target_include_directories(
 )
 target_link_libraries(
     ${PROJECT_NAME}
-    PUBLIC glad OpenGL::GL idkengine_common assimp::assimp
+    PUBLIC IdkThirdParty::glad OpenGL::GL idkengine_common assimp::assimp
 )
 target_sources(
     ${PROJECT_NAME} PRIVATE
