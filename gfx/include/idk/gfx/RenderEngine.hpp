@@ -7,7 +7,7 @@
 
 namespace idk::gfx
 {
-    class RenderManager: public idk::Service
+    class RenderEngine: public idk::Service
     {
     public:
         virtual void onInit(EngineAPI&) final;
@@ -16,6 +16,13 @@ namespace idk::gfx
         virtual void onMidFrame(EngineAPI&) final;
         virtual void onPostFrame(EngineAPI&) final;
         virtual void onEvent(EngineAPI&, const void*) final;
+
+        // MeshHandle     CreateMesh(const MeshDesc&);
+        // void           DestroyMesh(MeshHandle);
+        // TextureHandle  CreateTexture(const TextureDesc&);
+        // void           DestroyTexture(TextureHandle);
+        // ShaderHandle   CreateShader(const ShaderDesc&);
+        // MaterialHandle CreateMaterial(const MaterialDesc&);
 
     // private:
         void      *mWinCtx;

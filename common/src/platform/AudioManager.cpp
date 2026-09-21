@@ -38,7 +38,7 @@ void idk::AudioManager::onPreFrame(EngineAPI&)
 }
 
 
-idk::ObjectHandle idk::AudioManager::createSound(const char *filepath)
+idk::ResourceHandle idk::AudioManager::createSound(const char *filepath)
 {
     MIX_Audio *audio = MIX_LoadAudio(mMixer, filepath, false);
     IDK_ASSERT(audio != NULL, "[AudioManager::loadSound] {}", SDL_GetError());
@@ -49,19 +49,20 @@ idk::ObjectHandle idk::AudioManager::createSound(const char *filepath)
     SoundType snd(audio, track);
     MIX_SetTrackAudio(snd.mTrack, snd.mAudio);
 
-    return mSounds.createObject(snd);
+    return mSounds.createResource(snd);
 }
 
 
-void idk::AudioManager::destroySound(ObjectHandle H)
+void idk::AudioManager::destroySound(ResourceHandle H)
 {
     auto *snd = mSounds.get(H);
     MIX_DestroyTrack(snd->mTrack);
     MIX_DestroyAudio(snd->mAudio);
+    mSounds.destroyResource(H);
 }
 
 
-void idk::AudioManager::startSound(ObjectHandle H)
+void idk::AudioManager::startSound(ResourceHandle H)
 {
     auto *snd = mSounds.get(H);
     snd->mStarted = true;
@@ -69,35 +70,35 @@ void idk::AudioManager::startSound(ObjectHandle H)
 }
 
 
-void idk::AudioManager::stopSound(ObjectHandle H)
+void idk::AudioManager::stopSound(ResourceHandle H)
 {
     auto *snd = mSounds.get(H);
     MIX_StopTrack(snd->mTrack, 0);
 }
 
 
-void idk::AudioManager::pauseSound(ObjectHandle H)
+void idk::AudioManager::pauseSound(ResourceHandle H)
 {
     auto *snd = mSounds.get(H);
     MIX_PauseTrack(snd->mTrack);
 }
 
 
-void idk::AudioManager::resumeSound(ObjectHandle H)
+void idk::AudioManager::resumeSound(ResourceHandle H)
 {
     auto *snd = mSounds.get(H);
     MIX_ResumeTrack(snd->mTrack);
 }
 
 
-bool idk::AudioManager::isSoundPlaying(ObjectHandle H)
+bool idk::AudioManager::isSoundPlaying(ResourceHandle H)
 {
     auto *snd = mSounds.get(H);
     return MIX_TrackPlaying(snd->mTrack);
 }
 
 
-bool idk::AudioManager::isSoundFinished(ObjectHandle H)
+bool idk::AudioManager::isSoundFinished(ResourceHandle H)
 {
     auto *snd = mSounds.get(H);
     return snd->mFinished;

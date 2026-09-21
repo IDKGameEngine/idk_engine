@@ -1,8 +1,5 @@
 project(idkengine_engine)
 
-find_package(Jolt REQUIRED)
-find_package(Steamworks CONFIG REQUIRED)
-
 add_library(
     ${PROJECT_NAME} OBJECT
 )

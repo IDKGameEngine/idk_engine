@@ -1,9 +1,9 @@
 #pragma once
 
 #include "libidk/Service.hpp"
-#include "libidk/ObjectManager.hpp"
 #include "libidk/dsa/List.hpp"
 #include "libidk/dsa/Stack.hpp"
+#include "libidk/dsa/ResourceManager.hpp"
 #include <SDL3_mixer/SDL_mixer.h>
 
 
@@ -31,21 +31,21 @@ namespace idk
         virtual void onShutdown(EngineAPI&) final;
         virtual void onPreFrame(EngineAPI&) final;
 
-        ObjectHandle createSound(const char *filepath);
-        void destroySound(ObjectHandle);
-        void startSound(ObjectHandle);
-        void stopSound(ObjectHandle);
-        void pauseSound(ObjectHandle);
-        void resumeSound(ObjectHandle);
+        ResourceHandle createSound(const char *filepath);
+        void destroySound(ResourceHandle);
+        void startSound(ResourceHandle);
+        void stopSound(ResourceHandle);
+        void pauseSound(ResourceHandle);
+        void resumeSound(ResourceHandle);
 
-        bool isSoundPlaying(ObjectHandle);
-        bool isSoundFinished(ObjectHandle);
+        bool isSoundPlaying(ResourceHandle);
+        bool isSoundFinished(ResourceHandle);
 
 
     private:
         MIX_Mixer *mMixer;
 
-        idk::ObjectManager<SoundType, MAX_SOUNDS> mSounds;
+        idk::ResourceManager<SoundType, MAX_SOUNDS> mSounds;
         // idk::ArrayType<SoundType, MAX_SOUNDS>   mSounds;
         // idk::InplaceStack<uint16_t, MAX_SOUNDS> mFreelist;
         // idk::InplaceStack<uint16_t, MAX_SOUNDS> mUsedlist;

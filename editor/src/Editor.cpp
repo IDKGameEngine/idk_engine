@@ -1,5 +1,5 @@
 #include "idk/editor/Editor.hpp"
-#include "idk/gfx/RenderManager.hpp"
+#include "idk/gfx/RenderEngine.hpp"
 #include "idk/EngineAPI.hpp"
 
 #include <imgui.h>
@@ -26,7 +26,7 @@ void idk::editor::EditorApplication::onInit(EngineAPI &api)
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;         // Enable Docking
-    io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;       // Enable Multi-Viewport / Platform Windows
+    // io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;       // Enable Multi-Viewport / Platform Windows
     //io.ConfigViewportsNoAutoMerge = true;
     //io.ConfigViewportsNoTaskBarIcon = true;
 
@@ -35,7 +35,7 @@ void idk::editor::EditorApplication::onInit(EngineAPI &api)
     //ImGui::StyleColorsLight();
 
     // Setup scaling
-    float main_scale = 1.0f;
+    float main_scale = SDL_GetDisplayContentScale(SDL_GetPrimaryDisplay());
     ImGuiStyle& style = ImGui::GetStyle();
     style.ScaleAllSizes(main_scale);        // Bake a fixed style scale. (until we have a solution for dynamic style scaling, changing this requires resetting Style + calling this again)
     style.FontScaleDpi = main_scale;        // Set initial font scale. (in docking branch: using io.ConfigDpiScaleFonts=true automatically overrides this for every window depending on the current monitor)
@@ -49,7 +49,7 @@ void idk::editor::EditorApplication::onInit(EngineAPI &api)
         style.Colors[ImGuiCol_WindowBg].w = 1.0f;
     }
 
-    auto *ren = api.getService<idk::gfx::RenderManager>();
+    auto *ren = api.getService<idk::gfx::RenderEngine>();
     ImGui_ImplSDL3_InitForOpenGL((SDL_Window*)(ren->mWinCtx), (SDL_GLContext)(ren->mGlCtx));
     ImGui_ImplOpenGL3_Init(nullptr);
 }
@@ -61,13 +61,7 @@ void idk::editor::EditorApplication::onShutdown(EngineAPI &api)
 }
 
 
-void idk::editor::EditorApplication::onPreFrame(EngineAPI &api)
-{
-    (void)api;
-}
-
-
-void idk::editor::EditorApplication::onMidFrame(EngineAPI&)
+void idk::editor::EditorApplication::onPreFrame(EngineAPI&)
 {
     static bool show_demo_window = true;
     static bool show_another_window = false;
@@ -124,21 +118,26 @@ void idk::editor::EditorApplication::onMidFrame(EngineAPI&)
         ImGui::End();
     }
 
+}
+
+
+void idk::editor::EditorApplication::onMidFrame(EngineAPI&)
+{
     // Rendering
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
-    // Update and Render additional Platform Windows
-    // (Platform functions may change the current OpenGL context, so we save/restore it to make it easier to paste this code elsewhere.
-    //  For this specific demo app we could also call SDL_GL_MakeCurrent(window, gl_context) directly)
-    if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
-    {
-        SDL_Window* backup_current_window = SDL_GL_GetCurrentWindow();
-        SDL_GLContext backup_current_context = SDL_GL_GetCurrentContext();
-        ImGui::UpdatePlatformWindows();
-        ImGui::RenderPlatformWindowsDefault();
-        SDL_GL_MakeCurrent(backup_current_window, backup_current_context);
-    }
+    // // Update and Render additional Platform Windows
+    // // (Platform functions may change the current OpenGL context, so we save/restore it to make it easier to paste this code elsewhere.
+    // //  For this specific demo app we could also call SDL_GL_MakeCurrent(window, gl_context) directly)
+    // if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+    // {
+    //     SDL_Window* backup_current_window = SDL_GL_GetCurrentWindow();
+    //     SDL_GLContext backup_current_context = SDL_GL_GetCurrentContext();
+    //     ImGui::UpdatePlatformWindows();
+    //     ImGui::RenderPlatformWindowsDefault();
+    //     SDL_GL_MakeCurrent(backup_current_window, backup_current_context);
+    // }
 }
 
 
@@ -151,7 +150,6 @@ void idk::editor::EditorApplication::onPostFrame(EngineAPI &api)
 
 void idk::editor::EditorApplication::onEvent(EngineAPI&, const void *event)
 {
-    VLOG_INFO("[EditorApplication::onEvent] A");
     ImGui_ImplSDL3_ProcessEvent((const SDL_Event*)event);
 }
 

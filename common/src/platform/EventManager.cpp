@@ -21,8 +21,6 @@ void idk::EventManager::onShutdown(idk::EngineAPI&)
 
 void idk::EventManager::onMidFrame(idk::EngineAPI &api)
 {
-    VLOG_INFO("[EventManager::onMidFrame]");
-
     SDL_Event e;
     while (SDL_PollEvent(&e))
     {
@@ -40,7 +38,6 @@ void idk::EventManager::onMidFrame(idk::EngineAPI &api)
         }
         else
         {
-            VLOG_INFO("[EventManager::onMidFrame] ELSE");
             api.broadcastEvent(EngineEvent::T_Platform, 0, reinterpret_cast<uint64_t>(&e));
         }
     }

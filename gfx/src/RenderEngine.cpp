@@ -1,11 +1,11 @@
-#include "idk/gfx/RenderManager.hpp"
+#include "idk/gfx/RenderEngine.hpp"
 #include "idk/platform/VideoManager.hpp"
 
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_opengl.h>
 
 
-void idk::gfx::RenderManager::onInit(EngineAPI &api)
+void idk::gfx::RenderEngine::onInit(EngineAPI &api)
 {
     mWinCtx = api.mVideo->getWindowHandle();
     mGlCtx = SDL_GL_CreateContext((SDL_Window*)mWinCtx);
@@ -47,36 +47,35 @@ void idk::gfx::RenderManager::onInit(EngineAPI &api)
 }
 
 
-void idk::gfx::RenderManager::onShutdown(EngineAPI&)
+void idk::gfx::RenderEngine::onShutdown(EngineAPI&)
 {
     gl::DeleteVertexArrays(1, &mDummyVao);
     SDL_GL_DestroyContext((SDL_GLContext)mGlCtx);
 }
 
 
-void idk::gfx::RenderManager::onPreFrame(EngineAPI&)
+void idk::gfx::RenderEngine::onPreFrame(EngineAPI&)
 {
     SDL_GL_MakeCurrent((SDL_Window*)mWinCtx, (SDL_GLContext)mGlCtx);
-
-    // gl::ClearColor(0.25f, 0.25f, 0.50f, 1.0f);
-    // gl::Clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    gl::ClearColor(0.25f, 0.25f, 0.50f, 1.0f);
+    gl::Clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     // gl::BindVertexArray(mDummyVao);
 }
 
 
-void idk::gfx::RenderManager::onMidFrame(EngineAPI&)
+void idk::gfx::RenderEngine::onMidFrame(EngineAPI&)
 {
 
 }
 
 
-void idk::gfx::RenderManager::onPostFrame(EngineAPI&)
+void idk::gfx::RenderEngine::onPostFrame(EngineAPI&)
 {
     SDL_GL_SwapWindow((SDL_Window*)mWinCtx);
 }
 
 
-void idk::gfx::RenderManager::onEvent(EngineAPI&, const void*)
+void idk::gfx::RenderEngine::onEvent(EngineAPI&, const void*)
 {
 
 }

@@ -1,5 +1,5 @@
 #include "idk/engine/Engine.hpp"
-#include "idk/gfx/RenderManager.hpp"
+#include "idk/gfx/RenderEngine.hpp"
 
 #include <filesystem>
 #include <steam/steam_api.h>
@@ -31,7 +31,7 @@ idk::Engine::Engine()
     addService<idk::EventManager>();
     addService<idk::InputManager>();
     addService<idk::VideoManager>("GameWindow", 1280, 720);
-    addService<idk::gfx::RenderManager>();
+    addService<idk::gfx::RenderEngine>();
 
     new (&mApi) EngineAPI(
         this,
@@ -47,7 +47,6 @@ void idk::Engine::run(idk::IApplication *app)
 {
     addService(app);
     initServices(mApi);
-    // app->onInit(mApi);
 
     while (mShouldQuit.load() == false)
     {
