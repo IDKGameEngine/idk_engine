@@ -4,7 +4,7 @@
 #include <SDL3/SDL.h>
 
 
-idk::EventManager::EventManager()
+void idk::EventManager::onInit(idk::EngineAPI&)
 {
     if (false == SDL_Init(SDL_INIT_EVENTS))
     {
@@ -13,7 +13,7 @@ idk::EventManager::EventManager()
 }
 
 
-void idk::EventManager::onInit(idk::EngineAPI&)
+void idk::EventManager::onShutdown(idk::EngineAPI&)
 {
 
 }
@@ -41,5 +41,11 @@ void idk::EventManager::onUpdate(idk::EngineAPI &api)
             api.broadcastEvent(EngineEvent::T_Platform, 0, reinterpret_cast<uint64_t>(&e));
         }
     }
+}
+
+
+void idk::EventManager::onEvent(EngineAPI&, const void*)
+{
+
 }
 

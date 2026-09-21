@@ -1,11 +1,11 @@
-#include "idk/gfx/RenderEngine.hpp"
+#include "idk/gfx/RenderManager.hpp"
 #include "idk/platform/VideoManager.hpp"
 
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_opengl.h>
 
 
-void idk::gfx::RenderEngine::onInit(EngineAPI &api)
+void idk::gfx::RenderManager::onInit(EngineAPI &api)
 {
     mWinCtx = api.mVideo->getWindowHandle();
     mGlCtx = SDL_GL_CreateContext((SDL_Window*)mWinCtx);
@@ -47,7 +47,14 @@ void idk::gfx::RenderEngine::onInit(EngineAPI &api)
 }
 
 
-void idk::gfx::RenderEngine::onUpdate(EngineAPI&)
+void idk::gfx::RenderManager::onShutdown(EngineAPI&)
+{
+    gl::DeleteVertexArrays(1, &mDummyVao);
+    SDL_GL_DestroyContext((SDL_GLContext)mGlCtx);
+}
+
+
+void idk::gfx::RenderManager::onUpdate(EngineAPI&)
 {
     SDL_GL_MakeCurrent((SDL_Window*)mWinCtx, (SDL_GLContext)mGlCtx);
 
@@ -60,14 +67,7 @@ void idk::gfx::RenderEngine::onUpdate(EngineAPI&)
 }
 
 
-void idk::gfx::RenderEngine::onShutdown(EngineAPI&)
-{
-    gl::DeleteVertexArrays(1, &mDummyVao);
-    SDL_GL_DestroyContext((SDL_GLContext)mGlCtx);
-}
-
-
-void idk::gfx::RenderEngine::onEvent(EngineAPI&, const void*)
+void idk::gfx::RenderManager::onEvent(EngineAPI&, const void*)
 {
 
 }

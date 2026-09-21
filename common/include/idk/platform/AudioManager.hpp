@@ -1,6 +1,7 @@
 #pragma once
 
-#include "IPlatformFeature.hpp"
+#include "libidk/Service.hpp"
+#include "libidk/ObjectManager.hpp"
 #include "libidk/dsa/List.hpp"
 #include "libidk/dsa/Stack.hpp"
 #include <SDL3_mixer/SDL_mixer.h>
@@ -8,7 +9,7 @@
 
 namespace idk
 {
-    class AudioManager: public idk::IPlatformFeature
+    class AudioManager: public idk::Service
     {
     public:
         static constexpr uint16_t MAX_SOUNDS = 64;
@@ -19,29 +20,36 @@ namespace idk
             friend class idk::AudioManager;
             MIX_Audio *mAudio;
             MIX_Track *mTrack;
-            uint16_t   mIdx;
+            bool       mStarted;
+            bool       mFinished;
+
+            SoundType(): SoundType(nullptr, nullptr) {  };
+            SoundType(MIX_Audio *a, MIX_Track *t): mAudio(a), mTrack(t), mStarted(false), mFinished(false) {  };
         };
 
-        AudioManager();
-        virtual ~AudioManager();
-
-        virtual void onUpdate(EngineAPI&) final;
+        virtual void onInit(EngineAPI&) final;
         virtual void onShutdown(EngineAPI&) final;
+        virtual void onUpdate(EngineAPI&) final;
         virtual void onEvent(EngineAPI&, const void*) final;
 
-        virtual SoundType *createSound(const char *filepath);
-        virtual void destroySound(SoundType*) final;
-        virtual void startSound(SoundType*) final;
-        virtual void stopSound(SoundType*) final;
-        virtual void pauseSound(SoundType*) final;
-        virtual void resumeSound(SoundType*) final;
+        ObjectHandle createSound(const char *filepath);
+        void destroySound(ObjectHandle);
+        void startSound(ObjectHandle);
+        void stopSound(ObjectHandle);
+        void pauseSound(ObjectHandle);
+        void resumeSound(ObjectHandle);
+
+        bool isSoundPlaying(ObjectHandle);
+        bool isSoundFinished(ObjectHandle);
+
 
     private:
         MIX_Mixer *mMixer;
-    
-        idk::ArrayType<SoundType, MAX_SOUNDS>   mSounds;
-        idk::InplaceStack<uint16_t, MAX_SOUNDS> mFreelist;
-        idk::InplaceStack<uint16_t, MAX_SOUNDS> mUsedlist;
+
+        idk::ObjectManager<SoundType, MAX_SOUNDS> mSounds;
+        // idk::ArrayType<SoundType, MAX_SOUNDS>   mSounds;
+        // idk::InplaceStack<uint16_t, MAX_SOUNDS> mFreelist;
+        // idk::InplaceStack<uint16_t, MAX_SOUNDS> mUsedlist;
 
     };
 

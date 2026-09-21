@@ -1,20 +1,18 @@
 #pragma once
 
-#include "IPlatformFeature.hpp"
+#include "libidk/Service.hpp"
 
 
 namespace idk
 {
-    class InputManager: public idk::IPlatformFeature
+    class InputManager: public idk::Service
     {
     private:
 
     public:
-        InputManager();
-        virtual ~InputManager() = default;
-
-        virtual void onUpdate(EngineAPI&) final;
+        virtual void onInit(EngineAPI&) final;
         virtual void onShutdown(EngineAPI&) final;
+        virtual void onUpdate(EngineAPI&) final;
         virtual void onEvent(EngineAPI&, const void*) final;
 
         bool isKeyDown(int keycode) const;

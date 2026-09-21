@@ -1,21 +1,22 @@
 #include "idk/platform/InputManager.hpp"
+#include "idk/EngineAPI.hpp"
 
 #include <SDL3/SDL.h>
 
 
-idk::InputManager::InputManager()
-{
-
-}
-
-
-void idk::InputManager::onUpdate(idk::EngineAPI&)
+void idk::InputManager::onInit(idk::EngineAPI&)
 {
 
 }
 
 
 void idk::InputManager::onShutdown(idk::EngineAPI&)
+{
+
+}
+
+
+void idk::InputManager::onUpdate(idk::EngineAPI&)
 {
 
 }

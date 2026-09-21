@@ -1,17 +1,14 @@
 #include "idk/platform/VideoManager.hpp"
 
-#include "libidk/Assert.hpp"
-#include "libidk/log.hpp"
-
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_opengl.h>
 
 
 idk::VideoManager::VideoManager(const char *title, int w, int h)
-:   mTitle(title),
-    mWin(nullptr),
-    mWidth(w),
-    mHeight(h)
+:   mTitle(title), mWin(nullptr), mWidth(w), mHeight(h) {  };
+
+
+void idk::VideoManager::onInit(idk::EngineAPI&)
 {
     if (false == SDL_Init(SDL_INIT_VIDEO))
     {
@@ -25,14 +22,14 @@ idk::VideoManager::VideoManager(const char *title, int w, int h)
         // windowFlags |= SDL_WINDOW_VULKAN;
     // #endif
 
-    if (!(mWin = SDL_CreateWindow(title, mWidth, mHeight, windowFlags)))
+    if (!(mWin = SDL_CreateWindow(mTitle, mWidth, mHeight, windowFlags)))
     {
         VLOG_FATAL("SDL_CreateWindow: {}", SDL_GetError());
     }
 }
 
 
-idk::VideoManager::~VideoManager()
+void idk::VideoManager::onShutdown(idk::EngineAPI&)
 {
     if (mWin != nullptr)
     {
@@ -43,12 +40,6 @@ idk::VideoManager::~VideoManager()
 
 
 void idk::VideoManager::onUpdate(idk::EngineAPI&)
-{
-
-}
-
-
-void idk::VideoManager::onShutdown(idk::EngineAPI&)
 {
 
 }

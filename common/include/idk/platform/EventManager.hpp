@@ -1,22 +1,21 @@
 #pragma once
 
-#include "IPlatformFeature.hpp"
+#include "libidk/Service.hpp"
 
 
 namespace idk
 {
-    class EventManager: public idk::IPlatformFeature
+    class EventManager: public idk::Service
     {
     private:
         using EventCallback = void (*)(const void *event);
         idk::InplaceList<uintptr_t, 64> mEventCallbacks;
 
     public:
-        EventManager();
-        virtual ~EventManager() = default;
-
         virtual void onInit(EngineAPI&) final;
+        virtual void onShutdown(EngineAPI&) final;
         virtual void onUpdate(EngineAPI&) final;
+        virtual void onEvent(EngineAPI&, const void*) final;
 
         bool addEventCallback(EventCallback func)
         {

@@ -1,11 +1,11 @@
 #pragma once
 
-#include "IPlatformFeature.hpp"
+#include "libidk/Service.hpp"
 
 
 namespace idk
 {
-    class VideoManager: public idk::IPlatformFeature
+    class VideoManager: public idk::Service
     {
     private:
         const char      *mTitle;
@@ -15,10 +15,10 @@ namespace idk
 
     public:
         VideoManager(const char *title, int w, int h);
-        ~VideoManager();
 
-        virtual void onUpdate(EngineAPI&) final;
+        virtual void onInit(EngineAPI&) final;
         virtual void onShutdown(EngineAPI&) final;
+        virtual void onUpdate(EngineAPI&) final;
         virtual void onEvent(EngineAPI&, const void*) final;
 
         void *getWindowHandle() { return mWin; }
