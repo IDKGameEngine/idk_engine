@@ -9,16 +9,18 @@
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_opengl.h>
 
-// static void EditorEventCallback(const void *event)
-// {
-//     (void)event;
-//     VLOG_INFO("[EditorEventCallback] Hello!");
-//     // ImGui_ImplSDL3_ProcessEvent((const SDL_Event*)event);
-// }
+
+static void EditorEventCallback(const void *event)
+{
+    VLOG_INFO("[EditorEventCallback]");
+    ImGui_ImplSDL3_ProcessEvent((const SDL_Event*)event);
+}
 
 
 void idk::editor::EditorApplication::onInit(EngineAPI &api)
 {
+    api.mEvent->addGenericCallback(EditorEventCallback);
+
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
@@ -141,8 +143,8 @@ void idk::editor::EditorApplication::onMidRender(EngineAPI&)
 }
 
 
-void idk::editor::EditorApplication::onEvent(EngineAPI&, const void *event)
-{
-    ImGui_ImplSDL3_ProcessEvent((const SDL_Event*)event);
-}
+// void idk::editor::EditorApplication::onEvent(EngineAPI&, const void *event)
+// {
+//     ImGui_ImplSDL3_ProcessEvent((const SDL_Event*)event);
+// }
 

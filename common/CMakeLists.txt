@@ -18,6 +18,7 @@ target_sources(
     "${CMAKE_CURRENT_SOURCE_DIR}/src/platform/AudioManager.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/src/platform/EventManager.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/src/platform/InputManager.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/platform/PlatformManager.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/src/platform/VideoManager.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/src/EngineAPI.cpp"
 )

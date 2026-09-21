@@ -22,22 +22,22 @@ void idk::InputManager::onUpdate(idk::EngineAPI&)
 }
 
 
-void idk::InputManager::onEvent(idk::EngineAPI&, const void *event)
-{
-    const SDL_Event &e = *static_cast<const SDL_Event*>(event);
+// void idk::InputManager::onEvent(idk::EngineAPI&, const void *event)
+// {
+//     const SDL_Event &e = *static_cast<const SDL_Event*>(event);
 
-    switch (e.type)
-    {
-    // case SDL_EVENT_KEY_DOWN:
-    //     VLOG_INFO("[InputManager::onEvent] KEY DOWN");
-    //     break;
-    // case SDL_EVENT_KEY_UP:
-    //     VLOG_INFO("[InputManager::onEvent] KEY UP");
-    //     break;
-    default:
-        break;
-    }
-}
+//     switch (e.type)
+//     {
+//     // case SDL_EVENT_KEY_DOWN:
+//     //     VLOG_INFO("[InputManager::onEvent] KEY DOWN");
+//     //     break;
+//     // case SDL_EVENT_KEY_UP:
+//     //     VLOG_INFO("[InputManager::onEvent] KEY UP");
+//     //     break;
+//     default:
+//         break;
+//     }
+// }
 
 
 bool idk::InputManager::isKeyDown(int keycode) const

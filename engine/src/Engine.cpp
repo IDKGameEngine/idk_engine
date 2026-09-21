@@ -1,109 +1,113 @@
 #include "idk/engine/Engine.hpp"
 #include "idk/gfx/RenderEngine.hpp"
 
-#include <filesystem>
-#include <steam/steam_api.h>
+
+static void EngineServiceRaiiFunc(idk::Engine *E)
+{
+    E->addService<idk::PlatformManager>();
+    E->addService<idk::AudioManager>();
+    E->addService<idk::EventManager>();
+    E->addService<idk::InputManager>();
+    E->addService<idk::VideoManager>("GameWindow", 1280, 720);
+    E->addService<idk::gfx::RenderEngine>();
+}
 
 
 idk::Engine::Engine()
-:   ServiceManager(),
-    mShouldQuit(false),
-    mApi(this, nullptr, nullptr, nullptr, nullptr)
+:   mServiceRaii(EngineServiceRaiiFunc, this),
+    mApi(this),
+    mShouldQuit(false)
 {
-    namespace fs = std::filesystem;
-
-    if (std::getenv("SteamEnv"))
-    {
-        SteamErrMsg errMsg = { 0 };
-        if (SteamAPI_InitEx(&errMsg) == k_ESteamAPIInitResult_OK)
-        {
-            VLOG_INFO("SteamAPI init success");
-        }
-        else
-        {
-            VLOG_FATAL("SteamAPI init failure: {}", errMsg);
-        }
-    }
-
-    fs::current_path(fs::path(SDL_GetBasePath()) / fs::path(IDK_CONTENT_BASEPATH));
-
     setFixedUpdateRate(30.0);
 
-    addService<idk::AudioManager>();
-    addService<idk::EventManager>();
-    addService<idk::InputManager>();
-    addService<idk::VideoManager>("GameWindow", 1280, 720);
-    addService<idk::gfx::RenderEngine>();
+    // mApi.mEvent->addEngineCallback()
+}
 
-    new (&mApi) EngineAPI(
-        this,
-        getService<AudioManager>(),
-        getService<EventManager>(),
-        getService<InputManager>(),
-        getService<VideoManager>()
-    );
 
+idk::Engine::~Engine()
+{
+    
 }
 
 
 void idk::Engine::setFixedUpdateRate(double rateHz)
 {
-    mFixedAccumulator.setRateHz(rateHz);
-    mApi.mFixedDeltaTimeSec = mFixedAccumulator.getStepSec();
+    mFixedTimer.setRateHz(rateHz);
+    mApi.mFixedDeltaTimeSec = mFixedTimer.getStepSec();
 }
 
 
 void idk::Engine::startApplication(idk::Service *app)
 {
     addService(app);
-    dispatchInit(mApi);
 
+    dispatchInit(mApi);
     while (!mShouldQuit.load())
     {
-        constexpr double MaxDeltaTimeSec = 0.25;
-        mApi.mDeltaTimeSec = std::min(mClock.tick(), MaxDeltaTimeSec);
-
-        processEvents();
-        dispatchUpdate(mApi);
-
-        mFixedAccumulator.addDeltaTimeSec(mApi.getDeltaTimeSec());
-        while (mFixedAccumulator.step())
-        {
-            dispatchFixedUpdate(mApi);
-        }
-
-        dispatchPreRender(mApi);
-        dispatchMidRender(mApi);
-        dispatchPostRender(mApi);
+        engineDeltaTime();
+        engineEvents();
+        engineUpdate();
+        engineRender();
     }
-
     dispatchShutdown(mApi);
 }
 
 
-void idk::Engine::processEvents()
+void idk::Engine::engineDeltaTime()
 {
-    EngineEvent e;
-    while (mApi.mEventQueue.pop(e))
-    {
-        processEvent(e);
-    }
+    constexpr double MaxDeltaTimeSec = 0.25;
+    mApi.mDeltaTimeSec = std::min(mClock.tick(), MaxDeltaTimeSec);
 }
 
 
-void idk::Engine::processEvent(const EngineEvent &e)
+void idk::Engine::engineEvents()
 {
-    if (e.type == EngineEvent::T_EngineCtl)
-    {
-        switch (e.subtype)
-        {
-            case EngineEvent::S_Pause:
-                break;
-            case EngineEvent::S_Resume:
-                break;
-            case EngineEvent::S_Shutdown:
-                mShouldQuit.store(true);
-                break;
-        }
-    }
+    // EngineEvent e;
+    // while (mApi.mEventQueue.pop(e))
+    // {
+    //     processEvent(e);
+    // }
 }
+
+void idk::Engine::engineUpdate()
+{
+    // Variable rate update
+    // -----------------------------------------------------
+    dispatchUpdate(mApi);
+    // -----------------------------------------------------
+
+    // Fixed rate update
+    // -----------------------------------------------------
+    mFixedTimer.addDeltaTimeSec(mApi.getDeltaTimeSec());
+    while (mFixedTimer.step())
+    {
+        dispatchFixedUpdate(mApi);
+    }
+    // -----------------------------------------------------
+}
+
+void idk::Engine::engineRender()
+{
+    dispatchPreRender(mApi);
+    dispatchMidRender(mApi);
+    dispatchPostRender(mApi);
+}
+
+
+
+// void idk::Engine::processEvent(const EngineEvent &e)
+// {
+//     if (e.type == EngineEvent::T_EngineCtl)
+//     {
+//         switch (e.subtype)
+//         {
+//             case EngineEvent::S_Pause:
+//                 break;
+//             case EngineEvent::S_Resume:
+//                 break;
+//             case EngineEvent::S_Shutdown:
+//                 mShouldQuit.store(true);
+//                 break;
+//         }
+//     }
+// }

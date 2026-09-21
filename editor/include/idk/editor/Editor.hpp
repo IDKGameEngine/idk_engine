@@ -12,7 +12,6 @@ namespace idk::editor
         virtual void onShutdown(idk::EngineAPI&) final;
         virtual void onPreRender(idk::EngineAPI&) final;
         virtual void onMidRender(idk::EngineAPI&) final;
-        virtual void onEvent(idk::EngineAPI&, const void*) final;
 
     private:
 

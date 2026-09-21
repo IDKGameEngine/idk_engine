@@ -19,27 +19,118 @@ void idk::EventManager::onShutdown(idk::EngineAPI&)
 }
 
 
-void idk::EventManager::onUpdate(idk::EngineAPI &api)
+// void idk::EventManager::onUpdate(idk::EngineAPI &api)
+// {
+//     SDL_Event e;
+//     while (SDL_PollEvent(&e))
+//     {
+//         for (uintptr_t addr: mEventCallbacks)
+//         {
+//             reinterpret_cast<EventCallback>(addr)(&e);
+//         }
+//         if (e.type == SDL_EVENT_QUIT)
+//         {
+//             api.dispatchEvent(EngineEvent::T_EngineCtl, EngineEvent::S_Shutdown);
+//         }
+//         else if ((e.type == SDL_EVENT_KEY_UP) && (e.key.scancode == SDL_SCANCODE_ESCAPE))
+//         {
+//             api.dispatchEvent(EngineEvent::T_EngineCtl, EngineEvent::S_Shutdown);
+//         }
+//         else
+//         {
+//             api.dispatchEvent(EngineEvent::T_Platform, 0, reinterpret_cast<uint64_t>(&e));
+//         }
+//     }
+// }
+
+
+void idk::EventManager::onUpdate(EngineAPI&)
 {
-    SDL_Event e;
-    while (SDL_PollEvent(&e))
+    SDL_Event sdlEvent;
+
+    while (SDL_PollEvent(&sdlEvent))
     {
-        for (uintptr_t addr: mEventCallbacks)
+        for (GenericCallback &func: mGenericCallbacks)
         {
-            reinterpret_cast<EventCallback>(addr)(&e);
+            func((const void*)(&sdlEvent));
         }
-        if (e.type == SDL_EVENT_QUIT)
+
+        switch (sdlEvent.type)
         {
-            api.dispatchEvent(EngineEvent::T_EngineCtl, EngineEvent::S_Shutdown);
-        }
-        else if ((e.type == SDL_EVENT_KEY_UP) && (e.key.scancode == SDL_SCANCODE_ESCAPE))
-        {
-            api.dispatchEvent(EngineEvent::T_EngineCtl, EngineEvent::S_Shutdown);
-        }
-        else
-        {
-            api.dispatchEvent(EngineEvent::T_Platform, 0, reinterpret_cast<uint64_t>(&e));
+            case SDL_EVENT_QUIT:
+            {
+                EngineEvent event(EngineEvent::Quit);
+                dispatch(mEngineCallbacks, event);
+                break;
+            }
+
+            case SDL_EVENT_WINDOW_RESIZED:
+            {
+                WindowEvent event(
+                    WindowEvent::Resized,
+                    sdlEvent.window.data1,
+                    sdlEvent.window.data2
+                );
+                dispatch(mWindowCallbacks, event);
+                break;
+            }
+
+            case SDL_EVENT_WINDOW_MINIMIZED:
+            {
+                WindowEvent event(WindowEvent::Minimized);
+                dispatch(mWindowCallbacks, event);
+                break;
+            }
+
+            case SDL_EVENT_WINDOW_RESTORED:
+            {
+                WindowEvent event(WindowEvent::Restored);
+                dispatch(mWindowCallbacks, event);
+                break;
+            }
+
+            case SDL_EVENT_KEY_DOWN:
+            {
+                InputEvent event(InputEvent::KeyDown);
+                dispatch(mInputCallbacks, event);
+                break;
+            }
+
+            case SDL_EVENT_KEY_UP:
+            {
+                InputEvent event(InputEvent::KeyUp);
+                dispatch(mInputCallbacks, event);
+                break;
+            }
+
+            // ...
         }
     }
 }
 
+
+bool idk::EventManager::addGenericCallback(GenericCallback func)
+{
+    if (mGenericCallbacks.full())
+    {
+        VLOG_WARN("[EventManager::addCallback] Cannot add callback: at capacity");
+        return false;
+    }
+    mGenericCallbacks.push(func);
+    return true;
+}
+
+bool idk::EventManager::addEngineCallback(EngineCallback func)
+{
+    return addCallback(mEngineCallbacks, func);
+}
+
+bool idk::EventManager::addWindowCallback(WindowCallback func)
+{
+    return addCallback(mWindowCallbacks, func);
+}
+
+bool idk::EventManager::addInputCallback(InputCallback func)
+{
+    return addCallback(mInputCallbacks, func);
+}

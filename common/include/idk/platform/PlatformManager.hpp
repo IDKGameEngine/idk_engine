@@ -5,19 +5,16 @@
 
 namespace idk
 {
-    class InputManager: public idk::Service
+    class PlatformManager: public idk::Service
     {
-    private:
-
     public:
+        PlatformManager();
         virtual void onInit(EngineAPI&) final;
         virtual void onShutdown(EngineAPI&) final;
         virtual void onUpdate(EngineAPI&) final;
 
-        bool isKeyDown(int keycode) const;
-        bool isMouseButtonDown(int button) const;
-        void getMousePosition(int& x, int& y) const;
+    private:
+        bool mSteamRuntimeDetected;
+
     };
-
 }
-

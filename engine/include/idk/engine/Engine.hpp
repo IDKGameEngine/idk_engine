@@ -2,7 +2,8 @@
 
 #include "idk/EngineAPI.hpp"
 #include "idk/EngineClock.hpp"
-#include "libidk/dsa/PeriodicTimer.hpp"
+#include "libidk/dsa/Raii.hpp"
+#include "libidk/dsa/Timer.hpp"
 
 namespace idk
 {
@@ -12,16 +13,23 @@ namespace idk
     {
     public:
         Engine();
+        ~Engine();
+
         void setFixedUpdateRate(double rateHz);
         void startApplication(idk::Service *app);
 
     private:
-        std::atomic<bool>       mShouldQuit;
-        idk::EngineAPI          mApi;
-        idk::EngineClock        mClock{};
-        idk::FixedAccumulator   mFixedAccumulator;
+        idk::RaiiFunc<void(Engine*)> mServiceRaii;
+        idk::EngineAPI               mApi;
+        std::atomic<bool>            mShouldQuit;
+        idk::EngineClock             mClock{};
+        idk::FixedTimer              mFixedTimer;
 
-        void processEvents();
+        void engineDeltaTime();
+        void engineEvents();
+        void engineUpdate();
+        void engineRender();
+
         void processEvent(const EngineEvent&);
 
     };

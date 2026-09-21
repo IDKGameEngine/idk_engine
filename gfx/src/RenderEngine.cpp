@@ -74,9 +74,3 @@ void idk::gfx::RenderEngine::onPostRender(EngineAPI&)
     SDL_GL_SwapWindow((SDL_Window*)mWinCtx);
 }
 
-
-void idk::gfx::RenderEngine::onEvent(EngineAPI&, const void*)
-{
-
-}
-

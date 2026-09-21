@@ -15,7 +15,6 @@ namespace idk::gfx
         virtual void onPreRender(EngineAPI&) final;
         virtual void onMidRender(EngineAPI&) final;
         virtual void onPostRender(EngineAPI&) final;
-        virtual void onEvent(EngineAPI&, const void*) final;
 
         // MeshHandle     CreateMesh(const MeshDesc&);
         // void           DestroyMesh(MeshHandle);

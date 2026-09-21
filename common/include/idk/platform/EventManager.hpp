@@ -1,29 +1,58 @@
 #pragma once
 
 #include "libidk/Service.hpp"
-
+#include "idk/Event.hpp"
 
 namespace idk
 {
     class EventManager: public idk::Service
     {
-    private:
-        using EventCallback = void (*)(const void *event);
-        idk::InplaceList<uintptr_t, 64> mEventCallbacks;
-
     public:
+        template <typename EventType>
+        using CallbackType = void (*)(const EventType&);
+
+        using GenericCallback = void (*)(const void*);
+        using EngineCallback  = CallbackType<EngineEvent>;
+        using WindowCallback  = CallbackType<WindowEvent>;
+        using InputCallback   = CallbackType<InputEvent>;
+
         virtual void onInit(EngineAPI&) final;
         virtual void onShutdown(EngineAPI&) final;
         virtual void onUpdate(EngineAPI&) final;
 
-        bool addEventCallback(EventCallback func)
+        bool addGenericCallback(GenericCallback);
+        bool addEngineCallback(EngineCallback);
+        bool addWindowCallback(WindowCallback);
+        bool addInputCallback(InputCallback);
+
+    private:
+        template <typename FuncType>
+        using CallbackList = InplaceList<FuncType, 16>;
+
+        CallbackList<GenericCallback> mGenericCallbacks;
+        CallbackList<EngineCallback>  mEngineCallbacks;
+        CallbackList<WindowCallback>  mWindowCallbacks;
+        CallbackList<InputCallback>   mInputCallbacks;
+
+        template <typename FuncType>
+        bool addCallback(CallbackList<FuncType> &callbacks, FuncType func)
         {
-            if (!mEventCallbacks.full())
+            if (callbacks.full())
             {
-                mEventCallbacks.push(reinterpret_cast<uintptr_t>(func));
-                return true;
+                VLOG_WARN("[EventManager::addCallback] Cannot add callback: at capacity");
+                return false;
             }
-            return false;
+            callbacks.push(func);
+            return true;
+        }
+
+        template <typename EventType>
+        void dispatch(CallbackList<CallbackType<EventType>> &callbacks, const EventType& event)
+        {
+            for (auto func: callbacks)
+            {
+                func(event);
+            }
         }
 
     };
