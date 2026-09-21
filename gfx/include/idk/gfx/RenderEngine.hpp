@@ -2,31 +2,23 @@
 
 #include "libidk/gpu//gl.hpp"
 #include "libidk/dsa/List.hpp"
+#include "idk/EngineAPI.hpp"
 
-namespace idk
-{
-    class PlatformContext;
-}
 
 namespace idk::gfx
 {
-    class RenderEngine;
+    class RenderEngine: public idk::Service
+    {
+    public:
+        virtual void onInit(EngineAPI&) final;
+        virtual void onUpdate(EngineAPI&) final;
+        virtual void onShutdown(EngineAPI&) final;
+        virtual void onEvent(EngineAPI&, const void*) final;
+
+    private:
+        void      *mWinCtx;
+        void      *mGlCtx;
+        uint32_t   mDummyVao;
+
+    };
 }
-
-
-class idk::gfx::RenderEngine
-{
-public:
-    RenderEngine(PlatformContext&);
-    ~RenderEngine();
-
-    void update();
-    void shutdown();
-
-private:
-    void    *mWinCtx;
-    void    *mGlCtx;
-
-    uint32_t mDummyVao;
-
-};

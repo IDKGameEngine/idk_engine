@@ -19,12 +19,12 @@ target_include_directories(
 )
 target_link_libraries(
     ${PROJECT_NAME}
-    PUBLIC glad OpenGL::GL idkengine_common idkengine_platform assimp::assimp
+    PUBLIC glad OpenGL::GL idkengine_common assimp::assimp
 )
 target_sources(
     ${PROJECT_NAME} PRIVATE
     # "${CMAKE_CURRENT_SOURCE_DIR}/src/vk/vk_mem_alloc.cpp"
     # "${CMAKE_CURRENT_SOURCE_DIR}/src/vk/VkBootstrap.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/src/GfxService.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/RenderEngine.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/RenderEngineGl.cpp"
 )

@@ -1,27 +1,25 @@
-#pragma once
+// #pragma once
 
-#include "libidk/Service.hpp"
-#include "idk/gfx/RenderEngine.hpp"
-#include "idk/platform/PlatformContext.hpp"
+// #include "libidk/Service.hpp"
+// #include "idk/gfx/RenderEngine.hpp"
 
 
-namespace idk::gfx
-{
-    class GfxService: public idk::Service
-    {
-    private:
-        idk::PlatformContext   &mPlat;
-        idk::gfx::RenderEngine  mRenderEngine;
+// namespace idk::gfx
+// {
+//     class GfxService: public idk::Service
+//     {
+//     private:
+//         idk::gfx::RenderEngine mRenderEngine;
 
-    public:
-        GfxService(idk::PlatformContext&);
-        ~GfxService();
+//     public:
+//         GfxService();
+//         virtual ~GfxService();
 
-        virtual void onInit(ServiceManager*) final;
-        virtual void onUpdate(ServiceManager*) final;
-        virtual void onShutdown(ServiceManager*) final;
-        virtual void onEvent(ServiceManager*, const void*) final;
+//         virtual void onInit(EngineAPI&) final;
+//         virtual void onUpdate(EngineAPI&) final;
+//         virtual void onShutdown(EngineAPI&) final;
+//         virtual void onEvent(EngineAPI&, const void*) final;
 
-        idk::gfx::RenderEngine &getRenderEngine() { return mRenderEngine; }
-    };
-}
+//         idk::gfx::RenderEngine &getRenderEngine() { return mRenderEngine; }
+//     };
+// }

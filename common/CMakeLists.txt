@@ -10,9 +10,14 @@ target_include_directories(
     ${PROJECT_NAME} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include"
 )
 target_link_libraries(
-    ${PROJECT_NAME} PUBLIC libidk
+    ${PROJECT_NAME}
+    PUBLIC SDL3 SDL3_net SDL3_mixer libidk
 )
 target_sources(
     ${PROJECT_NAME} PRIVATE
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/EventQueue.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/EngineAPI.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/AudioManager.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/EventManager.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/InputManager.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/VideoManager.cpp"
 )

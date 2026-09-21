@@ -1,14 +1,10 @@
 #include "idk/platform/EventManager.hpp"
-#include "idk/platform/PlatformContext.hpp"
-#include "libidk/log.hpp"
-
-#include "idk/engine-message/EventQueue.hpp"
+#include "idk/EngineAPI.hpp"
 
 #include <SDL3/SDL.h>
 
 
-idk::EventManager::EventManager(PlatformContext &ctx)
-:   IPlatformFeature(ctx)
+idk::EventManager::EventManager()
 {
     if (false == SDL_Init(SDL_INIT_EVENTS))
     {
@@ -17,16 +13,14 @@ idk::EventManager::EventManager(PlatformContext &ctx)
 }
 
 
-void idk::EventManager::onInit(idk::ServiceManager*)
+void idk::EventManager::onInit(idk::EngineAPI&)
 {
 
 }
 
 
-void idk::EventManager::onUpdate(idk::ServiceManager*)
+void idk::EventManager::onUpdate(idk::EngineAPI &api)
 {
-    auto &eq = idk::EngineEvent::gEngineEventQueue;
-
     SDL_Event e;
     while (SDL_PollEvent(&e))
     {
@@ -36,15 +30,15 @@ void idk::EventManager::onUpdate(idk::ServiceManager*)
         }
         if (e.type == SDL_EVENT_QUIT)
         {
-            eq.push({EngineEvent::SHUTDOWN, 0});
+            api.pushEvent(EngineEvent::T_EngineCtl, EngineEvent::S_Shutdown);
         }
         else if ((e.type == SDL_EVENT_KEY_UP) && (e.key.scancode == SDL_SCANCODE_ESCAPE))
         {
-            eq.push({EngineEvent::SHUTDOWN, 0});
+            api.pushEvent(EngineEvent::T_EngineCtl, EngineEvent::S_Shutdown);
         }
         else
         {
-            mCtx.broadcastEvent(&e);
+            api.broadcastEvent(EngineEvent::T_Platform, 0, reinterpret_cast<uint64_t>(&e));
         }
     }
 }

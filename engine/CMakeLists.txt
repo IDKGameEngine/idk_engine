@@ -1,6 +1,7 @@
 project(idkengine_engine)
 
 find_package(Jolt REQUIRED)
+find_package(Steamworks CONFIG REQUIRED)
 
 add_library(
     ${PROJECT_NAME} OBJECT
@@ -13,8 +14,8 @@ target_include_directories(
 )
 target_link_libraries(
     ${PROJECT_NAME}
-    PUBLIC idkengine_common idkengine_platform idkengine_gfx
-    PRIVATE Jolt::Jolt
+    PUBLIC idkengine_common idkengine_gfx
+    PRIVATE Steamworks::Steamworks Jolt::Jolt
 )
 target_sources(
     ${PROJECT_NAME} PRIVATE

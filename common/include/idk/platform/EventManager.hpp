@@ -12,10 +12,11 @@ namespace idk
         idk::InplaceList<uintptr_t, 64> mEventCallbacks;
 
     public:
-        EventManager(PlatformContext &ctx);
+        EventManager();
+        virtual ~EventManager() = default;
 
-        virtual void onInit(ServiceManager*) final;
-        virtual void onUpdate(ServiceManager*) final;
+        virtual void onInit(EngineAPI&) final;
+        virtual void onUpdate(EngineAPI&) final;
 
         bool addEventCallback(EventCallback func)
         {

@@ -1,5 +1,4 @@
 #include "idk/platform/VideoManager.hpp"
-#include "idk/platform/PlatformContext.hpp"
 
 #include "libidk/Assert.hpp"
 #include "libidk/log.hpp"
@@ -8,9 +7,8 @@
 #include <SDL3/SDL_opengl.h>
 
 
-idk::VideoManager::VideoManager(PlatformContext &ctx, const char *title, int w, int h)
-:   IPlatformFeature(ctx),
-    mTitle(title),
+idk::VideoManager::VideoManager(const char *title, int w, int h)
+:   mTitle(title),
     mWin(nullptr),
     mWidth(w),
     mHeight(h)
@@ -44,10 +42,23 @@ idk::VideoManager::~VideoManager()
 }
 
 
-void idk::VideoManager::onUpdate(idk::ServiceManager*)
+void idk::VideoManager::onUpdate(idk::EngineAPI&)
 {
 
 }
+
+
+void idk::VideoManager::onShutdown(idk::EngineAPI&)
+{
+
+}
+
+
+void idk::VideoManager::onEvent(idk::EngineAPI&, const void*)
+{
+
+}
+
 
 void idk::VideoManager::setWindowFullscreen(bool fullscreen)
 {

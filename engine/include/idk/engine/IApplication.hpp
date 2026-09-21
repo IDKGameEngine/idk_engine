@@ -1,18 +1,19 @@
 #pragma once
 
-#include "libidk/Types.hpp"
+#include "libidk/Service.hpp"
 
 namespace idk
 {
-    class Engine;
-
-    class IApplication: public idk::Immobile
+    class IApplication: public idk::Service
     {
     public:
+        IApplication() = default;
         virtual ~IApplication() = default;
-        virtual void onInit(Engine&) = 0;
-        virtual void onUpdate(Engine&) = 0;
-        virtual void onShutdown(Engine&) = 0;
+
+        virtual void onInit(EngineAPI&) = 0;
+        virtual void onUpdate(EngineAPI&) = 0;
+        virtual void onShutdown(EngineAPI&) = 0;
+        virtual void onEvent(idk::EngineAPI&, const void*) = 0;
     };
 
 }

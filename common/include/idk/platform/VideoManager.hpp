@@ -14,10 +14,12 @@ namespace idk
         int32_t          mHeight;
 
     public:
-        VideoManager(PlatformContext &ctx, const char *title, int w, int h);
+        VideoManager(const char *title, int w, int h);
         ~VideoManager();
 
-        virtual void onUpdate(ServiceManager*) final;
+        virtual void onUpdate(EngineAPI&) final;
+        virtual void onShutdown(EngineAPI&) final;
+        virtual void onEvent(EngineAPI&, const void*) final;
 
         void *getWindowHandle() { return mWin; }
 

@@ -1,24 +1,27 @@
 #include "idk/platform/InputManager.hpp"
-#include "idk/platform/PlatformContext.hpp"
 
 #include <SDL3/SDL.h>
 
 
-idk::InputManager::InputManager(PlatformContext &ctx)
-:   IPlatformFeature(ctx)
+idk::InputManager::InputManager()
 {
 
 }
 
 
-void idk::InputManager::onUpdate(idk::ServiceManager*)
+void idk::InputManager::onUpdate(idk::EngineAPI&)
 {
-    // SDL_GetKeyboardState();
-    // SDL_GetGamepadAxis()
+
 }
 
 
-void idk::InputManager::onEvent(idk::ServiceManager*, const void *event)
+void idk::InputManager::onShutdown(idk::EngineAPI&)
+{
+
+}
+
+
+void idk::InputManager::onEvent(idk::EngineAPI&, const void *event)
 {
     const SDL_Event &e = *static_cast<const SDL_Event*>(event);
 

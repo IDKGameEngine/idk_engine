@@ -1,9 +1,7 @@
 #pragma once
 
+#include "idk/EngineAPI.hpp"
 #include "idk/engine/IApplication.hpp"
-#include "idk/platform/PlatformContext.hpp"
-#include "libidk/Service.hpp"
-#include "libidk/dsa/Queue.hpp"
 
 
 namespace idk
@@ -18,6 +16,8 @@ namespace idk
 
     private:
         std::atomic<bool> mShouldQuit;
+        idk::EngineAPI    mApi;
+
         void process_engine_event(const EngineEvent&);
 
     };

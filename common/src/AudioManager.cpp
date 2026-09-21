@@ -1,11 +1,9 @@
 #include "idk/platform/AudioManager.hpp"
-#include "idk/platform/PlatformContext.hpp"
 #include "libidk/log.hpp"
 #include <SDL3/SDL.h>
 
 
-idk::AudioManager::AudioManager(PlatformContext &ctx)
-:   IPlatformFeature(ctx)
+idk::AudioManager::AudioManager()
 {
     if (false == MIX_Init())
     {
@@ -28,7 +26,17 @@ idk::AudioManager::~AudioManager()
 }
 
 
-void idk::AudioManager::onUpdate(idk::ServiceManager*)
+void idk::AudioManager::onUpdate(EngineAPI&)
+{
+
+}
+
+void idk::AudioManager::onShutdown(EngineAPI&)
+{
+
+}
+
+void idk::AudioManager::onEvent(EngineAPI&, const void*)
 {
 
 }

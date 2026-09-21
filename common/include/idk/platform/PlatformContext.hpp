@@ -18,10 +18,10 @@ namespace idk
         PlatformContext(const PlatformConfig &cfg);
         ~PlatformContext();
 
-        virtual void onInit(ServiceManager*) final;
-        virtual void onUpdate(ServiceManager*) final;
-        virtual void onShutdown(ServiceManager*) final;
-        virtual void onEvent(ServiceManager*, const void*) final;
+        virtual void onInit(EngineAPI&) final;
+        virtual void onUpdate(EngineAPI&) final;
+        virtual void onShutdown(EngineAPI&) final;
+        virtual void onEvent(EngineAPI&, const void*) final;
 
     };
 

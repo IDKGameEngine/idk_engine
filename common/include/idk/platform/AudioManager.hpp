@@ -22,10 +22,12 @@ namespace idk
             uint16_t   mIdx;
         };
 
-        AudioManager(PlatformContext &ctx);
+        AudioManager();
         virtual ~AudioManager();
 
-        virtual void onUpdate(ServiceManager*) final;
+        virtual void onUpdate(EngineAPI&) final;
+        virtual void onShutdown(EngineAPI&) final;
+        virtual void onEvent(EngineAPI&, const void*) final;
 
         virtual SoundType *createSound(const char *filepath);
         virtual void destroySound(SoundType*) final;
