@@ -54,10 +54,9 @@ idk::AudioManager::SoundHandle idk::AudioManager::createSound(const char *filepa
     MIX_Track *track = MIX_CreateTrack(mMixer);
     IDK_ASSERT(track != NULL, "[AudioManager::loadSound] {}", SDL_GetError());
 
-    SoundType snd(audio, track);
-    MIX_SetTrackAudio(snd.mTrack, snd.mAudio);
+    MIX_SetTrackAudio(track, audio);
 
-    return mSounds.createResource(snd);
+    return mSounds.createResource(SoundType(audio, track));
 }
 
 
