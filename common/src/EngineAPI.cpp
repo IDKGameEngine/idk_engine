@@ -31,6 +31,7 @@ bool idk::EngineAPI::pushEvent(int32_t type, int32_t subtype, uint64_t data)
 
 void idk::EngineAPI::broadcastEvent(int32_t, int32_t, uint64_t data)
 {
+    VLOG_INFO("[EngineAPI::broadcastEvent]");
     mOwner->broadcastEvent(*this, (const void*)data);
 }
 

@@ -39,7 +39,13 @@ void idk::VideoManager::onShutdown(idk::EngineAPI&)
 }
 
 
-void idk::VideoManager::onUpdate(idk::EngineAPI&)
+void idk::VideoManager::onPreFrame(idk::EngineAPI&)
+{
+
+}
+
+
+void idk::VideoManager::onPostFrame(idk::EngineAPI&)
 {
 
 }

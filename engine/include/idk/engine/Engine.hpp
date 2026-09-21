@@ -15,8 +15,8 @@ namespace idk
         void run(idk::IApplication *app);
 
     private:
-        std::atomic<bool> mShouldQuit;
-        idk::EngineAPI    mApi;
+        std::atomic<bool>       mShouldQuit;
+        idk::EngineAPI          mApi;
 
         void process_engine_event(const EngineEvent&);
 

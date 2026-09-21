@@ -8,12 +8,15 @@ namespace idk::editor
     class EditorApplication: public idk::IApplication
     {
     public:
-        EditorApplication();
-        virtual void onInit(idk::Engine&) final;
-        virtual void onUpdate(idk::Engine&) final;
-        virtual void onShutdown(idk::Engine&) final;
+        virtual void onInit(idk::EngineAPI&) final;
+        virtual void onShutdown(idk::EngineAPI&) final;
+        virtual void onPreFrame(idk::EngineAPI&) final;
+        virtual void onMidFrame(idk::EngineAPI&) final;
+        virtual void onPostFrame(idk::EngineAPI&) final;
+        virtual void onEvent(idk::EngineAPI&, const void*) final;
 
     private:
 
     };
 }
+

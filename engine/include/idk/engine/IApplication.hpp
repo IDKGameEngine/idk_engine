@@ -11,7 +11,7 @@ namespace idk
         virtual ~IApplication() = default;
 
         virtual void onInit(EngineAPI&) = 0;
-        virtual void onUpdate(EngineAPI&) = 0;
+        virtual void onPreFrame(EngineAPI&) = 0;
         virtual void onShutdown(EngineAPI&) = 0;
         virtual void onEvent(idk::EngineAPI&, const void*) = 0;
     };

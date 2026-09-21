@@ -21,7 +21,7 @@ void idk::AudioManager::onShutdown(EngineAPI&)
 }
 
 
-void idk::AudioManager::onUpdate(EngineAPI&)
+void idk::AudioManager::onPreFrame(EngineAPI&)
 {
     // for (uint16_t i=0; i<MAX_SOUNDS; i++)
     // {
@@ -35,12 +35,6 @@ void idk::AudioManager::onUpdate(EngineAPI&)
     //         snd.mFinished = true;
     //     }
     // }
-}
-
-
-void idk::AudioManager::onEvent(EngineAPI&, const void*)
-{
-
 }
 
 

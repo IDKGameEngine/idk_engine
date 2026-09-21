@@ -18,7 +18,8 @@ namespace idk
 
         virtual void onInit(EngineAPI&) final;
         virtual void onShutdown(EngineAPI&) final;
-        virtual void onUpdate(EngineAPI&) final;
+        virtual void onPreFrame(EngineAPI&) final;
+        virtual void onPostFrame(EngineAPI&) final;
         virtual void onEvent(EngineAPI&, const void*) final;
 
         void *getWindowHandle() { return mWin; }

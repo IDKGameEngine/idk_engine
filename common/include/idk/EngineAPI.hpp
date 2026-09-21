@@ -48,6 +48,9 @@ namespace idk
         bool pushEvent(int32_t type, int32_t subtype=0UL, uint64_t data=0UL);
         void broadcastEvent(int32_t type, int32_t subtype=0UL, uint64_t data=0UL);
 
+        template <typename ServiceType>
+        ServiceType *getService() { return mOwner->getService<ServiceType>(); }
+
     private:
         friend class idk::Engine;
         idk::core::Queue<EngineEvent, 128> mEventQueue;

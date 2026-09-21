@@ -38,7 +38,7 @@
 // }
 
 
-// void idk::gfx::GfxService::onUpdate(EngineAPI&)
+// void idk::gfx::GfxService::onPreFrame(EngineAPI&)
 // {
 //     mRenderEngine.update();
 // }

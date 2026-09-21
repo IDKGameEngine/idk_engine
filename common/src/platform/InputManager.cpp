@@ -16,7 +16,13 @@ void idk::InputManager::onShutdown(idk::EngineAPI&)
 }
 
 
-void idk::InputManager::onUpdate(idk::EngineAPI&)
+void idk::InputManager::onPreFrame(idk::EngineAPI&)
+{
+
+}
+
+
+void idk::InputManager::onPostFrame(EngineAPI&)
 {
 
 }

@@ -54,15 +54,24 @@ void idk::gfx::RenderManager::onShutdown(EngineAPI&)
 }
 
 
-void idk::gfx::RenderManager::onUpdate(EngineAPI&)
+void idk::gfx::RenderManager::onPreFrame(EngineAPI&)
 {
     SDL_GL_MakeCurrent((SDL_Window*)mWinCtx, (SDL_GLContext)mGlCtx);
 
-    gl::ClearColor(0.25f, 0.25f, 0.50f, 1.0f);
-    gl::Clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    // gl::ClearColor(0.25f, 0.25f, 0.50f, 1.0f);
+    // gl::Clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    // gl::BindVertexArray(mDummyVao);
+}
 
-    gl::BindVertexArray(mDummyVao);
 
+void idk::gfx::RenderManager::onMidFrame(EngineAPI&)
+{
+
+}
+
+
+void idk::gfx::RenderManager::onPostFrame(EngineAPI&)
+{
     SDL_GL_SwapWindow((SDL_Window*)mWinCtx);
 }
 

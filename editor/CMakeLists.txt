@@ -14,7 +14,7 @@ target_include_directories(
 )
 target_link_libraries(
     ${PROJECT_NAME}
-    PUBLIC idkengine_common idkengine_platform idkengine_gfx idkengine_engine
+    PUBLIC idkengine_common idkengine_gfx idkengine_engine
     PRIVATE IdkThirdParty::imgui
 )
 target_sources(

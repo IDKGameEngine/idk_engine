@@ -50,14 +50,20 @@ void idk::Engine::run(idk::IApplication *app)
 
     while (mShouldQuit.load() == false)
     {
-        updateServices(mApi);
-        app->onUpdate(mApi);
+        updatePreFrame(mApi);
+        app->onPreFrame(mApi);
 
         EngineEvent e;
         while (mApi.mEventQueue.pop(e))
         {
             process_engine_event(e);
         }
+
+        updateMidFrame(mApi);
+        app->onMidFrame(mApi);
+
+        updatePostFrame(mApi);
+        app->onPostFrame(mApi);
     }
 
     app->onShutdown(mApi);
