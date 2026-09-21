@@ -21,7 +21,6 @@ namespace idk
     private:
         idk::RaiiFunc<void(Engine*)> mServiceRaii;
         idk::EngineAPI               mApi;
-        std::atomic<bool>            mShouldQuit;
         idk::EngineClock             mClock{};
         idk::FixedTimer              mFixedTimer;
 
@@ -31,6 +30,8 @@ namespace idk
         void engineRender();
 
         void processEvent(const EngineEvent&);
+
+        static void onEngineEventCallback(EngineAPI&, const EngineEvent&);
 
     };
 }

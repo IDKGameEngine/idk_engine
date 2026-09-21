@@ -7,6 +7,8 @@
 #include "idk/platform/VideoManager.hpp"
 #include "libidk/dsa/Queue.hpp"
 
+#include <atomic>
+
 
 namespace idk
 {
@@ -41,7 +43,7 @@ namespace idk
 
         EngineAPI(ServiceManager *owner);
 
-        // void dispatchEvent(int32_t type, int32_t subtype=0UL, uint64_t data=0UL);
+        void   quit();
         double getDeltaTimeSec();
         double getFixedDeltaTimeSec();
 
@@ -52,9 +54,9 @@ namespace idk
         friend class idk::Engine;
         // using EventQueue = idk::core::Queue<EngineEvent, 128>;
 
-        // EventQueue  mEventQueue;
-        double      mDeltaTimeSec{ 0.01 };
-        double      mFixedDeltaTimeSec{ 0.01 };
+        std::atomic<bool>   mShouldQuit{ false };
+        double              mDeltaTimeSec{ 0.01 };
+        double              mFixedDeltaTimeSec{ 0.01 };
 
     };
 

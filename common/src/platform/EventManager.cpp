@@ -44,7 +44,7 @@ void idk::EventManager::onShutdown(idk::EngineAPI&)
 // }
 
 
-void idk::EventManager::onUpdate(EngineAPI&)
+void idk::EventManager::onUpdate(EngineAPI &api)
 {
     SDL_Event sdlEvent;
 
@@ -52,7 +52,7 @@ void idk::EventManager::onUpdate(EngineAPI&)
     {
         for (GenericCallback &func: mGenericCallbacks)
         {
-            func((const void*)(&sdlEvent));
+            func(api, (const void*)(&sdlEvent));
         }
 
         switch (sdlEvent.type)
@@ -60,7 +60,7 @@ void idk::EventManager::onUpdate(EngineAPI&)
             case SDL_EVENT_QUIT:
             {
                 EngineEvent event(EngineEvent::Quit);
-                dispatch(mEngineCallbacks, event);
+                dispatch(api, mEngineCallbacks, event);
                 break;
             }
 
@@ -71,35 +71,35 @@ void idk::EventManager::onUpdate(EngineAPI&)
                     sdlEvent.window.data1,
                     sdlEvent.window.data2
                 );
-                dispatch(mWindowCallbacks, event);
+                dispatch(api, mWindowCallbacks, event);
                 break;
             }
 
             case SDL_EVENT_WINDOW_MINIMIZED:
             {
                 WindowEvent event(WindowEvent::Minimized);
-                dispatch(mWindowCallbacks, event);
+                dispatch(api, mWindowCallbacks, event);
                 break;
             }
 
             case SDL_EVENT_WINDOW_RESTORED:
             {
                 WindowEvent event(WindowEvent::Restored);
-                dispatch(mWindowCallbacks, event);
+                dispatch(api, mWindowCallbacks, event);
                 break;
             }
 
             case SDL_EVENT_KEY_DOWN:
             {
                 InputEvent event(InputEvent::KeyDown);
-                dispatch(mInputCallbacks, event);
+                dispatch(api, mInputCallbacks, event);
                 break;
             }
 
             case SDL_EVENT_KEY_UP:
             {
                 InputEvent event(InputEvent::KeyUp);
-                dispatch(mInputCallbacks, event);
+                dispatch(api, mInputCallbacks, event);
                 break;
             }
 

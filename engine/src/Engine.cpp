@@ -15,11 +15,11 @@ static void EngineServiceRaiiFunc(idk::Engine *E)
 
 idk::Engine::Engine()
 :   mServiceRaii(EngineServiceRaiiFunc, this),
-    mApi(this),
-    mShouldQuit(false)
+    mApi(this)
 {
     setFixedUpdateRate(30.0);
 
+    mApi.mEvent->addEngineCallback(Engine::onEngineEventCallback);
     // mApi.mEvent->addEngineCallback()
 }
 
@@ -42,7 +42,7 @@ void idk::Engine::startApplication(idk::Service *app)
     addService(app);
 
     dispatchInit(mApi);
-    while (!mShouldQuit.load())
+    while (!mApi.mShouldQuit.load())
     {
         engineDeltaTime();
         engineEvents();
@@ -95,19 +95,21 @@ void idk::Engine::engineRender()
 
 
 
-// void idk::Engine::processEvent(const EngineEvent &e)
-// {
-//     if (e.type == EngineEvent::T_EngineCtl)
-//     {
-//         switch (e.subtype)
-//         {
-//             case EngineEvent::S_Pause:
-//                 break;
-//             case EngineEvent::S_Resume:
-//                 break;
-//             case EngineEvent::S_Shutdown:
-//                 mShouldQuit.store(true);
-//                 break;
-//         }
-//     }
-// }
+void idk::Engine::onEngineEventCallback(idk::EngineAPI &api, const idk::EngineEvent &e)
+{
+    using namespace idk;
+
+    switch (e.type)
+    {
+        case EngineEvent::Quit:
+            api.quit();
+            break;
+        case EngineEvent::Pause:
+            break;
+        case EngineEvent::Resume:
+            break;
+        default:
+            break;
+    }
+}
+

@@ -10,16 +10,10 @@
 #include <SDL3/SDL_opengl.h>
 
 
-static void EditorEventCallback(const void *event)
-{
-    VLOG_INFO("[EditorEventCallback]");
-    ImGui_ImplSDL3_ProcessEvent((const SDL_Event*)event);
-}
-
 
 void idk::editor::EditorApplication::onInit(EngineAPI &api)
 {
-    api.mEvent->addGenericCallback(EditorEventCallback);
+    api.mEvent->addGenericCallback(onGenericEventCallback);
 
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
@@ -28,9 +22,6 @@ void idk::editor::EditorApplication::onInit(EngineAPI &api)
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;         // Enable Docking
-    // io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;       // Enable Multi-Viewport / Platform Windows
-    //io.ConfigViewportsNoAutoMerge = true;
-    //io.ConfigViewportsNoTaskBarIcon = true;
 
     // Setup Dear ImGui style
     ImGui::StyleColorsDark();
@@ -57,9 +48,11 @@ void idk::editor::EditorApplication::onInit(EngineAPI &api)
 }
 
 
-void idk::editor::EditorApplication::onShutdown(EngineAPI &api)
+void idk::editor::EditorApplication::onShutdown(EngineAPI&)
 {
-    (void)api;
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplSDL3_Shutdown();
+    ImGui::DestroyContext();
 }
 
 
@@ -143,8 +136,7 @@ void idk::editor::EditorApplication::onMidRender(EngineAPI&)
 }
 
 
-// void idk::editor::EditorApplication::onEvent(EngineAPI&, const void *event)
-// {
-//     ImGui_ImplSDL3_ProcessEvent((const SDL_Event*)event);
-// }
-
+void idk::editor::EditorApplication::onGenericEventCallback(idk::EngineAPI&, const void *event)
+{
+    ImGui_ImplSDL3_ProcessEvent((const SDL_Event*)event);
+}

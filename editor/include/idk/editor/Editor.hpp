@@ -14,6 +14,7 @@ namespace idk::editor
         virtual void onMidRender(idk::EngineAPI&) final;
 
     private:
+        static void onGenericEventCallback(idk::EngineAPI&, const void*);
 
     };
 }

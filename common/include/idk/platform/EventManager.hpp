@@ -9,9 +9,9 @@ namespace idk
     {
     public:
         template <typename EventType>
-        using CallbackType = void (*)(const EventType&);
+        using CallbackType = void (*)(EngineAPI&, const EventType&);
 
-        using GenericCallback = void (*)(const void*);
+        using GenericCallback = void (*)(EngineAPI&, const void*);
         using EngineCallback  = CallbackType<EngineEvent>;
         using WindowCallback  = CallbackType<WindowEvent>;
         using InputCallback   = CallbackType<InputEvent>;
@@ -47,11 +47,11 @@ namespace idk
         }
 
         template <typename EventType>
-        void dispatch(CallbackList<CallbackType<EventType>> &callbacks, const EventType& event)
+        void dispatch(EngineAPI &api, CallbackList<CallbackType<EventType>> &callbacks, const EventType& event)
         {
             for (auto func: callbacks)
             {
-                func(event);
+                func(api, event);
             }
         }
 

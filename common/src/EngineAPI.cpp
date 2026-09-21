@@ -25,6 +25,11 @@ idk::EngineAPI::EngineAPI(ServiceManager *O)
 // }
 
 
+void idk::EngineAPI::quit()
+{
+    mShouldQuit.store(true);
+}
+
 double idk::EngineAPI::getDeltaTimeSec()
 {
     return mDeltaTimeSec;
